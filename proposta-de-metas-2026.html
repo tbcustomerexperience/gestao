@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metas 2026 — Tania Bulhões</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:       #3d6b4f;
+  --green-dark:  #2c4f3a;
+  --green-mid:   #4a7d5e;
+  --green-light: #eef3f0;
+  --gold:        #b89a5e;
+  --gold-dark:   #96783f;
+  --gold-light:  #f9f4ec;
+  --cream:       #faf8f5;
+  --sand:        #f0ece4;
+  --sand-dark:   #e2dcd2;
+  --text:        #1a1a1a;
+  --text-mid:    #444;
+  --muted:       #888;
+  --red:         #b03a2e;
+  --red-light:   #fdf0ee;
+  --border:      #ddd8cf;
+  --white:       #ffffff;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  background: #111;
+  color: var(--text);
+  user-select: none;
+}
+
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.38s ease;
+  overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* ══ NAV ══ */
+.nav {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  z-index: 9999;
+  background: rgba(0,0,0,0.38);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 40px; padding: 8px 16px;
+}
+.nav-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.65); font-size: 15px; padding: 2px 7px;
+  line-height: 1; transition: color 0.15s; font-family: inherit;
+}
+.nav-btn:hover { color: #fff; }
+.nav-dots { display: flex; gap: 5px; align-items: center; }
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(255,255,255,0.25); cursor: pointer;
+  transition: all 0.22s; border: none; padding: 0;
+}
+.dot.on { background: var(--gold); width: 18px; border-radius: 3px; }
+.nav-count { font-size: 10px; color: rgba(255,255,255,0.38); min-width: 28px; text-align: center; }
+
+/* ══ SHARED HEADER ══ */
+.slide-header {
+  padding: 22px 48px 16px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sh-left .eyebrow {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 3px;
+}
+.sh-left h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 2vw, 24px); font-weight: 400;
+  color: var(--green-dark); letter-spacing: 0.01em; line-height: 1.2;
+}
+.sh-right { font-size: 9.5px; color: var(--muted); text-align: right; line-height: 1.8; }
+.sh-right strong { display: block; font-size: 10px; color: var(--text-mid); }
+
+.slide-body { flex: 1; overflow: hidden; padding: 22px 48px 68px; display: flex; flex-direction: column; }
+
+/* dark header variant */
+.dark-header .slide-header { border-bottom-color: rgba(255,255,255,0.09); }
+.dark-header .sh-left .eyebrow { color: var(--gold); }
+.dark-header .sh-left h2 { color: rgba(255,255,255,0.88); }
+.dark-header .sh-right { color: rgba(255,255,255,0.3); }
+.dark-header .sh-right strong { color: rgba(255,255,255,0.55); }
+
+/* ══════════════════
+   S1 — CAPA
+══════════════════ */
+#s1 {
+  background: var(--green-dark);
+  justify-content: center; align-items: center; text-align: center;
+  overflow: hidden;
+}
+#s1::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 55% at 15% 85%, rgba(184,154,94,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 85% 15%, rgba(255,255,255,0.03) 0%, transparent 60%);
+}
+.s1-inner { position: relative; z-index: 1; }
+.s1-eye {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+}
+.s1-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 4vw, 54px); font-weight: 300;
+  color: #fff; letter-spacing: 0.02em; line-height: 1.1;
+}
+.s1-title em { font-style: italic; color: rgba(255,255,255,0.55); }
+.s1-rule { width: 40px; height: 1px; background: var(--gold); margin: 24px auto; opacity: 0.45; }
+.s1-index { display: flex; gap: 36px; justify-content: center; }
+.s1-item { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.09em; text-transform: uppercase; }
+.s1-item span { display: block; font-family: 'Cormorant Garamond', serif; font-size: 18px; color: rgba(255,255,255,0.15); font-weight: 300; margin-bottom: 3px; text-transform: none; }
+.s1-bg { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-size: clamp(90px,13vw,155px); font-weight: 300; color: rgba(255,255,255,0.045); line-height: 1; white-space: nowrap; pointer-events: none; z-index: 0; }
+
+/* ══════════════════
+   S2 — ESTRATÉGICOS
+══════════════════ */
+#s2 { background: var(--green-dark); }
+
+.strat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+  max-width: 1100px;
+  margin: auto;
+  align-items: stretch;
+}
+.strat-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 20px 24px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: background 0.2s;
+}
+.strat-card:hover { background: #f0ece4; }
+.strat-tag {
+  font-size: 8px; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold-dark);
+  border-bottom: 1px solid rgba(184,154,94,0.25);
+  padding-bottom: 8px; margin-bottom: 4px;
+}
+.strat-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 1.5vw, 18px); font-weight: 300;
+  color: var(--green-dark); letter-spacing: 0.01em; line-height: 1.3;
+}
+.strat-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(30px, 3.5vw, 46px); font-weight: 300;
+  color: var(--green-dark); line-height: 1; letter-spacing: -0.025em;
+  margin: 6px 0 2px;
+}
+.strat-value sup { font-size: 0.32em; font-weight: 400; vertical-align: super; letter-spacing: 0; color: var(--green-mid); }
+.strat-value sub { font-size: 0.3em; font-weight: 300; vertical-align: baseline; color: var(--muted); margin-left: 1px; }
+.strat-note {
+  font-size: 10.5px; color: var(--muted); font-weight: 300;
+  padding-top: 10px; border-top: 1px solid var(--border);
+  line-height: 1.6; margin-top: auto;
+}
+
+/* ══════════════════
+   S3 — RACIONAL
+══════════════════ */
+#s3 { background: var(--green-dark); }
+#s3 .slide-header, #s4 .slide-header { border-bottom-color: rgba(255,255,255,0.1); }
+#s3 .sh-left .eyebrow, #s4 .sh-left .eyebrow { color: var(--gold); }
+#s3 .sh-left h2, #s4 .sh-left h2 { color: rgba(255,255,255,0.88); }
+#s3 .sh-right, #s4 .sh-right { color: rgba(255,255,255,0.3); }
+#s3 .sh-right strong, #s4 .sh-right strong { color: rgba(255,255,255,0.55); }
+
+.racional-table-wrap {
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+  border: 1px solid var(--border);
+}
+.racional-table-wrap table {
+  width: 100%; border-collapse: collapse;
+}
+.racional-table-wrap thead tr {
+  background: var(--green-dark);
+  border-bottom: 1px solid rgba(184,154,94,0.35);
+}
+.racional-table-wrap thead th {
+  font-size: 7.5px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold);
+  padding: 13px 20px; text-align: left;
+}
+.racional-table-wrap thead th:not(:first-child) { text-align: center; }
+.racional-table-wrap tbody tr {
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  transition: background 0.15s;
+}
+.racional-table-wrap tbody tr:nth-child(even) { background: var(--sand); }
+.racional-table-wrap tbody tr:hover { background: #e8e2d8; }
+.racional-table-wrap tbody tr:last-child { border-bottom: none; }
+.racional-table-wrap tbody td {
+  padding: 13px 20px; font-size: 11px; color: var(--text-mid);
+  vertical-align: middle; font-weight: 300;
+}
+.racional-table-wrap tbody td:not(:first-child) { text-align: center; }
+
+/* coluna indicador */
+.td-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; font-weight: 400; color: var(--green-dark);
+  display: block; letter-spacing: 0.01em;
+}
+.td-sub { font-size: 9px; color: var(--muted); display: block; font-weight: 300; margin-top: 2px; letter-spacing: 0.02em; }
+
+/* melhor resultado */
+.td-best { color: var(--green); font-weight: 500; font-size: 12px; }
+.td-period { font-size: 8.5px; color: var(--muted); display: block; margin-top: 2px; font-weight: 300; }
+
+/* referência */
+.td-ref-src { font-size: 8.5px; color: var(--muted); display: block; margin-top: 2px; font-weight: 300; }
+
+/* meta */
+.td-meta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px; font-weight: 300; color: var(--green-dark);
+  letter-spacing: -0.02em;
+}
+
+/* badges */
+.badge {
+  font-size: 8.5px; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; display: inline-block; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.badge-ok  { background: var(--green-light); color: var(--green); border: 1px solid rgba(61,107,79,0.2); }
+.badge-off { background: var(--red-light); color: var(--red); border: 1px solid rgba(176,58,46,0.2); }
+
+/* ══════════════════
+   S4 — SÍNTESE OPS
+══════════════════ */
+#s4 { background: var(--green-dark); }
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  flex: 1;
+}
+.ops-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 16px 10px;
+  display: flex; flex-direction: column; gap: 1px;
+  transition: background 0.2s;
+}
+.ops-card:hover { background: #f0ece4; }
+
+/* label — igual ao strat-tag */
+.oc-label {
+  font-size: 7.5px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold-dark);
+  border-bottom: 1px solid rgba(184,154,94,0.25);
+  padding-bottom: 4px; margin-bottom: 2px;
+}
+
+/* nome do indicador — Cormorant como strat-name */
+.oc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1.05vw, 13px); font-weight: 300;
+  color: var(--green-dark); letter-spacing: 0.01em; line-height: 1.2;
+}
+
+/* valor grande — igual ao strat-value */
+.oc-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(20px, 2.1vw, 28px); font-weight: 300;
+  color: var(--green-dark); line-height: 1; letter-spacing: -0.025em;
+  margin: 3px 0 1px;
+}
+
+.oc-bar-wrap { height: 2px; background: var(--sand-dark); border-radius: 2px; margin: 3px 0 3px; overflow: hidden; }
+.oc-bar { height: 100%; border-radius: 2px; background: var(--green); }
+.oc-bar.miss { background: var(--red); }
+
+/* nota inferior — igual ao strat-note */
+.oc-row { font-size: 8px; color: var(--muted); font-weight: 300; display: flex; align-items: center; gap: 3px; }
+.oc-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+.dg { background: var(--green); }
+.dr { background: var(--red); }
+.oc-bench {
+  font-size: 8.5px; color: var(--muted); font-weight: 300;
+  padding-top: 4px; border-top: 1px solid var(--border);
+  line-height: 1.4; margin-top: auto;
+}
+
+.ops-card.nota-card {
+  background: rgba(184,154,94,0.12);
+  border-color: rgba(184,154,94,0.3);
+  justify-content: center; gap: 8px;
+}
+.nota-title { font-size: 8px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
+.nota-card p { font-size: 10.5px; color: var(--muted); line-height: 1.65; font-weight: 300; }
+
+/* ══════════════════
+   S3 ALTERNATIVO — KPI LIST
+══════════════════ */
+.kpi-header {
+  display: grid;
+  grid-template-columns: 26% 9% 1fr 10% 22%;
+  gap: 0 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(184,154,94,0.35);
+  background: var(--green-dark);
+  border-radius: 5px 5px 0 0;
+}
+.kpi-header > div {
+  font-size: 7px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--gold); text-align: center;
+}
+.kpi-header .kpi-col-name { text-align: left; }
+.kpi-header .kpi-col-bench { text-align: left; }
+
+.kpi-list { display: flex; flex-direction: column; gap: 0; flex: 1; }
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: 26% 9% 1fr 10% 22%;
+  gap: 0 16px;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  background: var(--cream);
+}
+.kpi-row:nth-child(even) { background: var(--sand); }
+.kpi-row:last-child { border-bottom: none; }
+.kpi-row:hover { background: #e8e2d8; }
+
+.kpi-col-name { display: flex; flex-direction: column; gap: 2px; }
+.kpi-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(13px, 1.15vw, 15px); font-weight: 400;
+  color: var(--green-dark); letter-spacing: 0.01em;
+}
+.kpi-desc { font-size: 8.5px; color: var(--muted); font-weight: 300; }
+
+.kpi-col-atual { text-align: center; }
+.kpi-atual-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 400; letter-spacing: -0.01em;
+  color: var(--muted);
+}
+.kpi-atual-val.ok  { color: var(--green); }
+.kpi-atual-val.miss { color: var(--red); }
+
+.kpi-col-bar { position: relative; }
+.kpi-track {
+  height: 3px; background: var(--sand-dark);
+  border-radius: 3px; position: relative; overflow: visible;
+}
+.kpi-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.kpi-fill.ok   { background: linear-gradient(90deg, rgba(61,107,79,0.4), var(--green)); }
+.kpi-fill.miss { background: linear-gradient(90deg, rgba(176,58,46,0.3), var(--red)); }
+.kpi-marker {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold); border: 1.5px solid var(--cream);
+  box-shadow: 0 0 0 1px rgba(184,154,94,0.5);
+}
+
+.kpi-col-meta { text-align: center; }
+.kpi-meta-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  color: var(--green-dark); letter-spacing: 0;
+}
+
+.kpi-col-bench {
+  font-size: 8.5px; color: var(--muted);
+  font-weight: 300; line-height: 1.5;
+}
+
+.kpi-footnote {
+  font-size: 8px; color: rgba(255,255,255,0.22);
+  font-weight: 300; letter-spacing: 0.04em;
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+
+
+/* ajustes executivos da versão final */
+.kpi-col-meta {
+  background: rgba(184,154,94,0.08);
+  border-left: 1px solid rgba(184,154,94,0.28);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -11px 0;
+}
+.kpi-header .kpi-col-meta {
+  margin: -10px 0;
+  color: var(--gold);
+  background: rgba(184,154,94,0.10);
+}
+.kpi-meta-val { color: var(--gold-dark); }
+.kpi-label.miss { color: var(--red); }
+.kpi-marker.miss {
+  background: var(--red);
+  box-shadow: 0 0 0 1px rgba(176,58,46,0.35);
+}
+.kpi-legend {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 8px;
+  color: rgba(255,255,255,0.28);
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  margin-top: 8px;
+}
+.kpi-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.kpi-legend i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--green); }
+.kpi-legend i.meta { background: var(--gold); }
+.kpi-legend i.gap { background: var(--red); }
+.kpi-note-inline {
+  color: rgba(255,255,255,0.34);
+  font-weight: 300;
+}
+.fin-sub.final-note {
+  max-width: 520px;
+  margin: 12px auto 0;
+  color: rgba(255,255,255,0.36);
+}
+
+/* ══════════════════
+   S5 — ENCERRAMENTO
+══════════════════ */
+#s5 {
+  background: var(--green-dark);
+  justify-content: center; align-items: center; text-align: center;
+}
+#s5::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 65% 65% at 50% 115%, rgba(184,154,94,0.14) 0%, transparent 60%);
+}
+.fin-inner { position: relative; z-index: 1; max-width: 580px; }
+.fin-eye { font-size: 8.5px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+.fin-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 7vw, 90px); font-weight: 300; color: rgba(255,255,255,0.88); line-height: 1.1; margin-bottom: 0; }
+.fin-sub { font-size: 11px; color: rgba(255,255,255,0.32); font-weight: 300; margin-bottom: 32px; line-height: 1.65; }
+.fin-pills { display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; }
+.fin-pill { font-size: 10px; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 4px 13px; background: rgba(255,255,255,0.04); }
+.fin-pill strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+.fin-brand { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); font-family: 'Cormorant Garamond', serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.16); white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ══ S1 — CAPA ══ -->
+  <div class="slide active" id="s1">
+    <div class="s1-inner">
+      <div class="s1-eye">Tania Bulhões · Customer Experience</div>
+      <div class="s1-title">Proposta de <em>Metas Anuais</em></div>
+      <div class="s1-rule"></div>
+      <div class="s1-index">
+        <div class="s1-item"><span>01</span>Indicadores Estratégicos</div>
+        <div class="s1-item"><span>02</span>Síntese Operacional</div>
+        <div class="s1-item"><span>03</span>Racional das Metas</div>
+      </div>
+    </div>
+    <div class="s1-bg">2026</div>
+  </div>
+
+  <!-- ══ S2 — INDICADORES ESTRATÉGICOS ══ -->
+  <div class="slide dark-header" id="s2">
+    <div class="slide-header">
+      <div class="sh-left">
+        <div class="eyebrow">Indicadores Estratégicos</div>
+        <h2>Metas Gerenciais 2026</h2>
+      </div>
+      <div class="sh-right">
+        <strong>Tania Bulhões CX</strong>
+        Referência: jan–jun 2025
+      </div>
+    </div>
+    <div class="slide-body" style="background:var(--green-dark); justify-content:center; align-items:center;">
+      <div class="strat-grid">
+
+        <div class="strat-card">
+          <div class="strat-tag">Meta Organizacional</div>
+          <div class="strat-name">EBITDA</div>
+          <div class="strat-value"><sup>R$</sup>70<sub>Mi</sub></div>
+          <div class="strat-note">Resultado financeiro esperado para o exercício de 2026.</div>
+        </div>
+
+        <div class="strat-card">
+          <div class="strat-tag">Performance de Atendimento</div>
+          <div class="strat-name">CSAT — Satisfação do Cliente</div>
+          <div class="strat-value">90<sub>%</sub></div>
+          <div class="strat-note">Atual: 86% · Mercado varejo BR: 80–90%</div>
+        </div>
+
+        <div class="strat-card">
+          <div class="strat-tag">Reputação</div>
+          <div class="strat-name">Reclame Aqui</div>
+          <div class="strat-value">8<sub>/10</sub></div>
+          <div class="strat-note">Índice mínimo para o selo "Ótimo". Impacto direto na confiança e decisão de compra do consumidor.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S4 — RACIONAL ══ -->
+  <div class="slide" id="s4">
+    <div class="slide-header">
+      <div class="sh-left">
+        <div class="eyebrow">Racional das Metas · CX 2026</div>
+        <h2>Detalhamento por Indicador</h2>
+      </div>
+      <div class="sh-right">
+        <strong>Tania Bulhões CX</strong>
+        Base: jan–jun 2025
+      </div>
+    </div>
+    <div class="slide-body" style="background:var(--green-dark);">
+      <div class="racional-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:22%">Indicador</th>
+              <th>Média Jan–Jun 2025</th>
+              <th>Melhor Resultado</th>
+              <th>Referência de Mercado</th>
+              <th>Posição Atual</th>
+              <th style="background:rgba(184,154,94,0.1); border-left:1px solid rgba(184,154,94,0.3); color:var(--gold);">Meta 2026</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="td-name">CSAT</span><span class="td-sub">Satisfação pós-atendimento</span></td>
+              <td>86,0%</td>
+              <td class="td-best">92,0%<span class="td-period">mai/2025</span></td>
+              <td>80–90%<span class="td-ref-src">Retently / Digisac, 2025</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">90%</td>
+            </tr>
+            <tr>
+              <td><span class="td-name">Taxa de Resposta — CSAT</span><span class="td-sub">% de pesquisas respondidas</span></td>
+              <td>16,0%</td>
+              <td class="td-best">18,0%<span class="td-period">jan e mar/2025</span></td>
+              <td>20–28%<span class="td-ref-src">IndeCX / Zendesk, 2026</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">≥20%</td>
+            </tr>
+            <tr>
+              <td><span class="td-name">TMA — 1ª Resposta</span><span class="td-sub">Tempo médio real da primeira resposta (min)</span></td>
+              <td>~14 min</td>
+              <td class="td-best">4 min<span class="td-period">jun/2025</span></td>
+              <td>5–30 min<span class="td-ref-src">Zendesk CX Trends, 2025</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">17 min</td>
+            </tr>
+            <tr>
+              <td><span class="td-name">Tickets Reabertos</span><span class="td-sub">% de tickets com reabertura</span></td>
+              <td>18,0%</td>
+              <td class="td-best">11,0%<span class="td-period">jun/2025</span></td>
+              <td>&lt;20% · &lt;10% world-class<span class="td-ref-src">SQM Group, 2024</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">≤20%</td>
+            </tr>
+            <tr>
+              <td><span class="td-name">SLA WhatsApp</span><span class="td-sub">% de tickets respondidos em ≤10 min</span></td>
+              <td>48,0%</td>
+              <td class="td-best">66,0%<span class="td-period">jun/2025</span></td>
+              <td>60–80%<span class="td-ref-src">Zendesk CX Trends, 2025</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">60%</td>
+            </tr>
+            <tr>
+              <td><span class="td-name">SLA E-mail</span><span class="td-sub">% de tickets respondidos em ≤2h</span></td>
+              <td>96,0%</td>
+              <td class="td-best">100,0%<span class="td-period">jun/2025</span></td>
+              <td>90–97%<span class="td-ref-src">Zendesk CX Trends, 2025</span></td>
+              <td><span class="badge badge-ok">Dentro da faixa</span></td>
+              <td class="td-meta" style="border-left:1px solid rgba(184,154,94,0.3); background:rgba(184,154,94,0.08);">≥90%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S3 — SÍNTESE OPERACIONAL ══ -->
+  <div class="slide" id="s3">
+    <div class="slide-header">
+      <div class="sh-left">
+        <div class="eyebrow">Metas da Área · CX 2026</div>
+        <h2>Síntese dos Indicadores Operacionais</h2>
+      </div>
+      <div class="sh-right">
+        <strong>Tania Bulhões CX</strong>
+        Elaborado em junho de 2026
+      </div>
+    </div>
+    <div class="slide-body" style="background:var(--green-dark); padding-top:16px; padding-bottom:72px;">
+      <div style="border:1px solid var(--border); border-radius:6px; overflow:hidden; flex:1; display:flex; flex-direction:column;">
+      <!-- cabeçalho das colunas -->
+      <div class="kpi-header">
+        <div class="kpi-col-name"></div>
+        <div class="kpi-col-atual">Resultado Atual</div>
+        <div class="kpi-col-bar">Progresso</div>
+        <div class="kpi-col-meta">Meta 2026</div>
+        <div class="kpi-col-bench">Referência de mercado</div>
+      </div>
+
+      <!-- linhas -->
+      <div class="kpi-list">
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label">CSAT</span>
+            <span class="kpi-desc">Satisfação do Cliente</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val">86%</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill ok" style="width:86%"></div>
+              <div class="kpi-marker" style="left:90%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">90%</span></div>
+          <div class="kpi-col-bench">80–90% · Retently/Digisac 2025</div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label miss">Taxa Resposta CSAT</span>
+            <span class="kpi-desc">% de pesquisas respondidas</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val miss">16%</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill miss" style="width:16%"></div>
+              <div class="kpi-marker miss" style="left:20%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">≥20%</span></div>
+          <div class="kpi-col-bench">20–28% · IndeCX/Zendesk 2026</div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label">TMA 1ª Resposta</span>
+            <span class="kpi-desc">Tempo médio da primeira resposta</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val ok">~14 min</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill ok" style="width:47%"></div>
+              <div class="kpi-marker" style="left:57%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">17 min</span></div>
+          <div class="kpi-col-bench">5–30 min · Zendesk CX Trends 2025</div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label">Tickets Reabertos</span>
+            <span class="kpi-desc">% de tickets com reabertura</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val ok">18%</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill ok" style="width:90%"></div>
+              <div class="kpi-marker" style="left:100%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">≤20%</span></div>
+          <div class="kpi-col-bench">&lt;20% · SQM Group 2024</div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label miss">SLA WhatsApp</span>
+            <span class="kpi-desc">Tickets respondidos em ≤10 min</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val miss">48%</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill miss" style="width:48%"></div>
+              <div class="kpi-marker miss" style="left:60%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">60%</span></div>
+          <div class="kpi-col-bench">60–80% · Zendesk CX Trends 2025</div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-col-name">
+            <span class="kpi-label">SLA E-mail</span>
+            <span class="kpi-desc">Tickets respondidos em ≤2h</span>
+          </div>
+          <div class="kpi-col-atual"><span class="kpi-atual-val ok">96%</span></div>
+          <div class="kpi-col-bar">
+            <div class="kpi-track">
+              <div class="kpi-fill ok" style="width:96%"></div>
+              <div class="kpi-marker" style="left:90%"></div>
+            </div>
+          </div>
+          <div class="kpi-col-meta"><span class="kpi-meta-val">≥90%</span></div>
+          <div class="kpi-col-bench">90–97% · Zendesk CX Trends 2025</div>
+        </div>
+
+      </div>
+
+      </div><!-- /wrapper -->
+
+      <div class="kpi-legend"><span><i></i>Atual dentro/atingindo</span><span><i class="gap"></i>Abaixo da meta</span><span><i class="meta"></i>Meta 2026</span></div>
+
+      <div class="kpi-footnote"><span class="kpi-note-inline">Base: jan–jun 2025 · Metas definidas considerando sazonalidade, férias e momento de consolidação do time.</span></div>
+    </div>
+  </div>
+
+  <!-- ══ S5 — ENCERRAMENTO ══ -->
+  <div class="slide" id="s5">
+    <div class="fin-inner">
+      <div class="fin-eye">Tania Bulhões · Customer Experience · 2026</div>
+      <div class="fin-title">Obrigada.</div>
+      <div class="fin-sub final-note">Metas construídas considerando histórico da operação, benchmarks de mercado, sazonalidades e maturidade atual da equipe.</div>
+    </div>
+    <div class="fin-brand">Tania Bulhões</div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <button class="nav-btn" id="prev">&#8592;</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="next">&#8594;</button>
+  <span class="nav-count" id="count"></span>
+</nav>
+
+<script>
+(function () {
+  var slides = document.querySelectorAll('.slide');
+  var dotsEl = document.getElementById('dots');
+  var countEl = document.getElementById('count');
+  var total = slides.length;
+  var cur = 0;
+
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('button');
+    d.className = 'dot';
+    d.setAttribute('data-i', i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('on');
+    cur = ((n % total) + total) % total;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('on');
+    countEl.textContent = (cur + 1) + ' / ' + total;
+  }
+
+  dotsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-i]');
+    if (btn) goTo(parseInt(btn.getAttribute('data-i')));
+  });
+
+  document.getElementById('prev').addEventListener('click', function () { goTo(cur - 1); });
+  document.getElementById('next').addEventListener('click', function () { goTo(cur + 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
+  });
+
+  var tx = 0;
+  document.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) dx < 0 ? goTo(cur + 1) : goTo(cur - 1);
+  }, { passive: true });
+
+  goTo(0);
+})();
+</script>
+</body>
+</html>
