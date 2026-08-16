@@ -428,7 +428,45 @@ td.ec{padding:0;background:var(--yc)}
 }
 </style>
 
-<meta id="bbafmabaelnnkondpfpjmdklbmfnbmol"><meta id="dcngeagmmhegagicpcmpinaoklddcgon"></head>
+<meta id="bbafmabaelnnkondpfpjmdklbmfnbmol"><meta id="dcngeagmmhegagicpcmpinaoklddcgon">
+<style id="ajuste-centralizacao-csat">
+/* Centraliza o conteúdo dos cards CSAT / Taxa de Resposta dos analistas */
+.csat-response-card > #csatgap-i,
+.csat-response-card > #csatgap-g{
+  align-items:stretch!important;
+  justify-items:stretch!important;
+}
+
+.csat-response-card #csatgap-i .kpi-card,
+.csat-response-card #csatgap-g .kpi-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+.csat-response-card #csatgap-i .kpi-label,
+.csat-response-card #csatgap-g .kpi-label,
+.csat-response-card #csatgap-i .kpi-val,
+.csat-response-card #csatgap-g .kpi-val,
+.csat-response-card #csatgap-i .kpi-sub,
+.csat-response-card #csatgap-g .kpi-sub{
+  width:100%!important;
+  text-align:center!important;
+  justify-content:center!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+.csat-response-card #csatgap-i .kbadge,
+.csat-response-card #csatgap-g .kbadge{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+</style>
+
+</head>
 <body>
 <div class="toast show" id="toast" style="background: var(--green);">⏳ Publicando no GitHub...</div>
 <!-- GITHUB CONFIG MODAL -->
@@ -3633,6 +3671,76 @@ function renderIndividualEvolution(key){
     tbHtml+=statusDot(sCurKpi);
     tbHtml+='</tr>';
   });
+
+
+  // Row: % Atingido Total — média do percentual de atingimento das metas do mês
+  // Tickets não entram no cálculo. Cada indicador é limitado a 100%.
+  function pctCappedAnalyst(v,target,dir){
+    if(!n(v)||!n(target)||+target===0)return null;
+    var p=dir==='min'?(+target/+v*100):(+v/+target*100);
+    return Math.min(100,Math.round(p));
+  }
+  function totalStatusAnalyst(p){
+    if(p==null)return 'none';
+    return p>=100?'ok':p>=80?'warn':'bad';
+  }
+  function totalCellAnalyst(v,isCur){
+    var colStyle=isCur?curTd:'';
+    if(v==null){
+      return '<td style="text-align:center;padding:5px 5px;'+colStyle+'"><span class="evo-box evo-box-empty">—</span></td>';
+    }
+    var s=totalStatusAnalyst(v);
+    return '<td style="text-align:center;padding:5px 5px;'+colStyle+'"><span class="evo-box" style="color:'+fgOf[s]+';background:'+bgOf[s]+'">'+v+'%</span></td>';
+  }
+
+  var totalByMonthAnalyst={};
+  months.forEach(function(mi){
+    var r=csatRows[mi];
+    var txv=r&&n(r.solic)&&+r.solic>0&&n(r.respostas)?Math.round(+r.respostas/+r.solic*100):null;
+    var vals=[
+      pctCappedAnalyst(r&&n(r.csat)?+r.csat:null,90,'max'),
+      pctCappedAnalyst(txv,20,'max')
+    ];
+    kpiDefs.forEach(function(k,ki){
+      var m=kpiMetas[ki];
+      vals.push(m?pctCappedAnalyst(n(k.data[mi])?+k.data[mi]:null,m.val,m.dir):null);
+    });
+    vals=vals.filter(function(v){return v!=null;});
+    totalByMonthAnalyst[mi]=vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):null;
+  });
+
+  tbHtml+='<tr style="'+rowBorder()+'border-top:2px solid var(--border)">';
+  tbHtml+=lbl('% Atingido Total');
+  months.forEach(function(mi){
+    tbHtml+=totalCellAnalyst(totalByMonthAnalyst[mi],mi===currentIdx);
+    if(mi===currentIdx&&expanded){
+      weekSlots.forEach(function(){
+        tbHtml+='<td style="text-align:center;padding:7px 10px 7px 4px;background:rgba(184,154,94,.04)"><span class="evo-box evo-box-empty">—</span></td>';
+      });
+    }
+  });
+
+  var totalCurAnalyst=currentIdx>=0?totalByMonthAnalyst[currentIdx]:null;
+  var totalPrevAnalyst=prevIdx>=0?totalByMonthAnalyst[prevIdx]:null;
+  var totalSAnalyst=totalStatusAnalyst(totalCurAnalyst);
+
+  // % Meta e Realizado seguem o consolidado do mês em destaque, como na visão da Área.
+  tbHtml+=pctMetaCell(totalCurAnalyst,totalSAnalyst);
+  tbHtml+=realizadoCell(totalCurAnalyst,totalSAnalyst,'%');
+
+  if(totalCurAnalyst!=null&&totalPrevAnalyst!=null){
+    var totalDiffAnalyst=totalCurAnalyst-totalPrevAnalyst;
+    if(totalDiffAnalyst===0){
+      tbHtml+='<td style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:var(--muted)">— 0 p.p.</td>';
+    }else{
+      var totalUpAnalyst=totalDiffAnalyst>0;
+      tbHtml+='<td style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:'+(totalUpAnalyst?'var(--green)':'var(--red)')+'">'+(totalUpAnalyst?'▲ +':'▼ −')+Math.abs(totalDiffAnalyst)+' p.p.</td>';
+    }
+  }else{
+    tbHtml+='<td style="text-align:center;padding:8px 10px;font-size:11px;font-weight:600;color:var(--muted)">—</td>';
+  }
+  tbHtml+=statusDot(totalSAnalyst);
+  tbHtml+='</tr>';
 
   tbody.innerHTML=tbHtml;
 }
