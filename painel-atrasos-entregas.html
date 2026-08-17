@@ -228,6 +228,352 @@
   .admin-cancel{background:#fff;border:1px solid var(--line);color:var(--ink-soft);}
   .admin-confirm{background:var(--green-dark);border:1px solid var(--green-dark);color:#fff;}
 
+
+
+  /* ===== IDENTIDADE VISUAL OVERVIEW CX ===== */
+  :root{
+    --green:#2C4F3A;
+    --green-dark:#1F3A2A;
+    --green-cover:#668E56;
+    --gold:#B89A5E;
+    --gold-light:#D8C7A0;
+    --cream:#F7F4EC;
+    --sand:#EDE6D6;
+    --sand-dark:#E2D9C4;
+    --card:#FBFAF6;
+    --paper:#FBFAF6;
+    --ink:#33352F;
+    --ink-soft:#6B6D64;
+    --line:#DED5C0;
+    --red:#B4553F;
+    --red-bg:#F4E1DC;
+    --amber:#C08A3E;
+    --amber-bg:#F5EAD6;
+    --ok:#4C7A5B;
+    --ok-bg:#E4EFE6;
+    --taupe:#6E6257;
+    --taupe-bg:#ECE6DE;
+    --shadow:0 1px 3px rgba(44,79,58,.06),0 8px 24px -12px rgba(44,79,58,.12);
+    --nav-w:282px;
+    --nav-w-collapsed:72px;
+  }
+
+  html,body{background:var(--cream);}
+  body{color:var(--ink);}
+
+  /* Navegação lateral, inspirada no Overview CX */
+  .tabs{
+    position:fixed;
+    inset:0 auto 0 0;
+    width:var(--nav-w);
+    height:100vh;
+    z-index:70;
+    margin:0;
+    padding:128px 0 62px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    background:var(--green-cover);
+    border:0;
+    box-shadow:8px 0 24px -18px rgba(31,58,42,.45);
+  }
+  .tabs::before{
+    content:'Painel de Atrasos em Entregas';
+    white-space:normal;
+    position:absolute;
+    top:24px;
+    left:26px;
+    right:26px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;
+    font-style:normal;
+    font-weight:600;
+    line-height:1.08;
+    color:#F7F4EC;
+    padding-bottom:18px;
+    border-bottom:1px solid rgba(247,244,236,.15);
+  }
+  .tab-btn{
+    width:100%;
+    text-align:left;
+    padding:13px 22px;
+    border:0;
+    border-left:3px solid transparent;
+    color:#D7DDD4;
+    font-size:12.5px;
+    font-weight:600;
+    background:transparent;
+    transition:.16s ease;
+  }
+  .tab-btn:hover{background:rgba(247,244,236,.07);color:#fff;}
+  .tab-btn.active{
+    color:#fff;
+    background:rgba(184,154,94,.14);
+    border-left-color:var(--gold);
+    border-bottom-color:transparent;
+  }
+
+  .nav-toggle{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:18px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border:1px solid rgba(247,244,236,.22);
+    border-radius:7px;
+    background:rgba(247,244,236,.06);
+    color:#F7F4EC;
+    font-family:'DM Sans',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.18s ease;
+  }
+  .nav-toggle:hover{background:rgba(247,244,236,.12);}
+  .nav-toggle .nav-arrow{font-size:16px;line-height:1;font-weight:700;letter-spacing:1px;}
+
+  .tabs, header.topbar, .filters, main{transition:width .22s ease, margin-left .22s ease, padding .22s ease;}
+
+  body.nav-collapsed .tabs{width:var(--nav-w-collapsed);padding-top:94px;}
+  body.nav-collapsed .tabs::before{
+    content:'TB';
+    top:25px;
+    left:14px;
+    right:14px;
+    padding-bottom:15px;
+    text-align:center;
+    font-size:22px;
+    white-space:nowrap;
+  }
+  body.nav-collapsed .tab-btn{
+    height:48px;
+    padding:0;
+    text-align:center;
+    font-size:0;
+    border-left-width:3px;
+    position:relative;
+  }
+  body.nav-collapsed .tab-btn::before{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    margin:0 auto;
+    border-radius:50%;
+    font-family:'DM Sans',sans-serif;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.02em;
+    color:#E4E9E1;
+    content:'•';
+  }
+  body.nav-collapsed .tab-btn[data-tab="visao"]::before{content:'VG';}
+  body.nav-collapsed .tab-btn[data-tab="estado"]::before{content:'UF';}
+  body.nav-collapsed .tab-btn[data-tab="detalhe"]::before{content:'NF';}
+  body.nav-collapsed .tab-btn.active::before{background:rgba(247,244,236,.10);color:#fff;}
+  body.nav-collapsed .nav-toggle{left:14px;right:14px;padding:0;font-size:0;}
+  body.nav-collapsed .nav-toggle .nav-arrow{font-size:18px;transform:none;}
+  body.nav-collapsed header.topbar,
+  body.nav-collapsed .filters,
+  body.nav-collapsed main{margin-left:var(--nav-w-collapsed);}
+
+  @media (max-width:900px){
+    :root{--nav-w:248px;}
+    header.topbar{padding-left:24px;padding-right:24px;}
+    .filters{padding-left:24px;padding-right:24px;}
+    main{padding-left:24px;padding-right:24px;}
+  }
+
+  /* Cabeçalho claro e mais editorial */
+  header.topbar{
+    margin-left:var(--nav-w);
+    background:var(--cream);
+    color:var(--ink);
+    padding:28px 40px 18px;
+    border-bottom:1px solid var(--line);
+    box-shadow:none;
+  }
+  .brand h1{
+    color:var(--green-dark);
+    font-size:32px;
+    font-weight:500;
+    font-style:italic;
+  }
+  .topbar-meta{color:var(--ink-soft);font-size:11.5px;}
+  .topbar-meta button{
+    color:var(--green-dark);
+    border:1px solid var(--gold-light);
+    background:var(--paper);
+    border-radius:6px;
+    font-weight:600;
+    padding:7px 12px;
+  }
+  .topbar-meta button:hover{background:var(--sand);}
+
+  .filters{
+    margin-left:var(--nav-w);
+    padding:14px 40px 18px;
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+    gap:10px 12px;
+  }
+  .filters label{color:#85877E;font-size:9.5px;letter-spacing:.08em;}
+  .filters select,.filters input[type="search"],.filters input[type="date"],.filters .dd-btn{
+    background:var(--paper);
+    border-color:var(--line);
+    border-radius:6px;
+    min-height:36px;
+  }
+  .filters .dd-panel{border-radius:8px;border-color:var(--line);box-shadow:var(--shadow);}
+  .filters .clearbtn{border-radius:6px;background:transparent;border-color:var(--line);}
+
+  main{
+    margin-left:var(--nav-w);
+    max-width:none;
+    padding:30px 40px 64px;
+  }
+
+  /* Cards de KPI no mesmo vocabulário visual do Overview */
+  .kpi-row,.kpi-row-4{gap:14px;margin-bottom:26px;}
+  .kpi{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:3px solid var(--green);
+    border-radius:6px;
+    padding:18px 16px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:118px;
+  }
+  .kpi .label{
+    color:var(--ink-soft);
+    font-size:10.5px;
+    letter-spacing:.09em;
+    font-weight:600;
+    margin-bottom:5px;
+  }
+  .kpi .value,.kpi .value.red,.kpi .value.amber{
+    font-family:'Cormorant Garamond',serif;
+    font-size:34px;
+    font-style:italic;
+    font-weight:500;
+    color:#3D3F39;
+    letter-spacing:-.015em;
+    line-height:1.05;
+  }
+  .kpi .value.red{color:#8D4B43;}
+  .kpi .value.amber{color:#A98445;}
+  .kpi .value .value-pct{font-family:'DM Sans',sans-serif;font-style:normal;font-size:12px;font-weight:600;}
+  .kpi .sub{color:#8A8C83;font-size:11px;line-height:1.45;margin-top:6px;}
+
+  /* Painéis e títulos */
+  .grid-2{gap:18px;margin-bottom:20px;}
+  .grid-uf{gap:18px;}
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:22px 24px;
+    box-shadow:var(--shadow);
+  }
+  .panel.h-equal{height:420px;}
+  .panel h3{
+    font-family:'Cormorant Garamond',serif;
+    font-size:21px;
+    font-style:italic;
+    font-weight:500;
+    color:var(--green-dark);
+    margin-bottom:3px;
+  }
+  .panel .desc{color:var(--ink-soft);font-size:11.8px;line-height:1.45;margin-bottom:16px;}
+
+  /* Rankings mais leves */
+  .rank-row{padding:4px 0;margin-bottom:6px;}
+  .rank-name{font-weight:600;color:var(--green-dark);}
+  .rank-track{background:var(--sand);height:17px;border-radius:4px;}
+  .rank-fill{border-radius:4px;background:linear-gradient(90deg,#C8D4C4,#668E56);}
+  .rank-val{color:var(--ink-soft);}
+
+  /* Tabelas no padrão areia do Overview */
+  .matrix-wrap,.detail-wrap{border-color:var(--line);border-radius:8px;box-shadow:none;}
+  .matrix th,.uf-table th{
+    background:var(--sand-dark);
+    color:var(--green-dark);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+  .matrix td,.uf-table td{border-bottom:1px solid var(--line);}
+  .matrix td:first-child,.matrix th:first-child{background:var(--paper);}
+  .matrix th:first-child{background:var(--sand-dark);}
+  .matrix tr:last-child td{background:var(--sand);border-top:1px solid var(--gold-light);}
+
+  .detail-wrap{background:var(--paper);}
+  .detail-table th{
+    background:var(--sand-dark);
+    color:var(--green-dark);
+    border-bottom:1px solid var(--line);
+    font-size:10px;
+    letter-spacing:.03em;
+  }
+  .detail-table th.sortable:hover{color:var(--gold);}
+  .detail-table td{border-bottom:1px solid var(--line);color:var(--ink);}
+  .detail-table tr:hover td{background:#F3EEE3;}
+
+  .badge{border-radius:100px;font-size:10.5px;padding:3px 9px;}
+  .badge.atrasado{background:#F4E1DC;color:#985146;}
+  .badge.aberto{background:#F5EAD6;color:#9B743A;}
+  .badge.ok{background:#E4EFE6;color:#4C7A5B;}
+  .badge.atendimento{background:#ECE6DE;color:#66584C;}
+
+  .btn{
+    background:var(--paper);
+    border-color:var(--gold);
+    color:var(--green-dark);
+    border-radius:6px;
+    font-size:12px;
+  }
+  .btn:hover{background:var(--gold);color:#fff;}
+
+  .priority-rank{background:var(--sand);border-color:var(--line);}
+  .priority-info .uf-name{color:var(--green-dark);}
+  .exec-reading{background:var(--sand);border-left:3px solid var(--gold);border-radius:6px;}
+  .uf-footnote{color:var(--ink-soft);}
+
+  /* Modais */
+  .modal-overlay,.admin-overlay{background:rgba(31,58,42,.48);}
+  .modal-panel,.admin-modal{background:var(--paper);border:1px solid var(--line);border-radius:8px;}
+  .modal-header h3,.admin-modal h2{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--green-dark);}
+
+  /* Rolagem e responsividade */
+  ::-webkit-scrollbar-thumb{background:#C9B98E;}
+  @media(max-width:1100px){
+    :root{--nav-w:204px;}
+    header.topbar,.filters,main{margin-left:var(--nav-w);}
+    .tabs{width:var(--nav-w);}
+  }
+  @media(max-width:780px){
+    :root{--nav-w:0px;}
+    .tabs{position:static;width:100%;height:auto;padding:0;flex-direction:row;background:var(--green-cover);overflow-x:auto;}
+    .tabs::before{display:none;}
+    .tab-btn{width:auto;white-space:nowrap;border-left:0;border-bottom:2px solid transparent;padding:12px 16px;}
+    .tab-btn.active{border-bottom-color:var(--gold);border-left-color:transparent;}
+    header.topbar,.filters,main{margin-left:0;}
+    header.topbar{padding:20px 18px 14px;}
+    .brand h1{font-size:26px;}
+    .filters{padding:12px 18px;}
+    main{padding:20px 18px 50px;}
+  }
+
 </style>
 </head>
 <body>
@@ -315,9 +661,10 @@
 
     <div id="dashboardContent">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="visao">Visão Geral</button>
-      <button class="tab-btn" data-tab="estado">Análise por Estado</button>
-      <button class="tab-btn" data-tab="detalhe">Casos em Atraso</button>
+      <button class="tab-btn active" data-tab="visao" title="Visão Geral">Visão Geral</button>
+      <button class="tab-btn" data-tab="estado" title="Análise por Estado">Análise por Estado</button>
+      <button class="tab-btn" data-tab="detalhe" title="Casos em Atraso">Casos em Atraso</button>
+      <button type="button" class="nav-toggle" id="navToggle" aria-label="Recolher navegação" title="Recolher navegação"><span class="nav-arrow">&lt;&lt;</span></button>
     </div>
 
     <!-- TAB: VISÃO GERAL -->
@@ -334,21 +681,21 @@
       <div class="grid-2">
         <div class="panel h-equal">
           <h3>Atrasos por mês</h3>
-          <div class="desc">Volume de pedidos no prazo vs. atrasados, por mês de despacho · clique numa barra para ver o detalhamento diário</div>
+          <div class="desc">Volume de pedidos no prazo vs. atrasados, por mês da Previsão Entrega Cliente Original · clique numa barra para ver o detalhamento diário</div>
           <div class="chart-wrap"><canvas id="chartMes"></canvas></div>
         </div>
         <div class="panel h-equal">
-          <h3>% de atraso por transportadora</h3>
-          <div class="desc">Ranking das transportadoras com maior taxa de atraso</div>
-          <div id="rankTransp" class="rank-list"></div>
+          <h3>Evolução mensal — Entregue com Atraso vs. Atrasado sem entrega</h3>
+          <div class="desc">Por mês da Previsão Entrega Cliente Original, considerando apenas remessas já vencidas · clique numa barra para ver a evolução semanal</div>
+          <div class="chart-wrap"><canvas id="chartSemanal"></canvas></div>
         </div>
       </div>
 
       <div class="grid-2">
         <div class="panel h-equal">
-          <h3>Distribuição por UF</h3>
-          <div class="desc">10 estados com maior volume de casos atrasados (inclui SP)</div>
-          <div id="rankUF" class="rank-list"></div>
+          <h3>% de atraso por transportadora</h3>
+          <div class="desc">Ranking das transportadoras com maior taxa de atraso</div>
+          <div id="rankTransp" class="rank-list"></div>
         </div>
         <div class="panel h-equal">
           <h3>Distribuição por dias de atraso</h3>
@@ -487,6 +834,19 @@
       <button id="mesDrillClose" class="modal-close" aria-label="Fechar">✕</button>
     </div>
     <div class="chart-wrap modal-chart-wrap"><canvas id="chartMesDrill"></canvas></div>
+  </div>
+</div>
+
+<div id="semanalDrillOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div>
+        <h3 id="semanalDrillTitle">Detalhamento semanal</h3>
+        <div class="desc" id="semanalDrillDesc"></div>
+      </div>
+      <button id="semanalDrillClose" class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="chart-wrap modal-chart-wrap"><canvas id="chartSemanalDrill"></canvas></div>
   </div>
 </div>
 
@@ -655,6 +1015,9 @@ function monthKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padS
 function dayKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function dayLabel(key){ const [,m,d] = key.split('-'); return d + '/' + m; }
 function monthLabel(key){ const [y,m] = key.split('-'); return MESES_PT[parseInt(m,10)-1] + '/' + y.slice(2); }
+function weekStart(d){ const df = dayFloor(d); const dow = df.getDay(); return new Date(df.getFullYear(), df.getMonth(), df.getDate() - dow); } // domingo da semana
+function weekKey(d){ const ws = weekStart(d); return ws.getFullYear() + '-' + String(ws.getMonth()+1).padStart(2,'0') + '-' + String(ws.getDate()).padStart(2,'0'); }
+function weekLabel(key){ const [y,m,d] = key.split('-').map(Number); const ws = new Date(y, m-1, d); const we = new Date(y, m-1, d+6); return String(ws.getDate()).padStart(2,'0') + '/' + String(ws.getMonth()+1).padStart(2,'0') + '–' + String(we.getDate()).padStart(2,'0') + '/' + String(we.getMonth()+1).padStart(2,'0'); }
 
 function processData(json){
   adminUploadScreenUnlocked = false;
@@ -680,7 +1043,7 @@ function processData(json){
       situacaoTransp: row[COL.situacaoTransp] || '—',
       mensagemIntelipost: row[COL.mensagemIntelipost] || '—',
       statusTransportador: row[COL.statusTransportador] || '—',
-      monthKey: monthKey(despacho)
+      monthKey: monthKey(prevCliente)
     });
   });
 
@@ -946,6 +1309,13 @@ function buildFilters(){
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      const titles = {
+        visao: 'Painel de Atrasos em Entregas',
+        estado: 'Painel de Atrasos em Entregas - Análise por Estado',
+        detalhe: 'Painel de Atrasos em Entregas - Casos em Atraso'
+      };
+      const brandTitle = document.querySelector('.brand h1');
+      if (brandTitle && titles[btn.dataset.tab]) brandTitle.textContent = titles[btn.dataset.tab];
     });
   });
 
@@ -1045,8 +1415,9 @@ function renderChartMes(){
       c.font = "bold 11.5px 'DM Sans'";
       c.fillStyle = '#526534';
       c.textAlign = 'center';
+      const series = [noPrazo, atrasado, aberto, atendimento];
       meses.forEach((m,i) => {
-        const total = noPrazo[i]+atrasado[i]+aberto[i]+atendimento[i];
+        const total = series.reduce((sum, arr, di) => chart.isDatasetVisible(di) ? sum + arr[i] : sum, 0);
         const meta = chart.getDatasetMeta(0);
         const bar = meta.data[i];
         if (!bar) return;
@@ -1105,6 +1476,205 @@ function renderChartMes(){
 }
 
 /* =========================================================
+   RENDER — Evolução mensal (Entregue com Atraso vs. Atrasado sem entrega)
+   clique numa barra abre o detalhamento semanal daquele mês
+========================================================= */
+function renderChartSemanal(){
+  const dataReferencia = dayFloor(REF_DATE || new Date());
+
+  // mesma base do drill-down: só remessas cuja previsão já venceu (exclui "futuras")
+  const rows = FILTERED.filter(r => r.prevCliente && dayFloor(r.prevCliente) <= dataReferencia);
+
+  const meses = [...new Set(rows.map(r => monthKey(r.prevCliente)))].sort();
+
+  const atrasado = meses.map(mk => rows.filter(r => {
+    if (monthKey(r.prevCliente) !== mk) return false;
+    return r.entrega && dayFloor(r.entrega) > dayFloor(r.prevCliente);
+  }).length);
+
+  const abertoVencido = meses.map(mk => rows.filter(r => {
+    if (monthKey(r.prevCliente) !== mk) return false;
+    return !r.entrega && dayFloor(r.prevCliente) < dataReferencia;
+  }).length);
+
+  if (charts.semanal) charts.semanal.destroy();
+  const ctx = document.getElementById('chartSemanal').getContext('2d');
+  const maxTotal = Math.max(...meses.map((m,i) => atrasado[i]+abertoVencido[i]), 1);
+  const totalLabelSemanalPlugin = {
+    id: 'totalLabelSemanal',
+    afterDatasetsDraw(chart){
+      const { ctx: c, chartArea, scales } = chart;
+      c.save();
+      c.font = "bold 11.5px 'DM Sans'";
+      c.fillStyle = '#526534';
+      c.textAlign = 'center';
+      const series = [atrasado, abertoVencido];
+      meses.forEach((m,i) => {
+        const total = series.reduce((sum, arr, di) => chart.isDatasetVisible(di) ? sum + arr[i] : sum, 0);
+        const meta = chart.getDatasetMeta(0);
+        const bar = meta.data[i];
+        if (!bar) return;
+        const x = bar.x;
+        const y = scales.y.getPixelForValue(total) - 14;
+        c.fillText(total.toLocaleString('pt-BR'), x, Math.max(y, chartArea.top + 14));
+      });
+      c.restore();
+    }
+  };
+  charts.semanal = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: meses.map(monthLabel),
+      datasets: [
+        { label: 'Entregue com Atraso', data: atrasado, backgroundColor: '#DFC58A', borderRadius: 4 },
+        { label: 'Atrasado sem entrega', data: abertoVencido, backgroundColor: '#6A6D62', borderRadius: 4 },
+      ]
+    },
+    plugins: [totalLabelSemanalPlugin],
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 40 } },
+      onClick: (evt, elements, chart) => {
+        const points = chart.getElementsAtEventForMode(evt, 'x', { intersect: false }, true);
+        if (!points.length) return;
+        const idx = points[0].index;
+        const mk = meses[idx];
+        if (mk) openSemanalDrilldown(mk);
+      },
+      onHover: (evt, elements, chart) => {
+        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
+      },
+      scales: {
+        x: { stacked: true, grid: { display:false } },
+        y: { stacked: true, grid: { color:'#EEE8DC' }, suggestedMax: maxTotal * 1.15 }
+      },
+      plugins: {
+        legend: { position:'bottom', labels:{ font:{ family:'DM Sans', size:11 }, boxWidth:12 } },
+        datalabels: {
+          color: '#fff',
+          font: { family:'DM Sans', size:10.5, weight:'bold' },
+          anchor: 'center', align: 'center', clamp: true,
+          formatter: (value, context) => {
+            if (!value) return '';
+            const yScale = context.chart.scales.y;
+            const px = Math.abs(yScale.getPixelForValue(0) - yScale.getPixelForValue(value));
+            return px >= 18 ? value.toLocaleString('pt-BR') : '';
+          }
+        }
+      }
+    }
+  });
+}
+
+/* =========================================================
+   RENDER — Drill-down semanal (modal ao clicar num mês do gráfico
+   "Evolução mensal — Entregue com Atraso vs. Atrasado sem entrega")
+========================================================= */
+let chartSemanalDrillInstance = null;
+
+function openSemanalDrilldown(mk){
+  const dataReferencia = dayFloor(REF_DATE || new Date());
+
+  const rows = FILTERED.filter(r =>
+    r.prevCliente &&
+    monthKey(r.prevCliente) === mk &&
+    dayFloor(r.prevCliente) <= dataReferencia
+  );
+  const semanas = [...new Set(rows.map(r => weekKey(r.prevCliente)))].sort();
+
+  const atrasado = [];
+  const abertoVencido = [];
+
+  semanas.forEach(wk => {
+    const weekRows = rows.filter(r => weekKey(r.prevCliente) === wk);
+    let late = 0, overdue = 0;
+
+    weekRows.forEach(r => {
+      if (r.entrega){
+        if (dayFloor(r.entrega) > dayFloor(r.prevCliente)) late++;
+      } else {
+        if (dayFloor(r.prevCliente) < dataReferencia) overdue++;
+      }
+    });
+
+    atrasado.push(late);
+    abertoVencido.push(overdue);
+  });
+
+  document.getElementById('semanalDrillTitle').textContent = 'Detalhamento semanal — ' + monthLabel(mk);
+  document.getElementById('semanalDrillDesc').textContent = 'Entregue com Atraso vs. Atrasado sem entrega, por semana da Previsão Entrega Cliente Original (' + rows.length.toLocaleString('pt-BR') + ' remessas no mês, dentro do filtro atual)';
+  document.getElementById('semanalDrillOverlay').style.display = 'flex';
+
+  if (chartSemanalDrillInstance) chartSemanalDrillInstance.destroy();
+  const ctx = document.getElementById('chartSemanalDrill').getContext('2d');
+  const maxTotalSemana = Math.max(...semanas.map((s,i) => atrasado[i]+abertoVencido[i]), 1);
+  const totalLabelSemanalDrillPlugin = {
+    id: 'totalLabelSemanalDrill',
+    afterDatasetsDraw(chart){
+      const { ctx: c, chartArea, scales } = chart;
+      c.save();
+      c.font = "bold 11px 'DM Sans'";
+      c.fillStyle = '#526534';
+      c.textAlign = 'center';
+      const series = [atrasado, abertoVencido];
+      semanas.forEach((s,i) => {
+        const total = series.reduce((sum, arr, di) => chart.isDatasetVisible(di) ? sum + arr[i] : sum, 0);
+        const meta = chart.getDatasetMeta(0);
+        const bar = meta.data[i];
+        if (!bar) return;
+        const x = bar.x;
+        const y = scales.y.getPixelForValue(total) - 13;
+        c.fillText(total.toLocaleString('pt-BR'), x, Math.max(y, chartArea.top + 13));
+      });
+      c.restore();
+    }
+  };
+  chartSemanalDrillInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: semanas.map(weekLabel),
+      datasets: [
+        { label: 'Entregue com Atraso', data: atrasado, backgroundColor: '#DFC58A', borderRadius: 3 },
+        { label: 'Atrasado sem entrega', data: abertoVencido, backgroundColor: '#6A6D62', borderRadius: 3 },
+      ]
+    },
+    plugins: [totalLabelSemanalDrillPlugin],
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 26 } },
+      scales: {
+        x: { stacked: true, grid: { display:false }, ticks: { font: { family:'DM Sans', size:10.5 } } },
+        y: { stacked: true, grid: { color:'#EEE8DC' }, ticks: { precision: 0 }, suggestedMax: maxTotalSemana * 1.15 }
+      },
+      plugins: {
+        legend: { position:'bottom', labels:{ font:{ family:'DM Sans', size:11 }, boxWidth:12 } },
+        datalabels: {
+          color: '#fff',
+          font: { family:'DM Sans', size:9.5, weight:'bold' },
+          anchor: 'center', align: 'center', clamp: true,
+          formatter: (value, context) => {
+            if (!value) return '';
+            const yScale = context.chart.scales.y;
+            const px = Math.abs(yScale.getPixelForValue(0) - yScale.getPixelForValue(value));
+            return px >= 14 ? value.toLocaleString('pt-BR') : '';
+          }
+        }
+      }
+    }
+  });
+}
+
+function closeSemanalDrilldown(){
+  document.getElementById('semanalDrillOverlay').style.display = 'none';
+  if (chartSemanalDrillInstance){ chartSemanalDrillInstance.destroy(); chartSemanalDrillInstance = null; }
+}
+
+document.getElementById('semanalDrillClose').addEventListener('click', closeSemanalDrilldown);
+document.getElementById('semanalDrillOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'semanalDrillOverlay') closeSemanalDrilldown();
+});
+
+/* =========================================================
    RENDER — Drill-down diário (modal ao clicar num mês do gráfico "Atrasos por mês")
 ========================================================= */
 let chartMesDrillInstance = null;
@@ -1160,8 +1730,9 @@ function openMesDrilldown(mk){
       c.font = "bold 11px 'DM Sans'";
       c.fillStyle = '#526534';
       c.textAlign = 'center';
+      const series = [noPrazo, atrasado, abertoVencido, abertoHoje];
       dias.forEach((d,i) => {
-        const total = noPrazo[i]+atrasado[i]+abertoVencido[i]+abertoHoje[i];
+        const total = series.reduce((sum, arr, di) => chart.isDatasetVisible(di) ? sum + arr[i] : sum, 0);
         const meta = chart.getDatasetMeta(0);
         const bar = meta.data[i];
         if (!bar) return;
@@ -1240,38 +1811,6 @@ function renderRankTransp(){
       <div class="rank-name" title="${a.name}">${a.name}</div>
       <div class="rank-track"><div class="rank-fill" style="width:${(a.pct/maxPct*100).toFixed(1)}%"></div></div>
       <div class="rank-val">${a.pct.toFixed(1)}% <span style="opacity:.6">(${a.atraso}/${a.total})</span></div>
-    </div>`).join('');
-}
-
-/* =========================================================
-   RENDER — Ranking UF (10 estados com maior volume de atraso, sempre incluindo SP)
-========================================================= */
-function renderRankUF(){
-  const groups = {};
-  FILTERED.forEach(r => {
-    const k = r.uf || '—';
-    if (!groups[k]) groups[k] = { total: 0, atraso: 0 };
-    groups[k].total++;
-    if (r.statusCalc !== 'ok') groups[k].atraso++;
-  });
-  let arr = Object.entries(groups).map(([k,v]) => ({ name: k, total: v.total, atraso: v.atraso, pct: v.total ? v.atraso/v.total*100 : 0 }));
-  arr = arr.filter(a => a.atraso > 0).sort((a,b) => b.atraso - a.atraso);
-
-  let top = arr.slice(0, 10);
-  if (!top.find(a => a.name === 'SP')){
-    const sp = arr.find(a => a.name === 'SP');
-    if (sp) top.push(sp);
-  }
-  top.sort((a,b) => b.atraso - a.atraso);
-  const maxAtraso = Math.max(...top.map(a => a.atraso), 1);
-
-  const el = document.getElementById('rankUF');
-  if (!top.length){ el.innerHTML = '<div class="empty-state">Sem dados suficientes no filtro atual</div>'; return; }
-  el.innerHTML = top.map(a => `
-    <div class="rank-row">
-      <div class="rank-name" title="${a.name}">${a.name}</div>
-      <div class="rank-track"><div class="rank-fill" style="width:${(a.atraso/maxAtraso*100).toFixed(1)}%"></div></div>
-      <div class="rank-val">${a.atraso} <span style="opacity:.6">(${a.pct.toFixed(1)}%)</span></div>
     </div>`).join('');
 }
 
@@ -1650,7 +2189,25 @@ function statusBadge(r){
 }
 
 function detailRows(){
-  const rows = FILTERED.filter(r => r.statusCalc !== 'ok');
+  // Mesma unidade de contagem dos KPIs e da Análise por Estado: 1 linha por NF.
+  // Mantém o registro de pior status de cada NF para exibição no detalhamento.
+  const STATUS_PRIORITY = { atendimento: 3, aberto: 2, atrasado: 1, ok: 0 };
+  const map = new Map();
+  FILTERED.forEach(r => {
+    if (!map.has(r.nf)) map.set(r.nf, []);
+    map.get(r.nf).push(r);
+  });
+  const rows = [];
+  map.forEach(nfRows => {
+    let best = nfRows[0];
+    nfRows.forEach(r => {
+      if (STATUS_PRIORITY[r.statusCalc] > STATUS_PRIORITY[best.statusCalc]) best = r;
+      else if (STATUS_PRIORITY[r.statusCalc] === STATUS_PRIORITY[best.statusCalc] && r.diasAtraso > best.diasAtraso) best = r;
+    });
+    if (best.statusCalc !== 'ok') {
+      rows.push({ ...best, nfCount: nfRows.length });
+    }
+  });
   return sortDetailRows(rows, detailSortState);
 }
 
@@ -1713,7 +2270,7 @@ function renderDetailTable(){
   const start = (currentPage-1)*PAGE_SIZE;
   const pageRows = rows.slice(start, start+PAGE_SIZE);
 
-  document.getElementById('detailCount').textContent = rows.length.toLocaleString('pt-BR') + ' remessas em atraso (de ' + FILTERED.length.toLocaleString('pt-BR') + ' remessas no filtro)';
+  document.getElementById('detailCount').textContent = rows.length.toLocaleString('pt-BR') + ' NFs em atraso (de ' + computeUniqueOrders().length.toLocaleString('pt-BR') + ' NFs únicas no filtro)';
   document.getElementById('pageLabel').textContent = `Página ${currentPage} de ${totalPages}`;
   document.getElementById('prevPage').disabled = currentPage <= 1;
   document.getElementById('nextPage').disabled = currentPage >= totalPages;
@@ -1762,8 +2319,8 @@ function exportCsv(){
 function renderAll(){
   renderKPIs();
   renderChartMes();
+  renderChartSemanal();
   renderRankTransp();
-  renderRankUF();
   renderChartDiasAtraso();
   const ufStats = computeUFStats();
   renderUFKpis(ufStats);
@@ -1775,5 +2332,48 @@ function renderAll(){
   renderDetailTable();
 }
 </script>
+
+<script>
+(function(){
+  const btn = document.getElementById('navToggle');
+  if(!btn) return;
+  const key = 'tb_painel_nav_collapsed';
+  try{
+    if(localStorage.getItem(key) === '1') document.body.classList.add('nav-collapsed');
+  }catch(e){}
+  function sync(){
+    const collapsed = document.body.classList.contains('nav-collapsed');
+    btn.setAttribute('aria-label', collapsed ? 'Estender navegação' : 'Recolher navegação');
+    btn.title = collapsed ? 'Estender navegação' : 'Recolher navegação';
+    const arrow = btn.querySelector('.nav-arrow');
+    if(arrow) arrow.textContent = collapsed ? '>>' : '<<';
+  }
+  btn.addEventListener('click', function(){
+    document.body.classList.toggle('nav-collapsed');
+    try{ localStorage.setItem(key, document.body.classList.contains('nav-collapsed') ? '1' : '0'); }catch(e){}
+    sync();
+    setTimeout(function(){
+      if(window.charts){ Object.values(window.charts).forEach(function(c){ try{ c.resize(); }catch(e){} }); }
+      window.dispatchEvent(new Event('resize'));
+    }, 240);
+  });
+  sync();
+})();
+</script>
+
 </body>
 </html>
+
+<style>
+.kpi .value, .kpi .value.red, .kpi .value.amber { font-family:'Lora',serif !important; font-style:normal !important; font-weight:500 !important; letter-spacing:0 !important; }
+.kpi .value .value-pct { font-family:'DM Sans',sans-serif !important; font-style:normal !important; font-weight:600 !important; }
+</style>
+<style>
+/* Ajuste final: KPIs mais compactos */
+.kpi-row,.kpi-row-4{gap:10px !important;margin-bottom:18px !important;}
+.kpi{min-height:88px !important;padding:12px 12px !important;border-left-width:3px !important;}
+.kpi .label{font-size:9.5px !important;letter-spacing:.075em !important;margin-bottom:3px !important;line-height:1.2 !important;}
+.kpi .value,.kpi .value.red,.kpi .value.amber{font-size:29px !important;line-height:1 !important;font-style:normal !important;}
+.kpi .value .value-pct{font-size:10.5px !important;}
+.kpi .sub{font-size:10px !important;line-height:1.3 !important;margin-top:4px !important;}
+</style>
