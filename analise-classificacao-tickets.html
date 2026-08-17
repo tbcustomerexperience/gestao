@@ -11,6 +11,7 @@
   :root{
     --green:#2C4F3A;
     --green-dark:#1B3226;
+    --sidebar-green:#669056;
     --green-tint:#E7EDE7;
     --gold:#B89A5E;
     --gold-tint:#F1E9D6;
@@ -44,7 +45,7 @@
 
   /* ===== Top bar ===== */
   header.topbar{
-    background:var(--green);
+    background:var(--sidebar-green);
     color:var(--cream);
     padding:22px 32px;
     display:flex;
@@ -68,23 +69,46 @@
   header.topbar .brand .txt h1{font-size:24px; color:var(--white); line-height:1.1;}
   header.topbar .actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
 
-  nav.tabbar{
-    background:var(--green-dark); display:flex; gap:4px; padding:0 32px;
-    border-bottom:1px solid rgba(255,255,255,0.08);
+  /* ===== Layout shell (sidebar + content) ===== */
+  .app-shell{display:flex; align-items:stretch; min-height:calc(100vh - 78px);}
+  .sidebar{
+    width:230px; flex:none; background:var(--sidebar-green); color:var(--cream);
+    display:flex; flex-direction:column; padding:14px 0;
+    border-right:1px solid rgba(255,255,255,0.08);
+    transition:width .18s ease;
   }
-  .tab-btn{
-    background:transparent; border:none; color:rgba(247,243,236,0.65);
+  .sidebar.collapsed{width:78px;}
+  .sidebar-toggle{
+    background:transparent; border:none; color:var(--cream); cursor:pointer;
+    display:flex; align-items:center; gap:8px; padding:8px 18px 16px;
+    font-size:13px; font-weight:600; align-self:flex-start;
+  }
+  .sidebar-toggle svg{flex:none;}
+  .sidebar.collapsed .sidebar-toggle{padding:8px 20px 16px;}
+  .side-nav{display:flex; flex-direction:column; gap:2px; padding:0 10px;}
+  .side-btn{
+    background:transparent; border:none; color:rgba(255,255,255,0.85);
     font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px;
-    padding:13px 16px; cursor:pointer; border-bottom:3px solid transparent;
-    display:flex; align-items:center; gap:8px;
+    padding:11px 12px; cursor:pointer; border-radius:9px;
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+    border-left:3px solid transparent;
   }
-  .tab-btn:hover{color:var(--cream);}
-  .tab-btn.active{color:var(--white); border-bottom-color:var(--gold);}
-  .tab-btn .tab-count{
-    background:rgba(255,255,255,0.12); color:var(--cream); font-size:10.5px;
-    padding:2px 7px; border-radius:999px; font-weight:700;
+  .side-btn:hover{color:var(--white); background:rgba(0,0,0,0.12);}
+  .side-btn.active{color:var(--white); background:rgba(0,0,0,0.18); border-left-color:var(--gold);}
+  .side-btn .icon{flex:none; font-size:15px; width:18px; text-align:center;}
+  .side-btn .label{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .side-btn .label-short{display:none; font-size:10.5px; letter-spacing:.02em; text-align:center; width:100%; line-height:1.25; white-space:normal;}
+  .sidebar.collapsed .side-btn .label,
+  .sidebar.collapsed .side-btn .tab-count,
+  .sidebar.collapsed .sidebar-toggle .label{display:none;}
+  .sidebar.collapsed .side-btn .label-short{display:block;}
+  .sidebar.collapsed .side-btn{justify-content:center; padding:9px 4px;}
+  .side-btn .tab-count{
+    background:rgba(0,0,0,0.18); color:var(--white); font-size:10.5px;
+    padding:2px 7px; border-radius:999px; font-weight:700; margin-left:auto;
   }
-  .tab-btn.active .tab-count{background:var(--gold); color:var(--green-dark);}
+  .side-btn.active .tab-count{background:var(--gold); color:var(--sidebar-green);}
+  .content-col{flex:1; min-width:0;}
 
   .file-pill{
     display:flex; align-items:center; gap:10px;
@@ -107,6 +131,7 @@
   .btn-line:hover{border-color:var(--gold);}
 
   main{max-width:1680px; margin:0 auto; padding:32px 32px 80px;}
+  html, body{height:100%;}
 
   /* ===== Upload state ===== */
   .upload-wrap{
@@ -212,6 +237,7 @@
 
   /* ===== Table ===== */
   .table-wrap{background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-top:16px;}
+  .table-scroll{overflow:auto; max-height:62vh;}
   .table-head{display:flex; justify-content:space-between; align-items:center; padding:18px 22px 12px;}
   .table-head .count{font-size:13px; color:var(--ink-soft);}
   .table-head .count b{color:var(--ink);}
@@ -253,6 +279,28 @@
 
   footer.note{margin-top:26px; font-size:11.5px; color:var(--ink-soft); text-align:center; line-height:1.7;}
 
+  /* ===== Editable árvore de contato ===== */
+  .tree-toolbar{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .tree-toolbar .spacer{flex:1;}
+  .tree-input{
+    font-family:'DM Sans',sans-serif; font-size:12.5px; padding:7px 9px; border-radius:7px;
+    border:1px solid var(--line); background:var(--cream); color:var(--ink); width:100%;
+  }
+  .tree-input:focus{outline:2px solid var(--gold); outline-offset:1px; background:var(--white);}
+  td.tree-cell{padding:6px 10px;}
+  tr.tree-new-row td{background:var(--gold-tint);}
+  .tree-actions{display:flex; gap:6px; justify-content:center;}
+  .icon-btn{
+    background:var(--cream); border:1px solid var(--line); color:var(--ink-soft);
+    border-radius:7px; padding:6px 9px; cursor:pointer; font-size:12px; line-height:1;
+  }
+  .icon-btn:hover{border-color:var(--gold); color:var(--ink);}
+  .icon-btn.danger:hover{border-color:var(--rust); color:var(--rust);}
+  .save-status{font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:6px;}
+  .save-status.unsaved{color:var(--rust); font-weight:600;}
+  .save-status .dot2{width:7px;height:7px;border-radius:50%;background:var(--gray); flex:none;}
+  .save-status.unsaved .dot2{background:var(--rust);}
+
   @media (max-width:980px){
     .kpi-row{grid-template-columns:repeat(2,1fr);}
     .grid-2{grid-template-columns:1fr;}
@@ -273,12 +321,20 @@
   <div class="actions" id="topbarActions"></div>
 </header>
 
-<nav class="tabbar">
-  <button class="tab-btn active" data-tab="tabAuditoria">Auditoria de Tickets</button>
-  <button class="tab-btn" data-tab="tabArvore">Árvore de Contato <span class="tab-count">150</span></button>
-</nav>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-toggle" id="sidebarToggle" title="Recolher/Estender menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <span class="label">Menu</span>
+    </button>
+    <nav class="side-nav">
+      <button class="side-btn active" data-tab="tabAuditoria" title="Auditoria de Tickets"><span class="label">Auditoria de Tickets</span><span class="label-short">Audit.</span></button>
+      <button class="side-btn" data-tab="tabArvore" title="Árvore de Contato"><span class="label">Árvore de Contato</span><span class="label-short">Árvore</span><span class="tab-count">150</span></button>
+    </nav>
+  </aside>
 
-<main>
+  <div class="content-col">
+  <main>
 
 <div id="tabAuditoria" class="tabpanel">
 
@@ -344,7 +400,7 @@
         <div class="count"><b id="countShown">0</b> tickets exibidos <span id="countOfTotal"></span></div>
         <button class="btn-line" id="btnExport">Exportar CSV</button>
       </div>
-      <div style="overflow-x:auto;">
+      <div class="table-scroll">
         <table>
           <thead>
             <tr id="theadRow">
@@ -395,11 +451,18 @@
       <select id="treeMotivoFilter"><option value="">Todos</option></select>
     </div>
   </div>
+  <div class="tree-toolbar">
+    <button class="btn-line" id="btnAddTreeRow">+ Nova combinação</button>
+    <button class="btn-line" id="btnRestoreTree">Restaurar padrão</button>
+    <div class="spacer"></div>
+    <div class="save-status" id="treeSaveStatus"><span class="dot2"></span><span id="treeSaveStatusText">Alterações salvas</span></div>
+    <button class="btn-gold" id="btnSaveTree">Salvar alterações</button>
+  </div>
   <div class="table-wrap">
     <div class="table-head">
       <div class="count"><b id="treeCountShown">0</b> combinações válidas</div>
     </div>
-    <div style="overflow-x:auto;">
+    <div class="table-scroll">
       <table>
         <thead>
           <tr>
@@ -407,6 +470,7 @@
             <th>Motivo Detalhado</th>
             <th>Área Responsável</th>
             <th>Tipo</th>
+            <th class="no-sort">Ações</th>
           </tr>
         </thead>
         <tbody id="treeTbody"></tbody>
@@ -414,11 +478,14 @@
     </div>
   </div>
   <footer class="note">
-    Esta é a árvore usada como fonte da verdade pelo dashboard. Para atualizá-la (nova combinação, mudança de área/tipo), peça uma nova versão deste arquivo com a árvore revisada.
+    Esta é a árvore usada como fonte da verdade pelo dashboard. Edite, adicione ou remova combinações diretamente na tabela acima e clique em "Salvar alterações" para gravá-las neste navegador.<br>
+    As alterações ficam salvas localmente neste computador/navegador — se abrir o arquivo em outro computador, a árvore embutida original será usada até que novas alterações sejam salvas ali.
   </footer>
 </div>
 
 </main>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -426,7 +493,76 @@
 
   // ---------- árvore de contato embutida (fonte única de verdade) ----------
   // [Motivo Principal, Motivo Detalhado, Área Responsável, Tipo]
-  const TREE_DATA = [["Devoluçao", "Indisponibilidade de item", "Logística", "Problema"], ["Devoluçao", "Produto com Defeito", "Desenvolvimento", "Problema"], ["Devoluçao", "Produto com Defeito", "Loja Física", "Problema"], ["Devoluçao", "Produto com Avaria", "Logística", "Problema"], ["Devoluçao", "Produto com Avaria", "Loja Física", "Problema"], ["Devoluçao", "Desistência/Arrependimento", "Usuário", "Solicitação"], ["Devoluçao", "Problemas na Entrega", "Logística", "Problema"], ["Devoluçao", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Devoluçao", "Problemas de Autenticidade", "Desenvolvimento", "Problema"], ["Trocas", "Indisponibilidade de item", "Logística", "Problema"], ["Trocas", "Produto com Defeito", "Desenvolvimento", "Problema"], ["Trocas", "Produto com Defeito", "Loja Física", "Problema"], ["Trocas", "Produto com Avaria", "Logística", "Problema"], ["Trocas", "Produto com Avaria", "Loja Física", "Problema"], ["Trocas", "Desistência/Arrependimento", "Usuário", "Solicitação"], ["Trocas", "Problemas na Entrega", "Logística", "Problema"], ["Trocas", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Trocas", "Problemas de Autenticidade", "Desenvolvimento", "Problema"], ["Serviços Diversos", "Serviços e Propagandas", "Serviços Diversos", "Serviços & Parcerias"], ["Serviços Diversos", "Testes", "Serviços Diversos", "Teste"], ["Serviços Diversos", "Currículo/RH", "RH", "Serviços & Parcerias"], ["Serviços Diversos", "Sugestões & Elogios", "Loja Física", "Feedbacks"], ["Serviços Diversos", "Sugestões & Elogios", "Serviços Diversos", "Feedbacks"], ["Serviços Diversos", "Contato Outros Departamentos", "Outros Departamentos", "Serviços & Parcerias"], ["Serviços Diversos", "Pesquisas", "Serviços Diversos", "Pesquisa"], ["Serviços Diversos", "Contato Marketing", "Marketing", "Serviços & Parcerias"], ["Serviços Diversos", "Spam", "Serviços Diversos", "Spam"], ["Dúvidas", "Especificações/Dimensões do produto", "E-commerce", "Pergunta"], ["Dúvidas", "Usabilidade do Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Encontrabilidade de Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Disponibilidade de Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Disponibilidade de Produto", "Loja Física", "Pergunta"], ["Dúvidas", "Processo de Trocas e Devoluções", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Formas de Pagamento", "E-commerce", "Pergunta"], ["Dúvidas", "Sugestão de novos produtos", "Desenvolvimento", "Feedbacks"], ["Dúvidas", "Sugestões de Presentes", "Dúvidas Diversas", "Solicitação"], ["Dúvidas", "Sugestões de Produtos", "Dúvidas Diversas", "Solicitação"], ["Dúvidas", "Prazo de Entrega", "E-commerce", "Pergunta"], ["Dúvidas", "Outros", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Nota Fiscal Sem Valor", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Preço", "E-commerce", "Pergunta"], ["Dúvidas", "Embalagem de Presente", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Ações Promocionais", "E-commerce", "Pergunta"], ["Contato", "Contato Sem interação", "Usuário", "Outros"], ["Newsletter", "Descadastrar", "E-commerce", "Solicitação"], ["Newsletter", "Cadastrar", "E-commerce", "Solicitação"], ["Newsletter", "Sugestões & Elogios", "E-commerce", "Feedbacks"], ["Newsletter", "Reclamações Gerais", "E-commerce", "Problema"], ["Reclamações", "Problemas com login", "Tecnologia", "Problema"], ["Reclamações", "Navegabilidade do site", "Tecnologia", "Problema"], ["Reclamações", "Reclamações Loja Física", "Loja Física", "Problema"], ["Reclamações", "Reclamaçao Atendimento", "Customer Experience", "Problema"], ["Reclamações", "Reclame Aqui", "Reclame Aqui", "Problema"], ["Reclamações", "Reclame Aqui", "Loja Física", "Problema"], ["Reclamações", "Problemas com Pagamento", "Tecnologia", "Problema"], ["Reclamações", "Marketplace", "Marketplace", "Problema"], ["Reclamação de Produto", "Mal Uso", "Usuário", "Ocorrência"], ["Reclamação de Produto", "Características do Produto", "Desenvolvimento", "Ocorrência"], ["Reclamação de Produto", "Performance", "Desenvolvimento", "Problema"], ["Reclamação de Produto", "Em análise", "Desenvolvimento", "Problema"], ["Reclamação de Produto", "Produto com problema de funcionamento", "Desenvolvimento", "Problema"], ["Meus Pedidos", "2ª Via de Boleto", "E-commerce", "Solicitação"], ["Meus Pedidos", "2ª Via de Boleto", "Loja Física", "Solicitação"], ["Meus Pedidos", "Status de Pedido", "E-commerce", "Solicitação"], ["Meus Pedidos", "Status de Pedido", "Loja Física", "Solicitação"], ["Meus Pedidos", "Problemas na Entrega", "Loja Física", "Problema"], ["Meus Pedidos", "Problemas na Entrega", "Logística", "Problema"], ["Meus Pedidos", "Cópia Nota Fiscal", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cópia Nota Fiscal", "Loja Física", "Solicitação"], ["Meus Pedidos", "Embalagem de Presente", "E-commerce", "Solicitação"], ["Meus Pedidos", "Fraude", "E-commerce", "Ocorrência"], ["Meus Pedidos", "Alterações de Dados Cadastrais", "E-commerce", "Solicitação"], ["Meus Pedidos", "Alterações de Dados Cadastrais", "Loja Física", "Solicitação"], ["Meus Pedidos", "Pagamento Rejeitado", "E-commerce", "Ocorrência"], ["Meus Pedidos", "Atraso no Atendimento do Pedido", "Loja Física", "Problema"], ["Meus Pedidos", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Meus Pedidos", "Rastreio", "E-commerce", "Solicitação"], ["Meus Pedidos", "Rastreio", "Loja Física", "Solicitação"], ["Meus Pedidos", "Nota Fiscal Sem Valor", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cartão Presente", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cancelamento de Pedido", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cancelamento de Pedido", "Loja Física", "Solicitação"], ["Meus Pedidos", "Comprovante de Estorno", "Financeiro", "Solicitação"], ["Comercial", "Vendas", "Comercial", "Solicitação"], ["Comercial", "Orçamentos", "Comercial", "Solicitação"], ["Comercial", "Vendas Internacionais", "Comercial", "Solicitação"], ["Comercial", "Orientação de processo", "Comercial", "Solicitação Interna"], ["Lista de Casamento", "Problemas com Login", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Créditos - Lista de Casamento", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Navegabilidade do site", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Problemas com Pagamento", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Dúvida - Lista de Casamento", "Lista de Casamento", "Pergunta"], ["Lista de Casamento", "Pagamento Rejeitado", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Gerenciar lista", "Lista de Casamento", "Solicitação"], ["Lista de Casamento", "Status de Pedido", "Lista de Casamento", "Solicitação"], ["Lista de Casamento", "Duplicidade de Lista", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Cancelamento de Pedido", "Lista de Casamento", "Ocorrência"], ["Informações", "Informações Lojas Fìsicas", "Loja Física", "Solicitação"], ["Informações", "Informações Revenda", "Novos Negócios", "Solicitação"], ["Informações", "Personalizaçao de Produto", "Dúvidas Diversas", "Solicitação"], ["Informações", "Marketplace", "Marketplace", "Solicitação"], ["Informações", "Mimos e Amostras", "Dúvidas Diversas", "Pergunta"], ["Informações", "Descontos", "Dúvidas Diversas", "Pergunta"], ["Financeiro", "Solicitações Financeiro", "Financeiro", "Solicitação Interna"], ["Minha Conta", "Alterações de Dados Cadastrais", "E-commerce", "Solicitação"], ["Divergência no Pedido", "Falta de Produto", "Logística", "Problema"], ["Divergência no Pedido", "Falta de Produto", "Loja Física", "Problema"], ["Divergência no Pedido", "Inversão de Produto", "Logística", "Problema"], ["Divergência no Pedido", "Inversão de Produto", "Loja Física", "Problema"], ["Divergência no Pedido", "Duplicidade de Produtos", "Logística", "Problema"], ["Divergência no Pedido", "Duplicidade de Produtos", "Loja Física", "Problema"], ["Leila Restaurante", "Dúvidas Reservas", "Restaurante", "Pergunta"], ["Leila Restaurante", "Horário de Funcionamento", "Restaurante", "Pergunta"], ["Leila Restaurante", "Dúvidas Diversas", "Restaurante", "Pergunta"], ["Leila Restaurante", "Cardápio", "Restaurante", "Solicitação"], ["Leila Restaurante", "Eventos", "Restaurante", "Solicitação"], ["Ligações", "Ligações Perdidas", "Customer Experience", "Ocorrência"], ["Ligações", "Ligações Abandonadas", "Usuário", "Ocorrência"], ["Ligações", "Correio de Voz", "Usuário", "Ocorrência"], ["Ligações", "Engano", "Dúvidas Diversas", "Outros"], ["Pré-Venda", "Preço", "E-commerce", "Pergunta"], ["Pré-Venda", "Prazo de Entrega", "E-commerce", "Pergunta"], ["Pré-Venda", "Vendas", "E-commerce", "Solicitação"], ["Pré-Venda", "Contato sem interação", "Usuário", "Outros"], ["Pré-Venda", "Eventos", "Serviços Diversos", "Solicitação"], ["Jira", "Produto com Defeito", "Logística", "Solicitações Internas"], ["Jira", "Produto com Avaria", "Logística", "Solicitações Internas"], ["Jira", "Problemas na Entrega", "Logística", "Solicitações Internas"], ["Jira", "Falta de Produto", "Logística", "Solicitações Internas"], ["Reservas", "Fazer Reserva", "Leila Restaurante", "Solicitação"], ["Reservas", "Alterar Reserva", "Leila Restaurante", "Solicitação"], ["Reservas", "Dúvidas - Reservas", "Leila Restaurante", "Pergunta"], ["Reservas", "Cancelar Reserva", "Leila Restaurante", "Solicitação"], ["Dúvidas", "Horário de Funcionamento", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Tempo de Espera", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Dúvidas Diversas", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Opções Veganas", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Delivery", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Taxa de Rolha", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Formas de Pagamento", "Leila Restaurante", "Pergunta"], ["Cardápio", "Cardápio", "Leila Restaurante", "Solicitação"], ["Serviços Diversos", "Currículo", "Leila Restaurante", "Outros"], ["Serviços Diversos", "Eventos ou Parcerias", "Leila Restaurante", "Solicitação"], ["Serviços Diversos", "Sugestões", "Leila Restaurante", "Outros"], ["Reclamações", "Reclamações Atendimento", "Leila Restaurante", "Problema"], ["Reclamações", "Reclamações Pratos", "Leila Restaurante", "Problema"], ["Reclamações", "Reclamações Tempo de Espera", "Leila Restaurante", "Problema"], ["Pré-Venda", "Eventos", "Serviços Diversos", "Solicitação"], ["Gestão de Atendimento", "Duplicidade de Solicitação", "Usuário", "Ocorrência"], ["Relacionamento com o Cliente", "Pesquisas", "Customer Experience", "Feedbacks"]];
+  const TREE_STORAGE_KEY = 'auditoriaClassificacaoArvoreDeContato';
+  const DEFAULT_TREE_DATA = [["Devoluçao", "Indisponibilidade de item", "Logística", "Problema"], ["Devoluçao", "Produto com Defeito", "Desenvolvimento", "Problema"], ["Devoluçao", "Produto com Defeito", "Loja Física", "Problema"], ["Devoluçao", "Produto com Avaria", "Logística", "Problema"], ["Devoluçao", "Produto com Avaria", "Loja Física", "Problema"], ["Devoluçao", "Desistência/Arrependimento", "Usuário", "Solicitação"], ["Devoluçao", "Problemas na Entrega", "Logística", "Problema"], ["Devoluçao", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Devoluçao", "Problemas de Autenticidade", "Desenvolvimento", "Problema"], ["Trocas", "Indisponibilidade de item", "Logística", "Problema"], ["Trocas", "Produto com Defeito", "Desenvolvimento", "Problema"], ["Trocas", "Produto com Defeito", "Loja Física", "Problema"], ["Trocas", "Produto com Avaria", "Logística", "Problema"], ["Trocas", "Produto com Avaria", "Loja Física", "Problema"], ["Trocas", "Desistência/Arrependimento", "Usuário", "Solicitação"], ["Trocas", "Problemas na Entrega", "Logística", "Problema"], ["Trocas", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Trocas", "Problemas de Autenticidade", "Desenvolvimento", "Problema"], ["Serviços Diversos", "Serviços e Propagandas", "Serviços Diversos", "Serviços & Parcerias"], ["Serviços Diversos", "Testes", "Serviços Diversos", "Teste"], ["Serviços Diversos", "Currículo/RH", "RH", "Serviços & Parcerias"], ["Serviços Diversos", "Sugestões & Elogios", "Loja Física", "Feedbacks"], ["Serviços Diversos", "Sugestões & Elogios", "Serviços Diversos", "Feedbacks"], ["Serviços Diversos", "Contato Outros Departamentos", "Outros Departamentos", "Serviços & Parcerias"], ["Serviços Diversos", "Pesquisas", "Serviços Diversos", "Pesquisa"], ["Serviços Diversos", "Contato Marketing", "Marketing", "Serviços & Parcerias"], ["Serviços Diversos", "Spam", "Serviços Diversos", "Spam"], ["Dúvidas", "Especificações/Dimensões do produto", "E-commerce", "Pergunta"], ["Dúvidas", "Usabilidade do Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Encontrabilidade de Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Disponibilidade de Produto", "E-commerce", "Pergunta"], ["Dúvidas", "Disponibilidade de Produto", "Loja Física", "Pergunta"], ["Dúvidas", "Processo de Trocas e Devoluções", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Formas de Pagamento", "E-commerce", "Pergunta"], ["Dúvidas", "Sugestão de novos produtos", "Desenvolvimento", "Feedbacks"], ["Dúvidas", "Sugestões de Presentes", "Dúvidas Diversas", "Solicitação"], ["Dúvidas", "Sugestões de Produtos", "Dúvidas Diversas", "Solicitação"], ["Dúvidas", "Prazo de Entrega", "E-commerce", "Pergunta"], ["Dúvidas", "Outros", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Nota Fiscal Sem Valor", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Preço", "E-commerce", "Pergunta"], ["Dúvidas", "Embalagem de Presente", "Dúvidas Diversas", "Pergunta"], ["Dúvidas", "Ações Promocionais", "E-commerce", "Pergunta"], ["Contato", "Contato Sem interação", "Usuário", "Outros"], ["Newsletter", "Descadastrar", "E-commerce", "Solicitação"], ["Newsletter", "Cadastrar", "E-commerce", "Solicitação"], ["Newsletter", "Sugestões & Elogios", "E-commerce", "Feedbacks"], ["Newsletter", "Reclamações Gerais", "E-commerce", "Problema"], ["Reclamações", "Problemas com login", "Tecnologia", "Problema"], ["Reclamações", "Navegabilidade do site", "Tecnologia", "Problema"], ["Reclamações", "Reclamações Loja Física", "Loja Física", "Problema"], ["Reclamações", "Reclamaçao Atendimento", "Customer Experience", "Problema"], ["Reclamações", "Reclame Aqui", "Reclame Aqui", "Problema"], ["Reclamações", "Reclame Aqui", "Loja Física", "Problema"], ["Reclamações", "Problemas com Pagamento", "Tecnologia", "Problema"], ["Reclamações", "Marketplace", "Marketplace", "Problema"], ["Reclamação de Produto", "Mal Uso", "Usuário", "Ocorrência"], ["Reclamação de Produto", "Características do Produto", "Desenvolvimento", "Ocorrência"], ["Reclamação de Produto", "Performance", "Desenvolvimento", "Problema"], ["Reclamação de Produto", "Em análise", "Desenvolvimento", "Problema"], ["Reclamação de Produto", "Produto com problema de funcionamento", "Desenvolvimento", "Problema"], ["Meus Pedidos", "2ª Via de Boleto", "E-commerce", "Solicitação"], ["Meus Pedidos", "2ª Via de Boleto", "Loja Física", "Solicitação"], ["Meus Pedidos", "Status de Pedido", "E-commerce", "Solicitação"], ["Meus Pedidos", "Status de Pedido", "Loja Física", "Solicitação"], ["Meus Pedidos", "Problemas na Entrega", "Loja Física", "Problema"], ["Meus Pedidos", "Problemas na Entrega", "Logística", "Problema"], ["Meus Pedidos", "Cópia Nota Fiscal", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cópia Nota Fiscal", "Loja Física", "Solicitação"], ["Meus Pedidos", "Embalagem de Presente", "E-commerce", "Solicitação"], ["Meus Pedidos", "Fraude", "E-commerce", "Ocorrência"], ["Meus Pedidos", "Alterações de Dados Cadastrais", "E-commerce", "Solicitação"], ["Meus Pedidos", "Alterações de Dados Cadastrais", "Loja Física", "Solicitação"], ["Meus Pedidos", "Pagamento Rejeitado", "E-commerce", "Ocorrência"], ["Meus Pedidos", "Atraso no Atendimento do Pedido", "Loja Física", "Problema"], ["Meus Pedidos", "Atraso no Atendimento do Pedido", "Logística", "Problema"], ["Meus Pedidos", "Rastreio", "E-commerce", "Solicitação"], ["Meus Pedidos", "Rastreio", "Loja Física", "Solicitação"], ["Meus Pedidos", "Nota Fiscal Sem Valor", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cartão Presente", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cancelamento de Pedido", "E-commerce", "Solicitação"], ["Meus Pedidos", "Cancelamento de Pedido", "Loja Física", "Solicitação"], ["Meus Pedidos", "Comprovante de Estorno", "Financeiro", "Solicitação"], ["Comercial", "Vendas", "Comercial", "Solicitação"], ["Comercial", "Orçamentos", "Comercial", "Solicitação"], ["Comercial", "Vendas Internacionais", "Comercial", "Solicitação"], ["Comercial", "Orientação de processo", "Comercial", "Solicitação Interna"], ["Lista de Casamento", "Problemas com Login", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Créditos - Lista de Casamento", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Navegabilidade do site", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Problemas com Pagamento", "Lista de Casamento", "Problema"], ["Lista de Casamento", "Dúvida - Lista de Casamento", "Lista de Casamento", "Pergunta"], ["Lista de Casamento", "Pagamento Rejeitado", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Gerenciar lista", "Lista de Casamento", "Solicitação"], ["Lista de Casamento", "Status de Pedido", "Lista de Casamento", "Solicitação"], ["Lista de Casamento", "Duplicidade de Lista", "Lista de Casamento", "Ocorrência"], ["Lista de Casamento", "Cancelamento de Pedido", "Lista de Casamento", "Ocorrência"], ["Informações", "Informações Lojas Fìsicas", "Loja Física", "Solicitação"], ["Informações", "Informações Revenda", "Novos Negócios", "Solicitação"], ["Informações", "Personalizaçao de Produto", "Dúvidas Diversas", "Solicitação"], ["Informações", "Marketplace", "Marketplace", "Solicitação"], ["Informações", "Mimos e Amostras", "Dúvidas Diversas", "Pergunta"], ["Informações", "Descontos", "Dúvidas Diversas", "Pergunta"], ["Financeiro", "Solicitações Financeiro", "Financeiro", "Solicitação Interna"], ["Minha Conta", "Alterações de Dados Cadastrais", "E-commerce", "Solicitação"], ["Divergência no Pedido", "Falta de Produto", "Logística", "Problema"], ["Divergência no Pedido", "Falta de Produto", "Loja Física", "Problema"], ["Divergência no Pedido", "Inversão de Produto", "Logística", "Problema"], ["Divergência no Pedido", "Inversão de Produto", "Loja Física", "Problema"], ["Divergência no Pedido", "Duplicidade de Produtos", "Logística", "Problema"], ["Divergência no Pedido", "Duplicidade de Produtos", "Loja Física", "Problema"], ["Leila Restaurante", "Dúvidas Reservas", "Restaurante", "Pergunta"], ["Leila Restaurante", "Horário de Funcionamento", "Restaurante", "Pergunta"], ["Leila Restaurante", "Dúvidas Diversas", "Restaurante", "Pergunta"], ["Leila Restaurante", "Cardápio", "Restaurante", "Solicitação"], ["Leila Restaurante", "Eventos", "Restaurante", "Solicitação"], ["Ligações", "Ligações Perdidas", "Customer Experience", "Ocorrência"], ["Ligações", "Ligações Abandonadas", "Usuário", "Ocorrência"], ["Ligações", "Correio de Voz", "Usuário", "Ocorrência"], ["Ligações", "Engano", "Dúvidas Diversas", "Outros"], ["Pré-Venda", "Preço", "E-commerce", "Pergunta"], ["Pré-Venda", "Prazo de Entrega", "E-commerce", "Pergunta"], ["Pré-Venda", "Vendas", "E-commerce", "Solicitação"], ["Pré-Venda", "Contato sem interação", "Usuário", "Outros"], ["Pré-Venda", "Eventos", "Serviços Diversos", "Solicitação"], ["Jira", "Produto com Defeito", "Logística", "Solicitações Internas"], ["Jira", "Produto com Avaria", "Logística", "Solicitações Internas"], ["Jira", "Problemas na Entrega", "Logística", "Solicitações Internas"], ["Jira", "Falta de Produto", "Logística", "Solicitações Internas"], ["Reservas", "Fazer Reserva", "Leila Restaurante", "Solicitação"], ["Reservas", "Alterar Reserva", "Leila Restaurante", "Solicitação"], ["Reservas", "Dúvidas - Reservas", "Leila Restaurante", "Pergunta"], ["Reservas", "Cancelar Reserva", "Leila Restaurante", "Solicitação"], ["Dúvidas", "Horário de Funcionamento", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Tempo de Espera", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Dúvidas Diversas", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Opções Veganas", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Delivery", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Taxa de Rolha", "Leila Restaurante", "Pergunta"], ["Dúvidas", "Formas de Pagamento", "Leila Restaurante", "Pergunta"], ["Cardápio", "Cardápio", "Leila Restaurante", "Solicitação"], ["Serviços Diversos", "Currículo", "Leila Restaurante", "Outros"], ["Serviços Diversos", "Eventos ou Parcerias", "Leila Restaurante", "Solicitação"], ["Serviços Diversos", "Sugestões", "Leila Restaurante", "Outros"], ["Reclamações", "Reclamações Atendimento", "Leila Restaurante", "Problema"], ["Reclamações", "Reclamações Pratos", "Leila Restaurante", "Problema"], ["Reclamações", "Reclamações Tempo de Espera", "Leila Restaurante", "Problema"], ["Pré-Venda", "Eventos", "Serviços Diversos", "Solicitação"], ["Gestão de Atendimento", "Duplicidade de Solicitação", "Usuário", "Ocorrência"], ["Relacionamento com o Cliente", "Pesquisas", "Customer Experience", "Feedbacks"]];
+
+  let TREE_DATA = DEFAULT_TREE_DATA.map(row => row.slice());
+  let treeDirty = false;
+
+  function cloneTree(rows){ return rows.map(row => row.slice()); }
+
+  function loadTreeFromStorage(){
+    try{
+      const raw = localStorage.getItem(TREE_STORAGE_KEY);
+      if(!raw) return;
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.every(r => Array.isArray(r) && r.length === 4)){
+        TREE_DATA = parsed;
+      }
+    } catch(e){ console.error('Falha ao carregar árvore salva:', e); }
+    buildTreeMap();
+  }
+
+  function setTreeSaveStatus(dirty){
+    treeDirty = dirty;
+    const el = document.getElementById('treeSaveStatus');
+    const txt = document.getElementById('treeSaveStatusText');
+    if(!el || !txt) return;
+    el.classList.toggle('unsaved', dirty);
+    txt.textContent = dirty ? 'Alterações não salvas' : 'Alterações salvas';
+  }
+
+  function saveTreeChanges(){
+    try{
+      localStorage.setItem(TREE_STORAGE_KEY, JSON.stringify(TREE_DATA));
+      setTreeSaveStatus(false);
+    } catch(e){
+      console.error('Falha ao salvar árvore:', e);
+      alert('Não foi possível salvar as alterações neste navegador.');
+    }
+  }
+
+  function restoreDefaultTree(){
+    if(!confirm('Restaurar a árvore padrão? As alterações salvas neste navegador serão descartadas.')) return;
+    TREE_DATA = cloneTree(DEFAULT_TREE_DATA);
+    try{ localStorage.removeItem(TREE_STORAGE_KEY); } catch(e){}
+    buildTreeMap();
+    setTreeSaveStatus(false);
+    renderTreeTab();
+  }
+
+  function addTreeRow(){
+    TREE_DATA.push(['', '', '', '']);
+    buildTreeMap();
+    setTreeSaveStatus(true);
+    document.getElementById('treeSearch').value = '';
+    document.getElementById('treeMotivoFilter').value = '';
+    renderTreeTab();
+  }
+
+  function deleteTreeRow(idx){
+    TREE_DATA.splice(idx, 1);
+    buildTreeMap();
+    setTreeSaveStatus(true);
+    filterAndRenderTree();
+  }
+
+  function updateTreeCell(idx, col, value){
+    TREE_DATA[idx][col] = value;
+    buildTreeMap();
+    setTreeSaveStatus(true);
+  }
+
 
   // ---------- base de tickets padrão embutida (abre sem precisar subir arquivo) ----------
   // header (linha 0) + linhas de dados, mesmas colunas A-M do export
@@ -537,13 +673,17 @@
     return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
   }
 
-  // build tree map once from the embedded TREE_DATA: key -> [{area,tipo}]
-  const TREE_MAP = new Map();
-  TREE_DATA.forEach(([mp, md, area, tipo])=>{
-    const key = normKey(mp)+'|'+normKey(md);
-    if(!TREE_MAP.has(key)) TREE_MAP.set(key, []);
-    TREE_MAP.get(key).push({area, tipo});
-  });
+  // tree map: key -> [{area,tipo}] — rebuilt from TREE_DATA whenever it changes
+  let TREE_MAP = new Map();
+  function buildTreeMap(){
+    TREE_MAP = new Map();
+    TREE_DATA.forEach(([mp, md, area, tipo])=>{
+      const key = normKey(mp)+'|'+normKey(md);
+      if(!TREE_MAP.has(key)) TREE_MAP.set(key, []);
+      TREE_MAP.get(key).push({area, tipo});
+    });
+  }
+  buildTreeMap();
 
   // ---------- state ----------
   let ALL = [];        // all processed tickets
@@ -939,26 +1079,48 @@
     sel.innerHTML = '<option value="">Todos</option>' + motivos.map(m=>'<option value="'+m.replace(/"/g,'&quot;')+'">'+m+'</option>').join('');
     filterAndRenderTree();
   }
+  function escAttr(v){
+    return String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  }
+
   function filterAndRenderTree(){
     const q = normKey(document.getElementById('treeSearch').value);
     const motivo = document.getElementById('treeMotivoFilter').value;
-    const rows = TREE_DATA.filter(([mp,md,area,tipo])=>{
-      if(motivo && mp!==motivo) return false;
-      if(q){
-        const hay = normKey([mp,md,area,tipo].join(' '));
-        if(hay.indexOf(q)===-1) return false;
-      }
-      return true;
-    });
+    const rows = TREE_DATA
+      .map((row, idx)=>({row, idx}))
+      .filter(({row:[mp,md,area,tipo]})=>{
+        if(motivo && mp!==motivo) return false;
+        if(q){
+          const hay = normKey([mp,md,area,tipo].join(' '));
+          if(hay.indexOf(q)===-1) return false;
+        }
+        return true;
+      });
     document.getElementById('treeCountShown').textContent = rows.length.toLocaleString('pt-BR');
-    document.getElementById('treeTbody').innerHTML = rows.map(([mp,md,area,tipo])=>
-      '<tr><td>'+mp+'</td><td>'+md+'</td><td>'+area+'</td><td>'+tipo+'</td></tr>'
+    document.getElementById('treeTbody').innerHTML = rows.map(({row:[mp,md,area,tipo], idx})=>
+      '<tr>'+
+        '<td class="tree-cell"><input class="tree-input" data-idx="'+idx+'" data-col="0" value="'+escAttr(mp)+'"></td>'+
+        '<td class="tree-cell"><input class="tree-input" data-idx="'+idx+'" data-col="1" value="'+escAttr(md)+'"></td>'+
+        '<td class="tree-cell"><input class="tree-input" data-idx="'+idx+'" data-col="2" value="'+escAttr(area)+'"></td>'+
+        '<td class="tree-cell"><input class="tree-input" data-idx="'+idx+'" data-col="3" value="'+escAttr(tipo)+'"></td>'+
+        '<td class="tree-actions"><button class="icon-btn danger" data-del="'+idx+'" title="Remover combinação">✕</button></td>'+
+      '</tr>'
     ).join('');
+    document.querySelectorAll('#treeTbody .tree-input').forEach(inp=>{
+      inp.addEventListener('change', ()=>{
+        updateTreeCell(parseInt(inp.dataset.idx,10), parseInt(inp.dataset.col,10), inp.value);
+      });
+    });
+    document.querySelectorAll('#treeTbody [data-del]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        deleteTreeRow(parseInt(btn.dataset.del,10));
+      });
+    });
   }
 
   // ---------- tab switching ----------
   function bindTabs(){
-    const btns = document.querySelectorAll('.tab-btn');
+    const btns = document.querySelectorAll('.side-btn');
     btns.forEach(btn=>{
       btn.addEventListener('click', ()=>{
         btns.forEach(b=>b.classList.remove('active'));
@@ -969,14 +1131,34 @@
     });
   }
 
+  // ---------- sidebar collapse/expand ----------
+  function bindSidebar(){
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const SIDEBAR_KEY = 'auditoriaClassificacaoSidebarCollapsed';
+    try{
+      if(localStorage.getItem(SIDEBAR_KEY) === '1') sidebar.classList.add('collapsed');
+    } catch(e){}
+    toggle.addEventListener('click', ()=>{
+      sidebar.classList.toggle('collapsed');
+      try{ localStorage.setItem(SIDEBAR_KEY, sidebar.classList.contains('collapsed') ? '1' : '0'); } catch(e){}
+    });
+  }
+
   function init(){
     bindFilterEvents();
     bindSortEvents();
     bindTabs();
+    bindSidebar();
     bindCancelUpload();
+    loadTreeFromStorage();
+    setTreeSaveStatus(false);
     renderTreeTab();
     document.getElementById('treeSearch').addEventListener('input', filterAndRenderTree);
     document.getElementById('treeMotivoFilter').addEventListener('change', filterAndRenderTree);
+    document.getElementById('btnAddTreeRow').addEventListener('click', addTreeRow);
+    document.getElementById('btnRestoreTree').addEventListener('click', restoreDefaultTree);
+    document.getElementById('btnSaveTree').addEventListener('click', saveTreeChanges);
     const input = document.getElementById('fileInput');
     input.addEventListener('change', function(){
       if(this.files && this.files[0]) handleFile(this.files[0]);
