@@ -466,9 +466,28 @@ td.ec{padding:0;background:var(--yc)}
 }
 </style>
 
+
+<style id="nova-visao-acumulado-ytd">
+[id$="-ytd-kpis"] > div:first-child{
+  min-height:86px;
+}
+[id$="-ytd-kpis"] > div:first-child > div:first-child{
+  min-width:170px!important;
+}
+</style>
+
+
+<style id="metas-atingidas-destaque">
+.metas-hit-static{
+  border-radius:7px!important;
+  padding:10px 14px!important;
+  min-width:104px!important;
+}
+</style>
+
 </head>
 <body>
-<div class="toast show" id="toast" style="background: var(--green);">⏳ Publicando no GitHub...</div>
+<div class="toast" id="toast" style="background: var(--green);"></div>
 <!-- GITHUB CONFIG MODAL -->
 <div class="gh-overlay" id="gh-overlay" onclick="if(event.target===this)closeGhConfig()" style="display: none;">
 <div class="gh-modal">
@@ -563,11 +582,11 @@ td.ec{padding:0;background:var(--yc)}
 </div>
 <div class="sec">Resultado — <span>Mês Atual · Isabela Mesquita</span></div>
 <div class="panel-card" style="padding:0;margin-bottom:16px;overflow:hidden">
-<div id="i-mes-kpis" style="display:block"><div style="background:var(--ambg);display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)"><div style="display:flex;flex-direction:column;min-width:140px"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Mês</div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;line-height:1;color:var(--amber)">67%</span><span style="font-size:10px;color:var(--muted)">das metas</span></div></div><div style="flex:1 1 200px;min-width:160px"><div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:67%;background:var(--amber);border-radius:4px"></div></div><div style="font-size:10px;color:var(--text-mid)"><b>4 de 6</b> indicadores dentro da meta no período</div></div><div style="text-align:center;min-width:70px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">266</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div></div><div style="text-align:center;min-width:80px"><div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">▼ 342</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div></div><div style="text-align:center;min-width:60px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--amber)">4/6</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div></div></div><div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px"><div class="kpi-card ok"><div class="kpi-label">Tempo Médio 1ª Resposta</div><div class="kpi-val ok">5 min</div><div class="kpi-sub">≤17 min</div></div><div class="kpi-card ok"><div class="kpi-label">Tickets Reabertos</div><div class="kpi-val ok">10%</div><div class="kpi-sub">≤20%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA WhatsApp</div><div class="kpi-val ok">70%</div><div class="kpi-sub">≥60%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA E-mail</div><div class="kpi-val ok">97%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">CSAT</div><div class="kpi-val bad">65%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">Tx. Resposta</div><div class="kpi-val bad">15%</div><div class="kpi-sub">≥20%</div></div></div></div>
+<div id="i-mes-kpis" style="display:block"><div style="background:var(--ambg);display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)"><div style="display:flex;flex-direction:column;min-width:140px"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Mês</div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;line-height:1;color:var(--amber)">67%</span><span style="font-size:10px;color:var(--muted)">das metas</span></div></div><div style="flex:1 1 200px;min-width:160px"><div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:67%;background:var(--amber);border-radius:4px"></div></div><div style="font-size:10px;color:var(--text-mid)"><b>4 de 6</b> indicadores dentro da meta no período</div></div><div style="text-align:center;min-width:70px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">266</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div></div><div style="text-align:center;min-width:80px"><div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">▼ 342</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div></div><div style="text-align:center;min-width:60px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--amber)">4/6</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas dentro do YTD</div></div></div><div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px"><div class="kpi-card ok"><div class="kpi-label">Tempo Médio 1ª Resposta</div><div class="kpi-val ok">5 min</div><div class="kpi-sub">≤17 min</div></div><div class="kpi-card ok"><div class="kpi-label">Tickets Reabertos</div><div class="kpi-val ok">10%</div><div class="kpi-sub">≤20%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA WhatsApp</div><div class="kpi-val ok">70%</div><div class="kpi-sub">≥60%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA E-mail</div><div class="kpi-val ok">97%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">CSAT</div><div class="kpi-val bad">65%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">Tx. Resposta</div><div class="kpi-val bad">15%</div><div class="kpi-sub">≥20%</div></div></div></div>
 </div>
 <div class="sec">Acumulado do Ano — <span>YTD · Isabela Mesquita</span></div>
 <div class="panel-card" style="padding:0;margin-bottom:16px;overflow:hidden">
-<div id="i-ytd-kpis" style="display:block"><div style="background:var(--ambg);display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)"><div style="display:flex;flex-direction:column;min-width:140px"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Ano</div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;line-height:1;color:var(--amber)">50%</span><span style="font-size:10px;color:var(--muted)">das metas</span></div></div><div style="flex:1 1 200px;min-width:160px"><div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:50%;background:var(--amber);border-radius:4px"></div></div><div style="font-size:10px;color:var(--text-mid)"><b>3 de 6</b> indicadores dentro da meta no acumulado</div></div><div style="text-align:center;min-width:70px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">4.084</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div></div><div style="text-align:center;min-width:80px"><div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">▼ 342</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div></div><div style="text-align:center;min-width:60px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--amber)">3/6</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div></div></div><div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px"><div class="kpi-card ok"><div class="kpi-label">Tempo Médio 1ª Resposta (YTD)</div><div class="kpi-val ok">7 min</div><div class="kpi-sub">≤17 min</div></div><div class="kpi-card ok"><div class="kpi-label">Tickets Reabertos (YTD)</div><div class="kpi-val ok">17%</div><div class="kpi-sub">≤20%</div></div><div class="kpi-card warn"><div class="kpi-label">SLA WhatsApp (YTD)</div><div class="kpi-val warn">57%</div><div class="kpi-sub">≥60%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA E-mail (YTD)</div><div class="kpi-val ok">96%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card warn"><div class="kpi-label">CSAT Médio (YTD)</div><div class="kpi-val warn">82%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">Tx. Resposta (YTD)</div><div class="kpi-val bad">14%</div><div class="kpi-sub">≥20%</div></div></div></div>
+<div id="i-ytd-kpis" style="display:block"><div style="background:var(--ambg);display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)"><div style="display:flex;flex-direction:column;min-width:140px"><div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Realizado Acumulado YTD</div><div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;line-height:1;color:var(--amber)">50%</span><span style="font-size:10px;color:var(--muted)">das metas</span></div></div><div style="flex:1 1 200px;min-width:160px"><div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:50%;background:var(--amber);border-radius:4px"></div></div><div style="font-size:10px;color:var(--text-mid)"><b>3 de 6</b> indicadores dentro da meta no acumulado</div></div><div style="text-align:center;min-width:70px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">4.084</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div></div><div style="text-align:center;min-width:80px"><div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">▼ 342</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div></div><div style="text-align:center;min-width:60px"><div style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--amber)">3/6</div><div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div></div></div><div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px"><div class="kpi-card ok"><div class="kpi-label">Tempo Médio 1ª Resposta (YTD)</div><div class="kpi-val ok">7 min</div><div class="kpi-sub">≤17 min</div></div><div class="kpi-card ok"><div class="kpi-label">Tickets Reabertos (YTD)</div><div class="kpi-val ok">17%</div><div class="kpi-sub">≤20%</div></div><div class="kpi-card warn"><div class="kpi-label">SLA WhatsApp (YTD)</div><div class="kpi-val warn">57%</div><div class="kpi-sub">≥60%</div></div><div class="kpi-card ok"><div class="kpi-label">SLA E-mail (YTD)</div><div class="kpi-val ok">96%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card warn"><div class="kpi-label">CSAT Médio (YTD)</div><div class="kpi-val warn">82%</div><div class="kpi-sub">≥90%</div></div><div class="kpi-card bad"><div class="kpi-label">Tx. Resposta (YTD)</div><div class="kpi-val bad">14%</div><div class="kpi-sub">≥20%</div></div></div></div>
 </div>
 <div class="quick-lanc-card" style="margin-bottom:16px">
 <div class="quick-lanc-hdr"><span class="quick-lanc-av">IM</span><span class="quick-lanc-name">Isabela Mesquita — Evolução 2026</span>
@@ -596,39 +615,47 @@ td.ec{padding:0;background:var(--yc)}
 </div>
 </div>
 <div style="margin-top:32px;border-top:1px solid rgba(184,154,94,.2);padding-top:24px">
-<div class="sec" style="margin-bottom:12px">Glossário — <span>O que mede cada indicador</span></div>
+<div class="sec" style="margin-bottom:12px">Glossário — <span>Como ler e como calcular</span></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden">
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">CSAT</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Índice de satisfação do cliente após o atendimento, calculado com base nas avaliações recebidas nas pesquisas de satisfação.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> satisfação dos clientes que avaliaram o atendimento.<br><b>Cálculo:</b> percentual de avaliações positivas sobre o total de avaliações válidas recebidas. Meta: ≥90%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TAXA DE RESPOSTA (CSAT)</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de clientes que responderam à pesquisa de satisfação após o encerramento do atendimento.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> adesão dos clientes à pesquisa de satisfação.<br><b>Cálculo:</b> respostas recebidas ÷ pesquisas enviadas × 100. Meta: ≥20%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TMA – 1ª RESPOSTA</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Tempo médio que a equipe leva para enviar a primeira resposta ao cliente após a abertura do ticket.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> rapidez para realizar o primeiro retorno ao cliente.<br><b>Cálculo:</b> média do tempo de primeira resposta dos tickets medidos. Quanto menor, melhor. Meta: ≤17 min.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TICKETS REABERTOS</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets que foram reabertos após terem sido considerados resolvidos.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> recorrência de contatos que voltaram após a resolução.<br><b>Cálculo:</b> tickets reabertos ÷ tickets considerados resolvidos × 100. Quanto menor, melhor. Meta: ≤20%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">SLA WHATSAPP</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets respondidos dentro do prazo de até 10 minutos no canal WhatsApp.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> cumprimento do prazo de atendimento no WhatsApp.<br><b>Cálculo:</b> tickets respondidos em até 10 min ÷ tickets medidos no canal × 100. Meta: ≥60%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">SLA E-MAIL</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets respondidos dentro do prazo de até 2 horas no canal E-mail.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> cumprimento do prazo de atendimento por e-mail.<br><b>Cálculo:</b> tickets respondidos em até 2 h ÷ tickets medidos no canal × 100. Meta: ≥90%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
-<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">REALIZADO</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Resultado real do indicador naquele mês.</div>
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">REALIZADO (YTD)</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> resultado acumulado do indicador no ano até o mês selecionado.<br><b>Cálculo:</b> percentuais operacionais usam média ponderada pelo volume de tickets; CSAT usa a média dos meses preenchidos; Taxa de Resposta usa respostas acumuladas ÷ pesquisas enviadas acumuladas. No TMA, a coluna é exibida como % de atingimento para facilitar a comparação.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
-<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">% ATINGIDO</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Mostra quanto o resultado (Realizado) representa em relação à meta definida. Limitado a 100% — o símbolo ▲ indica que a meta foi superada.</div>
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">% ATINGIDO (MÊS)</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> quão perto o resultado do mês ficou da meta.<br><b>Cálculo:</b> quando maior é melhor, Realizado ÷ Meta × 100; quando menor é melhor, Meta ÷ Realizado × 100. O resultado é limitado a 100%. O símbolo ▲ indica que a meta foi superada.</div>
+</div>
+<div style="background:var(--cream);padding:14px 18px">
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">ÍNDICE DE REALIZAÇÃO YTD</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média do % de atingimento YTD dos 6 indicadores. Cada indicador é limitado a 100%, evitando que um resultado muito acima da meta compense outro abaixo dela.</div>
+</div>
+<div style="background:var(--cream);padding:14px 18px">
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">METAS ATINGIDAS</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> quantos dos 6 indicadores estão efetivamente dentro da meta.<br><b>Cálculo:</b> quantidade de indicadores que bateram a meta ÷ 6. Leitura visual: 0 a 3 em vermelho, 4 em amarelo, 5 ou 6 em verde.</div>
 </div>
 </div>
 </div>
@@ -684,39 +711,47 @@ td.ec{padding:0;background:var(--yc)}
 </div>
 </div>
 <div style="margin-top:32px;border-top:1px solid rgba(184,154,94,.2);padding-top:24px">
-<div class="sec" style="margin-bottom:12px">Glossário — <span>O que mede cada indicador</span></div>
+<div class="sec" style="margin-bottom:12px">Glossário — <span>Como ler e como calcular</span></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden">
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">CSAT</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Índice de satisfação do cliente após o atendimento, calculado com base nas avaliações recebidas nas pesquisas de satisfação.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> satisfação dos clientes que avaliaram o atendimento.<br><b>Cálculo:</b> percentual de avaliações positivas sobre o total de avaliações válidas recebidas. Meta: ≥90%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TAXA DE RESPOSTA (CSAT)</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de clientes que responderam à pesquisa de satisfação após o encerramento do atendimento.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> adesão dos clientes à pesquisa de satisfação.<br><b>Cálculo:</b> respostas recebidas ÷ pesquisas enviadas × 100. Meta: ≥20%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TMA – 1ª RESPOSTA</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Tempo médio que a equipe leva para enviar a primeira resposta ao cliente após a abertura do ticket.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> rapidez para realizar o primeiro retorno ao cliente.<br><b>Cálculo:</b> média do tempo de primeira resposta dos tickets medidos. Quanto menor, melhor. Meta: ≤17 min.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">TICKETS REABERTOS</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets que foram reabertos após terem sido considerados resolvidos.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> recorrência de contatos que voltaram após a resolução.<br><b>Cálculo:</b> tickets reabertos ÷ tickets considerados resolvidos × 100. Quanto menor, melhor. Meta: ≤20%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">SLA WHATSAPP</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets respondidos dentro do prazo de até 10 minutos no canal WhatsApp.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> cumprimento do prazo de atendimento no WhatsApp.<br><b>Cálculo:</b> tickets respondidos em até 10 min ÷ tickets medidos no canal × 100. Meta: ≥60%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">SLA E-MAIL</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Percentual de tickets respondidos dentro do prazo de até 2 horas no canal E-mail.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> cumprimento do prazo de atendimento por e-mail.<br><b>Cálculo:</b> tickets respondidos em até 2 h ÷ tickets medidos no canal × 100. Meta: ≥90%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
-<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">REALIZADO</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Resultado real do indicador naquele mês.</div>
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">REALIZADO (YTD)</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> resultado acumulado do indicador no ano até o mês selecionado.<br><b>Cálculo:</b> percentuais operacionais usam média ponderada pelo volume de tickets; CSAT usa a média dos meses preenchidos; Taxa de Resposta usa respostas acumuladas ÷ pesquisas enviadas acumuladas. No TMA, a coluna é exibida como % de atingimento para facilitar a comparação.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
-<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">% ATINGIDO</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55">Mostra quanto o resultado (Realizado) representa em relação à meta definida. Limitado a 100% — o símbolo ▲ indica que a meta foi superada.</div>
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">% ATINGIDO (MÊS)</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> quão perto o resultado do mês ficou da meta.<br><b>Cálculo:</b> quando maior é melhor, Realizado ÷ Meta × 100; quando menor é melhor, Meta ÷ Realizado × 100. O resultado é limitado a 100%. O símbolo ▲ indica que a meta foi superada.</div>
+</div>
+<div style="background:var(--cream);padding:14px 18px">
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">ÍNDICE DE REALIZAÇÃO YTD</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média do % de atingimento YTD dos 6 indicadores. Cada indicador é limitado a 100%, evitando que um resultado muito acima da meta compense outro abaixo dela.</div>
+</div>
+<div style="background:var(--cream);padding:14px 18px">
+<div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">METAS ATINGIDAS</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> quantos dos 6 indicadores estão efetivamente dentro da meta.<br><b>Cálculo:</b> quantidade de indicadores que bateram a meta ÷ 6. Leitura visual: 0 a 3 em vermelho, 4 em amarelo, 5 ou 6 em verde.</div>
 </div>
 </div>
 </div>
@@ -1671,6 +1706,10 @@ function buildUpdatedHTML(){
   refreshAll();
   syncInputAttrs();
   var src=document.documentElement.outerHTML;
+  // O toast ("Publicando no GitHub...") está visível no momento exato desta captura
+  // (saveAndRefresh o ativa antes de chamar esta função). Sem isto, o arquivo salvo/publicado
+  // sempre abriria com o aviso de publicação travado na tela. Normaliza para o estado padrão oculto.
+  src=src.replace(/<div class="toast[^"]*" id="toast"[^>]*>[^<]*<\/div>/,'<div class="toast" id="toast" style="background: var(--green);"></div>');
   ['cA_csat:90','cT_csat:100','cI_csat:100','cG_csat:100'].forEach(function(x){
     var s=x.split(':');src=src.replace(new RegExp('<canvas id="'+s[0]+'"[^>]*>','g'),'<canvas id="'+s[0]+'" height="'+s[1]+'">');
   });
@@ -1969,6 +2008,13 @@ function renderCsatGap(elId, CSAT_DATA) {
   el.innerHTML = html;
 }
 // ── COMBINED ACUMULADO YTD (CSAT + OPS) ──────────────
+function metasAtingidasTheme(qtd){
+  if(!n(qtd)) return {fg:'var(--muted)',bg:'rgba(136,136,136,.08)',border:'rgba(136,136,136,.20)'};
+  if(+qtd<=3) return {fg:'var(--red)',bg:'rgba(176,58,46,.10)',border:'rgba(176,58,46,.28)'};
+  if(+qtd===4) return {fg:'var(--amber)',bg:'rgba(194,146,79,.12)',border:'rgba(194,146,79,.32)'};
+  return {fg:'var(--green)',bg:'rgba(61,107,79,.11)',border:'rgba(61,107,79,.28)'};
+}
+
 function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride) {
   const el = document.getElementById(elId); if (!el) return;
   const csatFilled = CSAT_DATA.rows.filter(r => r && n(r.csat));
@@ -2010,6 +2056,36 @@ function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride
   const cum = metas.filter(Boolean).length;
   const totalY = metas.length;
   const pctY = totalY>0 ? Math.round(cum/totalY*100) : null;
+
+  // Índice de realização acumulada YTD.
+  // Mesmo método da linha "% Atingido Total" das tabelas de evolução (Área/analistas):
+  // para cada mês, calcula o % de atingimento de cada indicador (limitado a 100%),
+  // tira a média entre os indicadores daquele mês, e no fim faz a média simples
+  // dessas médias mensais — ou seja, soma dos resultados ÷ quantidade de meses.
+  function pctCappedYtd(value, target, dir){
+    if(!n(value)||!n(target)||+target===0) return null;
+    const p = dir==='min' ? (+target/+value*100) : (+value/+target*100);
+    return Math.min(100, Math.round(p));
+  }
+  const kpiDefsForMonth = KPIS.filter(k => k.id !== 'tickets');
+  const monthlyComposite = [];
+  for (let mi=0; mi<12; mi++){
+    const vals = [];
+    const csatRow = CSAT_DATA.rows[mi];
+    if (csatRow && n(csatRow.csat)) vals.push(pctCappedYtd(+csatRow.csat, 90, 'max'));
+    if (csatRow && n(csatRow.solic) && +csatRow.solic > 0 && n(csatRow.respostas)) {
+      vals.push(pctCappedYtd(Math.round(+csatRow.respostas/+csatRow.solic*100), 20, 'max'));
+    }
+    kpiDefsForMonth.forEach(k => {
+      if (k.metaVal === null) return;
+      if (n(k.data[mi])) vals.push(pctCappedYtd(+k.data[mi], k.metaVal, k.dir));
+    });
+    const filledVals = vals.filter(v => v!=null);
+    if (filledVals.length) monthlyComposite.push(Math.round(filledVals.reduce((a,b)=>a+b,0)/filledVals.length));
+  }
+  const realizedYtd = monthlyComposite.length
+    ? Math.round(monthlyComposite.reduce((a,b)=>a+b,0)/monthlyComposite.length)
+    : null;
   let lastTicketIdx = -1;
   for (let i=0;i<12;i++){ if (n(ticketsData[i])) lastTicketIdx = i; }
   const ticketsPrevIdxY = lastTicketIdx-1;
@@ -2019,18 +2095,20 @@ function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride
     const deltaY = ticketsData[lastTicketIdx] - ticketsPrevValY;
     trendTxtY = (deltaY>0?'▲ +':deltaY<0?'▼ ':'▶ ')+Math.abs(deltaY);
   }
-  const bt = (elId.indexOf('g-')===0) ? GREEN_THEME : bandTheme(pctY);
+  const bt = (elId.indexOf('g-')===0) ? GREEN_THEME : bandTheme(realizedYtd);
+  const mt = metasAtingidasTheme(cum);
   const heroHtml = '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
     '<div style="display:flex;flex-direction:column;min-width:140px">'+
       '<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Ano</div>'+
       '<div style="display:flex;align-items:baseline;gap:6px">'+
-        '<span style="font-family:\'DM Sans\',sans-serif;font-size:28px;font-weight:800;line-height:1;color:'+bt.accent+'">'+(n(pctY)?pctY+'%':'—')+'</span>'+
-        '<span style="font-size:10px;color:var(--muted)">das metas</span>'+
+        '<span style="font-family:\'DM Sans\',sans-serif;font-size:28px;font-weight:800;line-height:1;color:'+bt.accent+'">'+(n(realizedYtd)?realizedYtd+'%':'—')+'</span>'+
+        '<span style="font-size:10px;color:var(--muted)">índice de realização</span>'+
       '</div>'+
     '</div>'+
     '<div style="flex:1 1 200px;min-width:160px">'+
-      '<div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:'+(n(pctY)?pctY:0)+'%;background:'+bt.accent+';border-radius:4px"></div></div>'+
-      '<div style="font-size:10px;color:var(--text-mid)"><b>'+(totalY>0?cum+' de '+totalY:'—')+'</b> indicadores dentro da meta no acumulado</div>'+
+      '<div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:'+(n(realizedYtd)?realizedYtd:0)+'%;background:'+bt.accent+';border-radius:4px"></div></div>'+
+      '<div style="font-size:10px;color:var(--text-mid)"><b>'+(n(realizedYtd)?realizedYtd+'%':'—')+'</b> de realização média das metas no acumulado do ano</div>'+
+      '<div style="font-size:8.5px;color:var(--muted);margin-top:2px">'+(totalY>0?cum+' de '+totalY+' indicadores estão efetivamente dentro da meta YTD':'Sem dados')+'</div>'+
     '</div>'+
     '<div style="text-align:center;min-width:70px">'+
       '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">'+ticketsStr+'</div>'+
@@ -2040,9 +2118,9 @@ function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride
       '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">'+trendTxtY+'</div>'+
       '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div>'+
     '</div>'+
-    '<div style="text-align:center;min-width:60px">'+
-      '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:'+bt.accent+'">'+(totalY>0?cum+'/'+totalY:'—')+'</div>'+
-      '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div>'+
+    '<div style="text-align:center;min-width:104px;padding:10px 14px;border-radius:7px;background:'+mt.bg+';border:1px solid '+mt.border+'">'+
+      '<div style="font-family:\'DM Sans\',sans-serif;font-size:23px;font-weight:800;line-height:1;color:'+mt.fg+'">'+(totalY>0?cum+'/'+totalY:'—')+'</div>'+
+      '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:'+mt.fg+';margin-top:5px;font-weight:700">Metas Atingidas</div>'+
     '</div>'+
   '</div>';
   const listHtml = '<div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px">'+
@@ -2802,114 +2880,12 @@ function renderResumo(){
     months.push({i:i,has:hasAnyArea,r:r,tx:tx,sC:sC,sTx:sTx,kpiSt:kpiSt,overall:overallStatus(allSt)});
   }
 
-  // ── ① ACUMULADO DO ANO — ÁREA (hero + lista, mesmo padrão do Resumo Executivo) ──
+  // ── ① ACUMULADO DO ANO — ÁREA (mesmo cálculo/estilo usado nos analistas: índice de realização) ──
   var ytdPanel=document.getElementById('resumo-ytd-panel');
   var ytdTagEl=document.getElementById('resumo-ytd-tag');
+  if(ytdTagEl&&lastIdx>=0)ytdTagEl.textContent=ML[lastIdx]+'/26';
   if(ytdPanel){
-    var filled=months.filter(function(m){return m.has;});
-    if(!filled.length){
-      ytdPanel.innerHTML='<div style="color:var(--muted);padding:24px;grid-column:1/-1;text-align:center">Nenhum dado disponível</div>';
-    } else {
-      if(ytdTagEl&&lastIdx>=0)ytdTagEl.textContent=ML[lastIdx]+'/26';
-      // CSAT + Tx acumulados. Cada indicador é calculado somente com os meses em que possui dado.
-      var ytdCsatSum=0,ytdN=0,ytdSolic=0,ytdResp=0;
-      filled.forEach(function(m){
-        if(m.r&&n(m.r.csat)){ytdCsatSum+=+m.r.csat;ytdN++;}
-        if(m.r&&n(m.r.solic)&&+m.r.solic>0){
-          ytdSolic+=+m.r.solic;
-          ytdResp+=(n(m.r.respostas)?+m.r.respostas:0);
-        }
-      });
-      var avgCsat=ytdN>0?ytdCsatSum/ytdN:null;
-      var txYtd=ytdSolic>0?Math.round(ytdResp/ytdSolic*100):null;
-      var sYtdC=n(avgCsat)?st(avgCsat,90,'max'):'none';
-      var sYtdTx=n(txYtd)?st(txYtd,20,'max'):'none';
-
-      // KPI YTD averages (indices 1+: tma,reab,slaWp,slaEmail)
-      var kpiDefs=aK.slice(1);
-      var ticketsData=aK[0].data;
-      var kpiYtdVals=kpiDefs.map(function(k){
-        var wsum=0,wtot=0,sum2=0,cnt=0;
-        for(var mi=0;mi<=lastIdx;mi++){
-          var v=k.data[mi];if(!n(v))continue;
-          var t=ticketsData[mi];
-          if(n(t)&&+t>0){wsum+=(+v)*(+t);wtot+=(+t);}
-          else{sum2+=+v;cnt++;}
-        }
-        return wtot>0?wsum/wtot:(cnt>0?sum2/cnt:null);
-      });
-      var kpiYtdSt=kpiDefs.map(function(k,i){
-        var v=kpiYtdVals[i];return(n(v)&&k.metaVal!==null)?st(v,k.metaVal,k.dir):'none';
-      });
-
-      var indicsMet=0,indicsTot=0;
-      if(n(avgCsat)){indicsTot++;if(sYtdC==='ok')indicsMet++;}
-      if(n(txYtd)){indicsTot++;if(sYtdTx==='ok')indicsMet++;}
-      kpiDefs.forEach(function(k,i){
-        if(k.metaVal===null)return;
-        var v=kpiYtdVals[i];
-        if(!n(v))return;
-        indicsTot++;
-        if(kpiYtdSt[i]==='ok')indicsMet++;
-      });
-      var kpiPct=indicsTot>0?Math.round(indicsMet/indicsTot*100):null;
-
-      var ticketsYtdSum=0;
-      for(var mi=0;mi<=lastIdx;mi++){var v=aK[0].data[mi];if(n(v))ticketsYtdSum+=+v;}
-
-      var ytdItems=[
-        {l:'CSAT Médio (YTD)', v:n(avgCsat)?Math.round(avgCsat)+'%':'—', s:sYtdC, m:'≥90%'},
-        {l:'Tx. Resposta (YTD)', v:n(txYtd)?txYtd+'%':'—', s:sYtdTx, m:'≥20%'}
-      ];
-      var ytdShortLabels=['TMA (YTD)','Reabertos (YTD)','SLA WP (YTD)','SLA E-mail (YTD)'];
-      var ytdSubLabels=['≤17 min','≤20%','≥60%','≥90%'];
-      kpiDefs.forEach(function(k,i){
-        var v=kpiYtdVals[i];
-        ytdItems.push({l:ytdShortLabels[i], v:n(v)?fmt(Math.round(v),k.unit):'—', s:kpiYtdSt[i], m:ytdSubLabels[i]});
-      });
-
-      var sKpiPct=indicsTot>0?(indicsMet===indicsTot?'ok':indicsMet>0?'warn':'bad'):'none';
-      var lblPerfY={ok:'Excelente Desempenho',warn:'Bom Desempenho',bad:'Atenção',none:'—'};
-      var ticketsPrevIdxY=lastIdx-1;
-      var ticketsPrevY=ticketsPrevIdxY>=0?aK[0].data[ticketsPrevIdxY]:null;
-      var ticketsCurY=lastIdx>=0?aK[0].data[lastIdx]:null;
-      var trendTxtY='—';
-      if(n(ticketsCurY)&&n(ticketsPrevY)){
-        var deltaY=ticketsCurY-ticketsPrevY;
-        trendTxtY=(deltaY>0?'▲ +':deltaY<0?'▼ ':'▶ ')+Math.abs(deltaY);
-      }
-      var bt=bandTheme(kpiPct);
-      var ytdHeroHtml=
-        '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
-          '<div style="display:flex;flex-direction:column;min-width:140px">'+
-            '<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Ano</div>'+
-            '<div style="display:flex;align-items:baseline;gap:6px">'+
-              '<span style="font-family:\'DM Sans\',sans-serif;font-size:28px;font-weight:800;line-height:1;color:'+bt.accent+'">'+(n(kpiPct)?kpiPct+'%':'—')+'</span>'+
-              '<span style="font-size:10px;color:var(--muted)">das metas</span>'+
-            '</div>'+
-          '</div>'+
-          '<div style="flex:1 1 200px;min-width:160px">'+
-            '<div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:'+(n(kpiPct)?kpiPct:0)+'%;background:'+bt.accent+';border-radius:4px"></div></div>'+
-            '<div style="font-size:10px;color:var(--text-mid)"><b>'+(indicsTot>0?indicsMet+' de '+indicsTot:'—')+'</b> indicadores dentro da meta no acumulado</div>'+
-          '</div>'+
-          '<div style="text-align:center;min-width:70px">'+
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">'+ticketsYtdSum.toLocaleString('pt-BR')+'</div>'+
-            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div>'+
-          '</div>'+
-          '<div style="text-align:center;min-width:80px">'+
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">'+trendTxtY+'</div>'+
-            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div>'+
-          '</div>'+
-          '<div style="text-align:center;min-width:60px">'+
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:'+bt.accent+'">'+(indicsTot>0?indicsMet+'/'+indicsTot:'—')+'</div>'+
-            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div>'+
-          '</div>'+
-        '</div>';
-      var ytdListHtml='<div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px">'+
-        ytdItems.map(function(it){return '<div class="kpi-card '+it.s+'"><div class="kpi-label">'+it.l+'</div><div class="kpi-val '+it.s+'">'+it.v+'</div><div class="kpi-sub">'+it.m+'</div></div>';}).join('')+
-      '</div>';
-      ytdPanel.innerHTML=ytdHeroHtml+ytdListHtml;
-    }
+    renderKpiYtdFull('resumo-ytd-panel',{rows:AREA_CSAT_OVERRIDE},AREA_KPIS);
   }
 
   // ── ② TABELA MENSAL COMPACTA (transposta: indicadores=linhas, meses=colunas) ──
@@ -3138,11 +3114,17 @@ function renderResumo(){
     var totalPrev=lastIdx>=1?totalByMonth[lastIdx-1]:null;
     var tsCur=totalStatus(totalCur);
     var tBg=bgOf2[tsCur]||'transparent', tFg=fgOf2[tsCur]||'var(--muted)';
+    // Realizado (acum. ano) = média real de todos os meses com dado até o mês em destaque — não o valor do mês atual repetido.
+    var totalYtdVals=[];
+    for(var _tmi=0;_tmi<=lastIdx;_tmi++){ if(n(totalByMonth[_tmi])) totalYtdVals.push(totalByMonth[_tmi]); }
+    var totalYtd = totalYtdVals.length ? Math.round(totalYtdVals.reduce(function(a,b){return a+b;},0)/totalYtdVals.length) : null;
+    var tsYtd=totalStatus(totalYtd);
+    var tBgYtd=bgOf2[tsYtd]||'transparent', tFgYtd=fgOf2[tsYtd]||'var(--muted)';
     thtml+= totalCur!=null
       ? '<td style="text-align:center;padding:8px 10px;border-left:2px solid var(--border);border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBg+';color:'+tFg+';white-space:nowrap">'+totalCur+'%</span></td>'
       : '<td style="text-align:center;padding:8px 10px;border-left:2px solid var(--border);border-bottom:1px solid #f0ece4;color:var(--muted);font-size:11px">—</td>';
-    thtml+= totalCur!=null
-      ? '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBg+';color:'+tFg+'">'+totalCur+'%</span></td>'
+    thtml+= totalYtd!=null
+      ? '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBgYtd+';color:'+tFgYtd+'">'+totalYtd+'%</span></td>'
       : '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4;color:var(--muted);font-size:11px">—</td>';
     if(totalCur!=null&&totalPrev!=null){
       var td=totalCur-totalPrev;
@@ -3666,7 +3648,13 @@ function renderIndividualEvolution(key){
       }
     });
     tbHtml+=pctMetaCell(pctAlcancado(curKpiV,m.val,m.dir),sCurKpi);
-    tbHtml+=realizadoCell(ytdKpi,sYtdKpi,m.unit);
+    if(k.id==='tma' && n(ytdKpi)){
+      var tmaRealizadoPct = Math.min(100, pctAlcancado(ytdKpi,m.val,m.dir));
+      var tmaRealizadoStatus = tmaRealizadoPct>=100?'ok':tmaRealizadoPct>=80?'warn':'bad';
+      tbHtml+=realizadoCell(tmaRealizadoPct,tmaRealizadoStatus,'%');
+    }else{
+      tbHtml+=realizadoCell(ytdKpi,sYtdKpi,m.unit);
+    }
     tbHtml+=vsCell(curKpiV,prevKpiV,m.unit,m.dir);
     tbHtml+=statusDot(sCurKpi);
     tbHtml+='</tr>';
@@ -3724,9 +3712,14 @@ function renderIndividualEvolution(key){
   var totalPrevAnalyst=prevIdx>=0?totalByMonthAnalyst[prevIdx]:null;
   var totalSAnalyst=totalStatusAnalyst(totalCurAnalyst);
 
-  // % Meta e Realizado seguem o consolidado do mês em destaque, como na visão da Área.
+  // % Meta segue o mês em destaque. Realizado (acum. ano) = média real de todos os meses com dado até o mês em destaque
+  // (soma dos resultados mensais ÷ quantidade de meses) — não o valor do mês atual repetido.
+  var totalYtdValsAnalyst=[];
+  for(var _tmiA=0;_tmiA<=currentIdx;_tmiA++){ if(n(totalByMonthAnalyst[_tmiA])) totalYtdValsAnalyst.push(totalByMonthAnalyst[_tmiA]); }
+  var totalYtdAnalyst = totalYtdValsAnalyst.length ? Math.round(totalYtdValsAnalyst.reduce(function(a,b){return a+b;},0)/totalYtdValsAnalyst.length) : null;
+  var totalYtdSAnalyst = totalStatusAnalyst(totalYtdAnalyst);
   tbHtml+=pctMetaCell(totalCurAnalyst,totalSAnalyst);
-  tbHtml+=realizadoCell(totalCurAnalyst,totalSAnalyst,'%');
+  tbHtml+=realizadoCell(totalYtdAnalyst,totalYtdSAnalyst,'%');
 
   if(totalCurAnalyst!=null&&totalPrevAnalyst!=null){
     var totalDiffAnalyst=totalCurAnalyst-totalPrevAnalyst;
