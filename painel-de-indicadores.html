@@ -487,7 +487,7 @@ td.ec{padding:0;background:var(--yc)}
 
 </head>
 <body>
-<div class="toast" id="toast" style="background: var(--green);"></div>
+<div class="toast show" id="toast" style="background: var(--green);">⏳ Publicando no GitHub...</div>
 <!-- GITHUB CONFIG MODAL -->
 <div class="gh-overlay" id="gh-overlay" onclick="if(event.target===this)closeGhConfig()" style="display: none;">
 <div class="gh-modal">
@@ -651,7 +651,7 @@ td.ec{padding:0;background:var(--yc)}
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">ÍNDICE DE REALIZAÇÃO YTD</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média do % de atingimento YTD dos 6 indicadores. Cada indicador é limitado a 100%, evitando que um resultado muito acima da meta compense outro abaixo dela.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média dos resultados mensais preenchidos no ano. Em cada mês, o resultado é a média do % de atingimento dos 6 indicadores, com cada indicador limitado a 100%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">METAS ATINGIDAS</div>
@@ -747,7 +747,7 @@ td.ec{padding:0;background:var(--yc)}
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">ÍNDICE DE REALIZAÇÃO YTD</div>
-<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média do % de atingimento YTD dos 6 indicadores. Cada indicador é limitado a 100%, evitando que um resultado muito acima da meta compense outro abaixo dela.</div>
+<div style="font-size:11px;color:var(--text-mid);line-height:1.55"><b>O que mostra:</b> nível geral de entrega acumulada no ano.<br><b>Cálculo:</b> média dos resultados mensais preenchidos no ano. Em cada mês, o resultado é a média do % de atingimento dos 6 indicadores, com cada indicador limitado a 100%.</div>
 </div>
 <div style="background:var(--cream);padding:14px 18px">
 <div style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">METAS ATINGIDAS</div>
@@ -1381,7 +1381,7 @@ td.ec{padding:0;background:var(--yc)}
 <div class="cblabel" style="margin-bottom:1px"><span class="dot" style="background:#2c4f3a"></span>CSAT &amp; Taxa de Resposta — Evolução Mensal</div>
 <div class="cbsub">Barras = CSAT % · Linha = Tx. Resposta · linhas tracejadas = metas (90% / 25%)</div>
 </div>
-<div id="rc-csat-ytd-badge" style="font-family: &quot;DM Serif Display&quot;, serif; font-size: 22px; line-height: 1; color: var(--red);">YTD 89%</div>
+<div id="rc-csat-ytd-badge" style="font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: -.01em; line-height: 1; color: var(--red);">YTD 89%</div>
 </div>
 <canvas height="409" id="rc_csat_tx" style="box-sizing: border-box; display: block; height: 327px; width: 1402px;" width="1753"></canvas>
 </div>
@@ -1706,10 +1706,6 @@ function buildUpdatedHTML(){
   refreshAll();
   syncInputAttrs();
   var src=document.documentElement.outerHTML;
-  // O toast ("Publicando no GitHub...") está visível no momento exato desta captura
-  // (saveAndRefresh o ativa antes de chamar esta função). Sem isto, o arquivo salvo/publicado
-  // sempre abriria com o aviso de publicação travado na tela. Normaliza para o estado padrão oculto.
-  src=src.replace(/<div class="toast[^"]*" id="toast"[^>]*>[^<]*<\/div>/,'<div class="toast" id="toast" style="background: var(--green);"></div>');
   ['cA_csat:90','cT_csat:100','cI_csat:100','cG_csat:100'].forEach(function(x){
     var s=x.split(':');src=src.replace(new RegExp('<canvas id="'+s[0]+'"[^>]*>','g'),'<canvas id="'+s[0]+'" height="'+s[1]+'">');
   });
@@ -1947,6 +1943,7 @@ function renderKpiMesAtual(elId, CSAT_DATA, KPIS, tagId) {
     trendTxtM = (deltaM>0?'▲ +':deltaM<0?'▼ ':'▶ ')+Math.abs(deltaM);
   }
   const bt = (elId.indexOf('g-')===0) ? GREEN_THEME : bandTheme(pctM);
+  const mt = metasAtingidasTheme(cum);
   const heroHtml = '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
     '<div style="display:flex;flex-direction:column;min-width:140px">'+
       '<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Mês</div>'+
@@ -1967,9 +1964,9 @@ function renderKpiMesAtual(elId, CSAT_DATA, KPIS, tagId) {
       '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">'+trendTxtM+'</div>'+
       '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div>'+
     '</div>'+
-    '<div style="text-align:center;min-width:60px">'+
-      '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:'+bt.accent+'">'+(totalM>0?cum+'/'+totalM:'—')+'</div>'+
-      '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div>'+
+    '<div class="metas-hit-static" style="text-align:center;min-width:104px;padding:10px 14px;border-radius:7px;background:'+mt.bg+';border:1px solid '+mt.border+'">'+
+      '<div style="font-family:\'DM Sans\',sans-serif;font-size:23px;font-weight:800;line-height:1;color:'+mt.fg+'">'+(totalM>0?cum+'/'+totalM:'—')+'</div>'+ 
+      '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:'+mt.fg+';margin-top:5px;font-weight:700">Metas Atingidas</div>'+ 
     '</div>'+
   '</div>';
   const listHtml = '<div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px">'+
@@ -2015,6 +2012,28 @@ function metasAtingidasTheme(qtd){
   return {fg:'var(--green)',bg:'rgba(61,107,79,.11)',border:'rgba(61,107,79,.28)'};
 }
 
+
+function calcMonthlyRealization(CSAT_DATA, KPIS){
+  const rows = CSAT_DATA && CSAT_DATA.rows ? CSAT_DATA.rows : [];
+  const defs = (KPIS || []).filter(k => k.id !== 'tickets' && n(k.metaVal) && +k.metaVal !== 0);
+  const byMonth = Array(12).fill(null);
+  for(let mi=0; mi<12; mi++){
+    const r = rows[mi];
+    const vals = [];
+    function add(value,target,dir){
+      if(!n(value)||!n(target)||+target===0) return;
+      const p = dir==='min' ? (+target/+value*100) : (+value/+target*100);
+      vals.push(Math.min(100,Math.round(p)));
+    }
+    if(r && n(r.csat)) add(+r.csat,90,'max');
+    if(r && n(r.solic) && +r.solic>0 && n(r.respostas)) add(Math.round(+r.respostas/+r.solic*100),20,'max');
+    defs.forEach(function(k){ if(n(k.data[mi])) add(+k.data[mi],k.metaVal,k.dir); });
+    if(vals.length) byMonth[mi]=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  }
+  const filled = byMonth.filter(v => n(v));
+  return {byMonth, ytd: filled.length ? Math.round(filled.reduce((a,b)=>a+b,0)/filled.length) : null};
+}
+
 function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride) {
   const el = document.getElementById(elId); if (!el) return;
   const csatFilled = CSAT_DATA.rows.filter(r => r && n(r.csat));
@@ -2057,35 +2076,9 @@ function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride
   const totalY = metas.length;
   const pctY = totalY>0 ? Math.round(cum/totalY*100) : null;
 
-  // Índice de realização acumulada YTD.
-  // Mesmo método da linha "% Atingido Total" das tabelas de evolução (Área/analistas):
-  // para cada mês, calcula o % de atingimento de cada indicador (limitado a 100%),
-  // tira a média entre os indicadores daquele mês, e no fim faz a média simples
-  // dessas médias mensais — ou seja, soma dos resultados ÷ quantidade de meses.
-  function pctCappedYtd(value, target, dir){
-    if(!n(value)||!n(target)||+target===0) return null;
-    const p = dir==='min' ? (+target/+value*100) : (+value/+target*100);
-    return Math.min(100, Math.round(p));
-  }
-  const kpiDefsForMonth = KPIS.filter(k => k.id !== 'tickets');
-  const monthlyComposite = [];
-  for (let mi=0; mi<12; mi++){
-    const vals = [];
-    const csatRow = CSAT_DATA.rows[mi];
-    if (csatRow && n(csatRow.csat)) vals.push(pctCappedYtd(+csatRow.csat, 90, 'max'));
-    if (csatRow && n(csatRow.solic) && +csatRow.solic > 0 && n(csatRow.respostas)) {
-      vals.push(pctCappedYtd(Math.round(+csatRow.respostas/+csatRow.solic*100), 20, 'max'));
-    }
-    kpiDefsForMonth.forEach(k => {
-      if (k.metaVal === null) return;
-      if (n(k.data[mi])) vals.push(pctCappedYtd(+k.data[mi], k.metaVal, k.dir));
-    });
-    const filledVals = vals.filter(v => v!=null);
-    if (filledVals.length) monthlyComposite.push(Math.round(filledVals.reduce((a,b)=>a+b,0)/filledVals.length));
-  }
-  const realizedYtd = monthlyComposite.length
-    ? Math.round(monthlyComposite.reduce((a,b)=>a+b,0)/monthlyComposite.length)
-    : null;
+  // Performance do Ano: média simples dos resultados mensais preenchidos.
+  const monthlyRealization = calcMonthlyRealization(CSAT_DATA, KPIS);
+  const realizedYtd = monthlyRealization.ytd;
   let lastTicketIdx = -1;
   for (let i=0;i<12;i++){ if (n(ticketsData[i])) lastTicketIdx = i; }
   const ticketsPrevIdxY = lastTicketIdx-1;
@@ -2816,6 +2809,7 @@ function renderResumo(){
       trendTxtE=(deltaE>0?'▲ +':deltaE<0?'▼ ':'▶ ')+Math.abs(deltaE);
     }
     var bt=bandTheme(pctE);
+    var mt=metasAtingidasTheme(cumE);
     var heroHtml=
       '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
         '<div style="display:flex;flex-direction:column;min-width:140px">'+
@@ -2837,9 +2831,9 @@ function renderResumo(){
           '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">'+trendTxtE+'</div>'+
           '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div>'+
         '</div>'+
-        '<div style="text-align:center;min-width:60px">'+
-          '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:'+bt.accent+'">'+(totalE>0?cumE+'/'+totalE:'—')+'</div>'+
-          '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Metas Atingidas</div>'+
+        '<div class="metas-hit-static" style="text-align:center;min-width:104px;padding:10px 14px;border-radius:7px;background:'+mt.bg+';border:1px solid '+mt.border+'">'+
+          '<div style="font-family:\'DM Sans\',sans-serif;font-size:23px;font-weight:800;line-height:1;color:'+mt.fg+'">'+(totalE>0?cumE+'/'+totalE:'—')+'</div>'+ 
+          '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:'+mt.fg+';margin-top:5px;font-weight:700">Metas Atingidas</div>'+ 
         '</div>'+
       '</div>';
     var listHtml='<div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px">'+
@@ -2880,12 +2874,117 @@ function renderResumo(){
     months.push({i:i,has:hasAnyArea,r:r,tx:tx,sC:sC,sTx:sTx,kpiSt:kpiSt,overall:overallStatus(allSt)});
   }
 
-  // ── ① ACUMULADO DO ANO — ÁREA (mesmo cálculo/estilo usado nos analistas: índice de realização) ──
+  // ── ① ACUMULADO DO ANO — ÁREA (hero + lista, mesmo padrão do Resumo Executivo) ──
   var ytdPanel=document.getElementById('resumo-ytd-panel');
   var ytdTagEl=document.getElementById('resumo-ytd-tag');
-  if(ytdTagEl&&lastIdx>=0)ytdTagEl.textContent=ML[lastIdx]+'/26';
   if(ytdPanel){
-    renderKpiYtdFull('resumo-ytd-panel',{rows:AREA_CSAT_OVERRIDE},AREA_KPIS);
+    var filled=months.filter(function(m){return m.has;});
+    if(!filled.length){
+      ytdPanel.innerHTML='<div style="color:var(--muted);padding:24px;grid-column:1/-1;text-align:center">Nenhum dado disponível</div>';
+    } else {
+      if(ytdTagEl&&lastIdx>=0)ytdTagEl.textContent=ML[lastIdx]+'/26';
+      // CSAT + Tx acumulados. Cada indicador é calculado somente com os meses em que possui dado.
+      var ytdCsatSum=0,ytdN=0,ytdSolic=0,ytdResp=0;
+      filled.forEach(function(m){
+        if(m.r&&n(m.r.csat)){ytdCsatSum+=+m.r.csat;ytdN++;}
+        if(m.r&&n(m.r.solic)&&+m.r.solic>0){
+          ytdSolic+=+m.r.solic;
+          ytdResp+=(n(m.r.respostas)?+m.r.respostas:0);
+        }
+      });
+      var avgCsat=ytdN>0?ytdCsatSum/ytdN:null;
+      var txYtd=ytdSolic>0?Math.round(ytdResp/ytdSolic*100):null;
+      var sYtdC=n(avgCsat)?st(avgCsat,90,'max'):'none';
+      var sYtdTx=n(txYtd)?st(txYtd,20,'max'):'none';
+
+      // KPI YTD averages (indices 1+: tma,reab,slaWp,slaEmail)
+      var kpiDefs=aK.slice(1);
+      var ticketsData=aK[0].data;
+      var kpiYtdVals=kpiDefs.map(function(k){
+        var wsum=0,wtot=0,sum2=0,cnt=0;
+        for(var mi=0;mi<=lastIdx;mi++){
+          var v=k.data[mi];if(!n(v))continue;
+          var t=ticketsData[mi];
+          if(n(t)&&+t>0){wsum+=(+v)*(+t);wtot+=(+t);}
+          else{sum2+=+v;cnt++;}
+        }
+        return wtot>0?wsum/wtot:(cnt>0?sum2/cnt:null);
+      });
+      var kpiYtdSt=kpiDefs.map(function(k,i){
+        var v=kpiYtdVals[i];return(n(v)&&k.metaVal!==null)?st(v,k.metaVal,k.dir):'none';
+      });
+
+      var indicsMet=0,indicsTot=0;
+      if(n(avgCsat)){indicsTot++;if(sYtdC==='ok')indicsMet++;}
+      if(n(txYtd)){indicsTot++;if(sYtdTx==='ok')indicsMet++;}
+      kpiDefs.forEach(function(k,i){
+        if(k.metaVal===null)return;
+        var v=kpiYtdVals[i];
+        if(!n(v))return;
+        indicsTot++;
+        if(kpiYtdSt[i]==='ok')indicsMet++;
+      });
+      var kpiPct=indicsTot>0?Math.round(indicsMet/indicsTot*100):null;
+      var areaMonthlyRealization=calcMonthlyRealization({rows:ar},aK);
+      var areaRealizedYtd=areaMonthlyRealization.ytd;
+
+      var ticketsYtdSum=0;
+      for(var mi=0;mi<=lastIdx;mi++){var v=aK[0].data[mi];if(n(v))ticketsYtdSum+=+v;}
+
+      var ytdItems=[
+        {l:'CSAT Médio (YTD)', v:n(avgCsat)?Math.round(avgCsat)+'%':'—', s:sYtdC, m:'≥90%'},
+        {l:'Tx. Resposta (YTD)', v:n(txYtd)?txYtd+'%':'—', s:sYtdTx, m:'≥20%'}
+      ];
+      var ytdShortLabels=['TMA (YTD)','Reabertos (YTD)','SLA WP (YTD)','SLA E-mail (YTD)'];
+      var ytdSubLabels=['≤17 min','≤20%','≥60%','≥90%'];
+      kpiDefs.forEach(function(k,i){
+        var v=kpiYtdVals[i];
+        ytdItems.push({l:ytdShortLabels[i], v:n(v)?fmt(Math.round(v),k.unit):'—', s:kpiYtdSt[i], m:ytdSubLabels[i]});
+      });
+
+      var sKpiPct=indicsTot>0?(indicsMet===indicsTot?'ok':indicsMet>0?'warn':'bad'):'none';
+      var lblPerfY={ok:'Excelente Desempenho',warn:'Bom Desempenho',bad:'Atenção',none:'—'};
+      var ticketsPrevIdxY=lastIdx-1;
+      var ticketsPrevY=ticketsPrevIdxY>=0?aK[0].data[ticketsPrevIdxY]:null;
+      var ticketsCurY=lastIdx>=0?aK[0].data[lastIdx]:null;
+      var trendTxtY='—';
+      if(n(ticketsCurY)&&n(ticketsPrevY)){
+        var deltaY=ticketsCurY-ticketsPrevY;
+        trendTxtY=(deltaY>0?'▲ +':deltaY<0?'▼ ':'▶ ')+Math.abs(deltaY);
+      }
+      var bt=bandTheme(areaRealizedYtd);
+      var mt=metasAtingidasTheme(indicsMet);
+      var ytdHeroHtml=
+        '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
+          '<div style="display:flex;flex-direction:column;min-width:140px">'+
+            '<div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Performance do Ano</div>'+
+            '<div style="display:flex;align-items:baseline;gap:6px">'+
+              '<span style="font-family:\'DM Sans\',sans-serif;font-size:28px;font-weight:800;line-height:1;color:'+bt.accent+'">'+(n(areaRealizedYtd)?areaRealizedYtd+'%':'—')+'</span>'+
+              '<span style="font-size:10px;color:var(--muted)">índice de realização</span>'+
+            '</div>'+
+          '</div>'+
+          '<div style="flex:1 1 200px;min-width:160px">'+
+            '<div style="height:7px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin-bottom:7px"><div style="height:100%;width:'+(n(areaRealizedYtd)?areaRealizedYtd:0)+'%;background:'+bt.accent+';border-radius:4px"></div></div>'+
+            '<div style="font-size:10px;color:var(--text-mid)"><b>'+(n(areaRealizedYtd)?areaRealizedYtd+'%':'—')+'</b> de realização média das metas no acumulado do ano</div><div style="font-size:8.5px;color:var(--muted);margin-top:2px">'+(indicsTot>0?indicsMet+' de '+indicsTot+' indicadores estão efetivamente dentro da meta YTD':'Sem dados')+'</div>'+
+          '</div>'+
+          '<div style="text-align:center;min-width:70px">'+
+            '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)">'+ticketsYtdSum.toLocaleString('pt-BR')+'</div>'+
+            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">Total de Tickets</div>'+
+          '</div>'+
+          '<div style="text-align:center;min-width:80px">'+
+            '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:700;line-height:1;color:var(--text)">'+trendTxtY+'</div>'+
+            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:3px">vs. Mês Anterior</div>'+
+          '</div>'+
+          '<div style="text-align:center;min-width:104px;padding:10px 14px;border-radius:7px;background:'+mt.bg+';border:1px solid '+mt.border+'">'+
+            '<div style="font-family:\'DM Sans\',sans-serif;font-size:23px;font-weight:800;line-height:1;color:'+mt.fg+'">'+(indicsTot>0?indicsMet+'/'+indicsTot:'—')+'</div>'+
+            '<div style="font-size:7.5px;letter-spacing:.07em;text-transform:uppercase;color:'+mt.fg+';margin-top:5px;font-weight:700">Metas Atingidas</div>'+
+          '</div>'+
+        '</div>';
+      var ytdListHtml='<div style="padding:14px 16px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px">'+
+        ytdItems.map(function(it){return '<div class="kpi-card '+it.s+'"><div class="kpi-label">'+it.l+'</div><div class="kpi-val '+it.s+'">'+it.v+'</div><div class="kpi-sub">'+it.m+'</div></div>';}).join('')+
+      '</div>';
+      ytdPanel.innerHTML=ytdHeroHtml+ytdListHtml;
+    }
   }
 
   // ── ② TABELA MENSAL COMPACTA (transposta: indicadores=linhas, meses=colunas) ──
@@ -3112,19 +3211,17 @@ function renderResumo(){
     });
     var totalCur=lastIdx>=0?totalByMonth[lastIdx]:null;
     var totalPrev=lastIdx>=1?totalByMonth[lastIdx-1]:null;
+    var totalFilledArea=shownMonths.map(function(mi){return totalByMonth[mi];}).filter(function(v){return v!=null;});
+    var totalYtdArea=totalFilledArea.length?Math.round(totalFilledArea.reduce(function(a,b){return a+b;},0)/totalFilledArea.length):null;
     var tsCur=totalStatus(totalCur);
+    var tsYtd=totalStatus(totalYtdArea);
     var tBg=bgOf2[tsCur]||'transparent', tFg=fgOf2[tsCur]||'var(--muted)';
-    // Realizado (acum. ano) = média real de todos os meses com dado até o mês em destaque — não o valor do mês atual repetido.
-    var totalYtdVals=[];
-    for(var _tmi=0;_tmi<=lastIdx;_tmi++){ if(n(totalByMonth[_tmi])) totalYtdVals.push(totalByMonth[_tmi]); }
-    var totalYtd = totalYtdVals.length ? Math.round(totalYtdVals.reduce(function(a,b){return a+b;},0)/totalYtdVals.length) : null;
-    var tsYtd=totalStatus(totalYtd);
     var tBgYtd=bgOf2[tsYtd]||'transparent', tFgYtd=fgOf2[tsYtd]||'var(--muted)';
     thtml+= totalCur!=null
       ? '<td style="text-align:center;padding:8px 10px;border-left:2px solid var(--border);border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBg+';color:'+tFg+';white-space:nowrap">'+totalCur+'%</span></td>'
       : '<td style="text-align:center;padding:8px 10px;border-left:2px solid var(--border);border-bottom:1px solid #f0ece4;color:var(--muted);font-size:11px">—</td>';
-    thtml+= totalYtd!=null
-      ? '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBgYtd+';color:'+tFgYtd+'">'+totalYtd+'%</span></td>'
+    thtml+= totalYtdArea!=null
+      ? '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4"><span style="display:inline-block;padding:3px 5px;border-radius:5px;font-size:9px;font-weight:700;background:'+tBgYtd+';color:'+tFgYtd+'">'+totalYtdArea+'%</span></td>'
       : '<td style="text-align:center;padding:8px 10px;border-bottom:1px solid #f0ece4;color:var(--muted);font-size:11px">—</td>';
     if(totalCur!=null&&totalPrev!=null){
       var td=totalCur-totalPrev;
@@ -3712,14 +3809,12 @@ function renderIndividualEvolution(key){
   var totalPrevAnalyst=prevIdx>=0?totalByMonthAnalyst[prevIdx]:null;
   var totalSAnalyst=totalStatusAnalyst(totalCurAnalyst);
 
-  // % Meta segue o mês em destaque. Realizado (acum. ano) = média real de todos os meses com dado até o mês em destaque
-  // (soma dos resultados mensais ÷ quantidade de meses) — não o valor do mês atual repetido.
-  var totalYtdValsAnalyst=[];
-  for(var _tmiA=0;_tmiA<=currentIdx;_tmiA++){ if(n(totalByMonthAnalyst[_tmiA])) totalYtdValsAnalyst.push(totalByMonthAnalyst[_tmiA]); }
-  var totalYtdAnalyst = totalYtdValsAnalyst.length ? Math.round(totalYtdValsAnalyst.reduce(function(a,b){return a+b;},0)/totalYtdValsAnalyst.length) : null;
-  var totalYtdSAnalyst = totalStatusAnalyst(totalYtdAnalyst);
+  // % Meta mostra o mês em destaque. Realizado acumulado mostra a média dos resultados mensais preenchidos.
+  var totalFilledAnalyst=months.map(function(mi){return totalByMonthAnalyst[mi];}).filter(function(v){return v!=null;});
+  var totalYtdAnalyst=totalFilledAnalyst.length?Math.round(totalFilledAnalyst.reduce(function(a,b){return a+b;},0)/totalFilledAnalyst.length):null;
+  var totalYtdStatusAnalyst=totalStatusAnalyst(totalYtdAnalyst);
   tbHtml+=pctMetaCell(totalCurAnalyst,totalSAnalyst);
-  tbHtml+=realizadoCell(totalYtdAnalyst,totalYtdSAnalyst,'%');
+  tbHtml+=realizadoCell(totalYtdAnalyst,totalYtdStatusAnalyst,'%');
 
   if(totalCurAnalyst!=null&&totalPrevAnalyst!=null){
     var totalDiffAnalyst=totalCurAnalyst-totalPrevAnalyst;
