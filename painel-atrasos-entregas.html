@@ -685,22 +685,22 @@
           <div class="chart-wrap"><canvas id="chartMes"></canvas></div>
         </div>
         <div class="panel h-equal">
-          <h3>Evolução mensal — Entregue com Atraso vs. Atrasado sem entrega</h3>
-          <div class="desc">Mesma classificação do gráfico ao lado, por mês da Previsão Entrega Cliente Original · clique numa barra para ver a evolução semanal</div>
+          <h3>Evolução semanal · Entregue com Atraso vs. Atrasado sem entrega</h3>
+          <div class="desc">Últimas 7 semanas pela Previsão Entrega Cliente Original, com a mesma classificação do gráfico ao lado</div>
           <div class="chart-wrap"><canvas id="chartSemanal"></canvas></div>
         </div>
       </div>
 
       <div class="grid-2">
         <div class="panel h-equal">
-          <h3>% de atraso por transportadora</h3>
-          <div class="desc">Ranking das transportadoras com maior taxa de atraso</div>
-          <div id="rankTransp" class="rank-list"></div>
-        </div>
-        <div class="panel h-equal">
           <h3>Distribuição por dias de atraso</h3>
           <div class="desc">Quantidade de casos atrasados agrupados por faixa de dias de atraso</div>
           <div class="chart-wrap"><canvas id="chartDiasAtraso"></canvas></div>
+        </div>
+        <div class="panel h-equal">
+          <h3>% de atraso por transportadora</h3>
+          <div class="desc">Ranking das transportadoras com maior taxa de atraso</div>
+          <div id="rankTransp" class="rank-list"></div>
         </div>
       </div>
 
@@ -1482,27 +1482,28 @@ function renderChartMes(){
 function renderChartSemanal(){
   const dataReferencia = dayFloor(REF_DATE || new Date());
 
-  // mesma base do drill-down: só remessas cuja previsão já venceu (exclui "futuras")
-  const rows = FILTERED.filter(r => r.prevCliente && dayFloor(r.prevCliente) <= dataReferencia);
+  // Base válida: apenas remessas com previsão até a data de referência.
+  const rows = FILTERED.filter(r =>
+    r.prevCliente && dayFloor(r.prevCliente) <= dataReferencia
+  );
 
-  const meses = [...new Set(rows.map(r => monthKey(r.prevCliente)))].sort();
+  // Exibe as 7 semanas mais recentes disponíveis no período analisado.
+  // A semana é definida de segunda a domingo pela função weekKey().
+  const todasSemanas = [...new Set(rows.map(r => weekKey(r.prevCliente)))].sort();
+  const semanas = todasSemanas.slice(-7);
 
-  // Usa exatamente a mesma classificação do gráfico "Atrasos por mês".
-  // Assim, "Entregue com Atraso" = statusCalc 'atrasado' e
-  // "Atrasado sem entrega" = statusCalc 'aberto'.
-  // Casos classificados como "Atraso no atendimento" permanecem separados
-  // no primeiro gráfico e não são somados novamente aqui.
-  const atrasado = meses.map(mk => rows.filter(r =>
-    monthKey(r.prevCliente) === mk && r.statusCalc === 'atrasado'
+  const atrasado = semanas.map(wk => rows.filter(r =>
+    weekKey(r.prevCliente) === wk && r.statusCalc === 'atrasado'
   ).length);
 
-  const abertoVencido = meses.map(mk => rows.filter(r =>
-    monthKey(r.prevCliente) === mk && r.statusCalc === 'aberto'
+  const abertoVencido = semanas.map(wk => rows.filter(r =>
+    weekKey(r.prevCliente) === wk && r.statusCalc === 'aberto'
   ).length);
 
   if (charts.semanal) charts.semanal.destroy();
   const ctx = document.getElementById('chartSemanal').getContext('2d');
-  const maxTotal = Math.max(...meses.map((m,i) => atrasado[i]+abertoVencido[i]), 1);
+  const maxTotal = Math.max(...semanas.map((w,i) => atrasado[i] + abertoVencido[i]), 1);
+
   const totalLabelSemanalPlugin = {
     id: 'totalLabelSemanal',
     afterDatasetsDraw(chart){
@@ -1512,7 +1513,7 @@ function renderChartSemanal(){
       c.fillStyle = '#526534';
       c.textAlign = 'center';
       const series = [atrasado, abertoVencido];
-      meses.forEach((m,i) => {
+      semanas.forEach((w,i) => {
         const total = series.reduce((sum, arr, di) => chart.isDatasetVisible(di) ? sum + arr[i] : sum, 0);
         const meta = chart.getDatasetMeta(0);
         const bar = meta.data[i];
@@ -1524,10 +1525,11 @@ function renderChartSemanal(){
       c.restore();
     }
   };
+
   charts.semanal = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: meses.map(monthLabel),
+      labels: semanas.map(weekLabel),
       datasets: [
         { label: 'Entregue com Atraso', data: atrasado, backgroundColor: '#DFC58A', borderRadius: 4 },
         { label: 'Atrasado sem entrega', data: abertoVencido, backgroundColor: '#6A6D62', borderRadius: 4 },
@@ -1535,24 +1537,29 @@ function renderChartSemanal(){
     },
     plugins: [totalLabelSemanalPlugin],
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       layout: { padding: { top: 40 } },
-      onClick: (evt, elements, chart) => {
-        const points = chart.getElementsAtEventForMode(evt, 'x', { intersect: false }, true);
-        if (!points.length) return;
-        const idx = points[0].index;
-        const mk = meses[idx];
-        if (mk) openSemanalDrilldown(mk);
-      },
-      onHover: (evt, elements, chart) => {
-        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
-      },
       scales: {
-        x: { stacked: true, grid: { display:false } },
-        y: { stacked: true, grid: { color:'#EEE8DC' }, suggestedMax: maxTotal * 1.15 }
+        x: {
+          stacked: true,
+          grid: { display:false },
+          ticks: { font: { family:'DM Sans', size:10.5 } }
+        },
+        y: {
+          stacked: true,
+          grid: { color:'#EEE8DC' },
+          ticks: { precision: 0 },
+          suggestedMax: maxTotal * 1.15
+        }
       },
       plugins: {
         legend: { position:'bottom', labels:{ font:{ family:'DM Sans', size:11 }, boxWidth:12 } },
+        tooltip: {
+          callbacks: {
+            title: (items) => items.length ? 'Semana ' + items[0].label : ''
+          }
+        },
         datalabels: {
           color: '#fff',
           font: { family:'DM Sans', size:10.5, weight:'bold' },
