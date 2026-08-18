@@ -686,7 +686,7 @@
         </div>
         <div class="panel h-equal">
           <h3>Evolução mensal — Entregue com Atraso vs. Atrasado sem entrega</h3>
-          <div class="desc">Por mês da Previsão Entrega Cliente Original, considerando apenas remessas já vencidas · clique numa barra para ver a evolução semanal</div>
+          <div class="desc">Mesma classificação do gráfico ao lado, por mês da Previsão Entrega Cliente Original · clique numa barra para ver a evolução semanal</div>
           <div class="chart-wrap"><canvas id="chartSemanal"></canvas></div>
         </div>
       </div>
@@ -1487,15 +1487,18 @@ function renderChartSemanal(){
 
   const meses = [...new Set(rows.map(r => monthKey(r.prevCliente)))].sort();
 
-  const atrasado = meses.map(mk => rows.filter(r => {
-    if (monthKey(r.prevCliente) !== mk) return false;
-    return r.entrega && dayFloor(r.entrega) > dayFloor(r.prevCliente);
-  }).length);
+  // Usa exatamente a mesma classificação do gráfico "Atrasos por mês".
+  // Assim, "Entregue com Atraso" = statusCalc 'atrasado' e
+  // "Atrasado sem entrega" = statusCalc 'aberto'.
+  // Casos classificados como "Atraso no atendimento" permanecem separados
+  // no primeiro gráfico e não são somados novamente aqui.
+  const atrasado = meses.map(mk => rows.filter(r =>
+    monthKey(r.prevCliente) === mk && r.statusCalc === 'atrasado'
+  ).length);
 
-  const abertoVencido = meses.map(mk => rows.filter(r => {
-    if (monthKey(r.prevCliente) !== mk) return false;
-    return !r.entrega && dayFloor(r.prevCliente) < dataReferencia;
-  }).length);
+  const abertoVencido = meses.map(mk => rows.filter(r =>
+    monthKey(r.prevCliente) === mk && r.statusCalc === 'aberto'
+  ).length);
 
   if (charts.semanal) charts.semanal.destroy();
   const ctx = document.getElementById('chartSemanal').getContext('2d');
@@ -1590,11 +1593,8 @@ function openSemanalDrilldown(mk){
     let late = 0, overdue = 0;
 
     weekRows.forEach(r => {
-      if (r.entrega){
-        if (dayFloor(r.entrega) > dayFloor(r.prevCliente)) late++;
-      } else {
-        if (dayFloor(r.prevCliente) < dataReferencia) overdue++;
-      }
+      if (r.statusCalc === 'atrasado') late++;
+      else if (r.statusCalc === 'aberto') overdue++;
     });
 
     atrasado.push(late);
