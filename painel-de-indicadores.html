@@ -1522,7 +1522,8 @@ function bandTheme(pct){
     accent:{ok:'var(--green)', warn:'var(--amber)', bad:'var(--red)'}[s]
   };
 }
-// Painel do Gabriel: faixa sempre no tom de verde, independente do %.
+// GREEN_THEME não é mais usado para forçar a faixa do painel do Gabriel (bug corrigido).
+// Mantido apenas caso alguma outra parte do código ainda dependa dele.
 var GREEN_THEME={bg:'var(--gbg)',accent:'var(--green)'};
 function latestFilled(arr){for(let i=arr.length-1;i>=0;i--)if(n(arr[i]))return{val:+arr[i],idx:i};return null;}
 
@@ -1975,7 +1976,7 @@ function renderKpiMesAtual(elId, CSAT_DATA, KPIS, tagId) {
     const deltaM = ticketsVal - ticketsPrevVal;
     trendTxtM = (deltaM>0?'▲ +':deltaM<0?'▼ ':'▶ ')+Math.abs(deltaM);
   }
-  const bt = (elId.indexOf('g-')===0) ? GREEN_THEME : bandTheme(pctM);
+  const bt = bandTheme(pctM);
   const mt = metasAtingidasTheme(cum);
   const heroHtml = '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
     '<div style="display:flex;flex-direction:column;min-width:140px">'+
@@ -2121,7 +2122,7 @@ function renderKpiYtdFull(elId, CSAT_DATA, KPIS, tmaYtdOverride, csatYtdOverride
     const deltaY = ticketsData[lastTicketIdx] - ticketsPrevValY;
     trendTxtY = (deltaY>0?'▲ +':deltaY<0?'▼ ':'▶ ')+Math.abs(deltaY);
   }
-  const bt = (elId.indexOf('g-')===0) ? GREEN_THEME : bandTheme(realizedYtd);
+  const bt = bandTheme(realizedYtd);
   const mt = metasAtingidasTheme(cum);
   const heroHtml = '<div style="background:'+bt.bg+';display:flex;align-items:center;flex-wrap:wrap;padding:13px 26px;gap:26px;color:var(--text)">'+
     '<div style="display:flex;flex-direction:column;min-width:140px">'+
