@@ -413,6 +413,7 @@
               <th class="sortable" data-key="motivoDetalhado">Motivo Detalhado</th>
               <th class="sortable" data-key="areaInformada">Área Responsável</th>
               <th class="sortable" data-key="tipoInformado">Tipo</th>
+              <th class="sortable" data-key="statusTicket">Status do Ticket</th>
               <th class="sortable" data-key="correcao">Correção</th>
               <th class="sortable" data-key="status">Situação</th>
             </tr>
@@ -712,6 +713,7 @@
       const motivoDetalhado = norm(r[tMap.motivoDetalhado]);
       const areaInformada = norm(r[tMap.area]);
       const tipoInformado = norm(r[tMap.tipo]);
+      const statusTicket = tMap.status!==undefined ? norm(r[tMap.status]) : '';
       const key = normKey(motivoPrincipal)+'|'+normKey(motivoDetalhado);
       const combos = TREE_MAP.get(key);
 
@@ -754,6 +756,7 @@
         motivoDetalhado: motivoDetalhado || '—',
         areaInformada: areaInformada || '—',
         tipoInformado: tipoInformado || '—',
+        statusTicket: statusTicket || '—',
         expectedAreas, expectedTipos, expectedCombos,
         status
       });
@@ -809,7 +812,7 @@
       if(dateFromTs!==null && (t.dateTs===null || t.dateTs < dateFromTs)) return false;
       if(dateToTs!==null && (t.dateTs===null || t.dateTs > dateToTs)) return false;
       if(search){
-        const hay = normKey([t.id,t.analista,t.motivoPrincipal,t.motivoDetalhado,t.areaInformada,t.tipoInformado].join(' '));
+        const hay = normKey([t.id,t.analista,t.motivoPrincipal,t.motivoDetalhado,t.areaInformada,t.tipoInformado,t.statusTicket].join(' '));
         if(hay.indexOf(search)===-1) return false;
       }
       return true;
@@ -846,6 +849,7 @@
       case 'data': return t.dateTs===null? -Infinity : t.dateTs;
       case 'correcao': return normKey(correctionText(t));
       case 'status': return normKey(ERROR_LABELS[t.status]||'');
+      case 'statusTicket': return normKey(t.statusTicket);
       default: return normKey(t[key]);
     }
   }
@@ -921,6 +925,7 @@
           '<td>'+t.motivoDetalhado+'</td>'+
           '<td class="'+(areaWrong?'informed wrong':'')+'">'+t.areaInformada+'</td>'+
           '<td class="'+(tipoWrong?'informed wrong':'')+'">'+t.tipoInformado+'</td>'+
+          '<td class="nowrap">'+t.statusTicket+'</td>'+
           '<td class="expected">'+correctionText(t)+'</td>'+
           '<td>'+statusBadge(t)+'</td>'+
         '</tr>';
@@ -941,10 +946,10 @@
 
   function exportCsv(){
     const filtered = getFiltered();
-    const headers = ['ID','Data','Canal','Analista','Motivo Principal','Motivo Detalhado','Área Responsável','Tipo','Correção','Situação'];
+    const headers = ['ID','Data','Canal','Analista','Motivo Principal','Motivo Detalhado','Área Responsável','Tipo','Status do Ticket','Correção','Situação'];
     const rows = filtered.map(t=>[
       t.id, t.data, t.canal, t.analista, t.motivoPrincipal, t.motivoDetalhado,
-      t.areaInformada, t.tipoInformado, correctionText(t),
+      t.areaInformada, t.tipoInformado, t.statusTicket, correctionText(t),
       ERROR_LABELS[t.status]
     ]);
     const csv = [headers, ...rows].map(r=>
