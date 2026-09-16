@@ -378,6 +378,10 @@
         <select id="fAnalista"><option value="">Todos</option></select>
       </div>
       <div class="field">
+        <label>Status do Ticket</label>
+        <select id="fStatusTicket"><option value="">Todos</option></select>
+      </div>
+      <div class="field">
         <label>Buscar ID / palavra-chave</label>
         <input type="text" class="search-input" id="fSearch" placeholder="ex.: 136402, Devolução...">
       </div>
@@ -777,6 +781,8 @@
   function populateFilterOptions(){
     const analistas = uniqueSorted(ALL.map(t=>t.analista));
     fillSelect('fAnalista', analistas);
+    const statusTickets = uniqueSorted(ALL.map(t=>t.statusTicket));
+    fillSelect('fStatusTicket', statusTickets);
   }
   function fillSelect(id, values){
     const sel = document.getElementById(id);
@@ -789,6 +795,7 @@
 
   function getFiltered(){
     const analista = document.getElementById('fAnalista').value;
+    const statusTicket = document.getElementById('fStatusTicket').value;
     const search = normKey(document.getElementById('fSearch').value);
     const dateFromStr = document.getElementById('fDateFrom').value;
     const dateToStr = document.getElementById('fDateTo').value;
@@ -809,6 +816,7 @@
     }
     return base.filter(t=>{
       if(analista && t.analista!==analista) return false;
+      if(statusTicket && t.statusTicket!==statusTicket) return false;
       if(dateFromTs!==null && (t.dateTs===null || t.dateTs < dateFromTs)) return false;
       if(dateToTs!==null && (t.dateTs===null || t.dateTs > dateToTs)) return false;
       if(search){
@@ -983,7 +991,7 @@
   }
 
   function bindFilterEvents(){
-    ['fAnalista','fDateFrom','fDateTo'].forEach(id=>{
+    ['fAnalista','fStatusTicket','fDateFrom','fDateTo'].forEach(id=>{
       document.getElementById(id).addEventListener('change', ()=>{ currentPage=1; renderTable(); });
     });
     document.getElementById('fSearch').addEventListener('input', ()=>{ currentPage=1; renderTable(); });
@@ -991,7 +999,7 @@
       document.getElementById(id).addEventListener('change', ()=>{ currentPage=1; renderTable(); });
     });
     document.getElementById('btnClear').addEventListener('click', ()=>{
-      ['fAnalista','fDateFrom','fDateTo'].forEach(id=> document.getElementById(id).value='');
+      ['fAnalista','fStatusTicket','fDateFrom','fDateTo'].forEach(id=> document.getElementById(id).value='');
       document.getElementById('fSearch').value='';
       document.getElementById('fPendentes').checked = true;
       document.getElementById('fIncorretos').checked = true;
