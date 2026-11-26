@@ -118,7 +118,11 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
       <div class="leg"><span><i style="background:var(--verde2)"></i>Devolução</span><span><i style="background:var(--ouro)"></i>Troca</span></div>
       <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Valor devolvido por mês, troca e devolução"></svg></div>
     </div>
-    <div class="card"><h2 id="tMot">Motivos</h2><div class="scroll"><table id="tbMot"></table></div></div>
+    <div class="grid2">
+      <div class="card" style="margin:0"><h2 id="tMot">Motivos</h2><div class="scroll"><table id="tbMot"></table></div></div>
+      <div class="card" style="margin:0"><h2 id="tMotDev">Motivos das devoluções</h2><p class="note" style="margin:-6px 0 8px">Só o que é Devolução (tipo atualizado).</p><div class="scroll"><table id="tbMotDev"></table></div></div>
+    </div>
+    <div style="height:20px"></div>
     <div class="grid2">
       <div class="card"><h2>Mais devolvidos por arrependimento</h2><div class="scroll"><table id="tbArr"></table></div></div>
       <div class="card"><h2>Mais devolvidos por defeito ou avaria</h2><div class="scroll"><table id="tbDef"></table></div></div>
@@ -714,6 +718,12 @@ function renderInd(ano, mes){
   chartData = { meses:a.meses, sel:mes }; draw();
   $('tMot').textContent = 'Motivos · ' + per;
   const tm = a.motivos.reduce((s,o) => s+o.tot, 0);
+  // motivos só das devoluções (equivale à dinâmica Motivo Atualizado x Tipo Atualizado = Devolução)
+  const md = a.motivos.filter(o => o.dev > 0).sort((x, y) => y.dev - x.dev), td = md.reduce((s, o) => s + o.dev, 0);
+  $('tMotDev').textContent = 'Motivos das devoluções · ' + per;
+  $('tbMotDev').innerHTML = md.length ? '<tr><th>Motivo</th><th class="n">Valor</th><th class="n">%</th></tr>' +
+    md.map(o => '<tr><td>'+esc(o.m)+'<div class="bar" style="width:'+(td?o.dev/td*100:0)+'%;background:var(--verde2)"></div></td><td class="n">'+brl0(o.dev)+'</td><td class="n">'+Math.round(td?o.dev/td*100:0)+'%</td></tr>').join('') +
+    '<tr><th>Total</th><th class="n">'+brl0(td)+'</th><th class="n">100%</th></tr>' : '<tr><td class="empty">Nenhuma devolução no período.</td></tr>';
   $('tbMot').innerHTML = '<tr><th>Motivo</th><th class="n">Devolução</th><th class="n">Troca</th><th class="n">Total</th><th class="n">%</th></tr>' +
     a.motivos.map(o => '<tr><td>'+esc(o.m)+'<div class="bar" style="width:'+(tm?o.tot/tm*100:0)+'%"></div></td><td class="n">'+brl0(o.dev)+'</td><td class="n">'+brl0(o.troca)+'</td><td class="n">'+brl0(o.tot)+'</td><td class="n">'+pct(tm?o.tot/tm:0)+'</td></tr>').join('') +
     '<tr><th>Total</th><th class="n">'+brl0(k.dev)+'</th><th class="n">'+brl0(k.troca)+'</th><th class="n">'+brl0(k.tot)+'</th><th class="n">100%</th></tr>';
@@ -948,6 +958,8 @@ $('btXls').addEventListener('click', async () => {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.meses.map(m => ({ 'Mês':MES[m.m-1], 'Troca':m.troca, 'Devolução':m.dev, 'Total':m.troca+m.dev, 'Pedidos':m.pedidos }))), 'Resumo mensal '+ano);
   const per = !mes.length ? 'ano' : mes.length === 1 ? MES[mes[0]-1] : mes.length + ' meses';
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.motivos.map(o => ({ 'Motivo':o.m, 'Devolução':o.dev, 'Troca':o.troca, 'Total':o.tot }))), 'Motivos '+per);
+  const tdv = a.motivos.reduce((s, o) => s + o.dev, 0);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.motivos.filter(o => o.dev > 0).sort((x, y) => y.dev - x.dev).map(o => ({ 'Motivo Atualizado':o.m, 'Valor':o.dev, '%':tdv ? o.dev/tdv : 0 }))), 'Motivos devolução '+per);
   const tp = arr => arr.map(o => ({ 'Produto':o.n, 'Quantidade':o.q, 'Total Devolvido':o.v, '% do Total':o.pct, '% Acumulado':o.acum }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.arrep)), 'Arrependimento '+per);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.defeito)), 'Defeito-Avaria '+per);
