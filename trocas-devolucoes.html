@@ -55,6 +55,7 @@ td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:top}
 td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .bar{height:6px;border-radius:3px;background:var(--ouro);margin-top:4px}
 .nw{white-space:nowrap}
+.ord{min-height:0;border:0;background:none;padding:0;color:inherit;font:inherit;font-weight:600;cursor:pointer;text-decoration:underline dotted}
 .chip{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--soft);font-size:13px;margin:0 6px 6px 0}
 .tag{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--soft);white-space:nowrap}
 .tag.a{background:light-dark(#f6e4dc,#3a241c);color:var(--alerta)}
@@ -201,6 +202,11 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
           <select id="cTipo"><option>Troca</option><option>Devolução</option><option>Cancelado</option></select>
           <button id="cAdd">Incluir</button>
         </div>
+        <details style="margin-bottom:10px"><summary class="note" style="cursor:pointer">Colar várias correções de uma vez</summary>
+          <p class="note">Cole a tabela (pode ser do Excel). Cada linha precisa ter o pedido (ex.: 1625130658364-01) e, no fim, a correção: Troca, Devolução ou Cancelado.</p>
+          <textarea id="cCola" rows="5"></textarea>
+          <div class="row" style="margin-top:8px"><button id="cColaOk">Incluir correções</button><span class="note" id="cColaInfo"></span></div>
+        </details>
         <table id="tbCorr"></table>
       </div>
       <div class="card">
@@ -568,7 +574,7 @@ let rows = [], db = null, uid = null, saved = {}, nBase = 100;
 
 /* ---------- armazenamento (db privado por pessoa) ---------- */
 function chunks(){
-  const out = { meta: { excl:S.excl, corr:S.corr, lanc:S.lanc, canc:S.canc||[], vtex:S.vtex||{}, upd:S.upd } };
+  const out = { meta: { corrIni:!!S.corrIni, excl:S.excl, corr:S.corr, lanc:S.lanc, canc:S.canc||[], vtex:S.vtex||{}, upd:S.upd } };
   const put = (pre, arr, dkey) => arr.forEach(r => { const k = pre + (r[dkey]||'0000-00').slice(0,7); (out[k] ||= { rows:[] }).rows.push(r); });
   put('p-', S.prod, 'd'); put('r-', S.rev, 'd'); put('e-', S.est, 'd');
   Object.entries(S.bi || {}).forEach(([m, txt]) => { out['b-' + m] = { s: txt }; });
@@ -615,7 +621,7 @@ async function load(){
     clearTimeout(timer); $('aviso').innerHTML = '';
     const P=[],R=[],E=[];
     snap.docs.forEach(d => { const v = d.data(); saved[d.id] = JSON.stringify(v);
-      if (d.id === 'meta') { Object.assign(S, { excl:v.excl||S.excl, corr:v.corr||[], lanc:v.lanc||[], canc:v.canc||[], vtex:v.vtex||{}, upd:v.upd||'' }); }
+      if (d.id === 'meta') { Object.assign(S, { corrIni:!!v.corrIni, excl:v.excl||S.excl, corr:v.corr||[], lanc:v.lanc||[], canc:v.canc||[], vtex:v.vtex||{}, upd:v.upd||'' }); }
       else if (d.id.startsWith('p-')) P.push(...(v.rows||[])); else if (d.id.startsWith('r-')) R.push(...(v.rows||[])); else if (d.id.startsWith('e-')) E.push(...(v.rows||[])); else if (d.id.startsWith('b-')) (S.bi ||= {})[d.id.slice(2)] = v.s || ''; });
     S.prod = P.sort((a,b) => a.d.localeCompare(b.d) || a.p.localeCompare(b.p)); S.rev = R; S.est = E;
     if (!snap.size && loadLocal()) { setSalvo(true, 'Levando a base deste navegador para a sua conta…'); await save(); return; }
@@ -721,12 +727,12 @@ function renderPend(ano){
     : ordP === 'dias' ? (a.drv || '9999').localeCompare(b.drv || '9999') || a.d.localeCompare(b.d)
     : (a.an || '').localeCompare(b.an || '') || a.d.localeCompare(b.d));
   if ($('vOrd').value === 'ant') V.sort((a, b) => a.d.localeCompare(b.d)); else V.sort((a, b) => b.d.localeCompare(a.d));
-  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th>Data</th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
+  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th><button class="ord" data-ord="p" title="Ordenar por data">Data '+(ordP==='rec'?'▼':ordP==='ant'?'▲':'↕')+'</button></th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
     list.map(p => { const dias = p.drv ? Math.floor((hoje - new Date(p.drv+'T12:00')) / 864e5) : '';
       return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td></tr>'; }).join('') + '</tbody>'
     : '<tr><td class="empty">Nenhuma devolução pendente de estorno em '+rot+'.</td></tr>';
   const vx = e => e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', ');
-  $('tbVer').innerHTML = V.length ? '<thead><tr><th>Referência</th><th>Data</th><th>Pedido VTEX</th><th>Resumo</th><th>Status</th><th>Solicitante</th></tr></thead><tbody>' +
+  $('tbVer').innerHTML = V.length ? '<thead><tr><th>Referência</th><th><button class="ord" data-ord="v" title="Ordenar por data">Data '+($('vOrd').value==='ant'?'▲':'▼')+'</button></th><th>Pedido VTEX</th><th>Resumo</th><th>Status</th><th>Solicitante</th></tr></thead><tbody>' +
     V.map(e => '<tr><td>'+esc(e.r)+'</td><td>'+dt(e.d)+'</td><td class="nw">'+(esc(vx(e)) || '<span class="note">—</span>')+'</td><td>'+esc(e.rs)+'</td><td>'+esc(e.s)+'</td><td>'+esc(e.sol)+'</td></tr>').join('') + '</tbody>'
     : '<tr><td class="empty">Tudo certo: todo estorno do ano tem reversa ou lançamento.</td></tr>';
   const semVx = V.filter(e => !vx(e)).length;
@@ -835,12 +841,26 @@ $('jiraOk').addEventListener('click', async () => {
 $('fAno').addEventListener('change', () => { fillMes(false); render(); });
 $('fMes').addEventListener('change', render);
 $('fAn').addEventListener('change', () => renderPend(+$('fAno').value));
+$('tbPend').addEventListener('click', e => { if (!e.target.closest('[data-ord=p]')) return; $('pOrd').value = $('pOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
+$('tbVer').addEventListener('click', e => { if (!e.target.closest('[data-ord=v]')) return; $('vOrd').value = $('vOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
 ['pDe','pAte','vDe','vAte','pOrd','vOrd'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
 $('vLimpa').addEventListener('click', () => { $('vDe').value = ''; $('vAte').value = ''; renderPend(+$('fAno').value); });
 $('pLimpa').addEventListener('click', () => { $('pDe').value = ''; $('pAte').value = ''; renderPend(+$('fAno').value); });
 $('busca').addEventListener('input', () => { nBase = 100; renderBase(); });
 $('mais').addEventListener('click', () => { nBase += 200; renderBase(); });
 $('cAdd').addEventListener('click', () => { const p = $('cPed').value.trim(); if (!p) return; S.corr = S.corr.filter(c => c.p !== p).concat({ p, c:$('cTipo').value }); $('cPed').value=''; render(); save(); });
+$('cColaOk').addEventListener('click', () => {
+  const lin = $('cCola').value.split(/\r?\n/); let n = 0, ign = 0;
+  lin.forEach(l => {
+    const p = (l.match(/\b\d{10,}-\d{2}\b/) || [])[0];
+    const c = (l.trim().match(/(troca|devolu[cç][aã]o|cancelado)\s*$/i) || [])[1];
+    if (!p || !c) { if (l.trim() && !/pedido/i.test(l)) ign++; return; }
+    const cc = /^troca/i.test(c) ? 'Troca' : /^cancel/i.test(c) ? 'Cancelado' : 'Devolução';
+    S.corr = S.corr.filter(x => x.p !== p).concat({ p, c: cc }); n++;
+  });
+  $('cColaInfo').textContent = n + ' correções incluídas' + (ign ? ' · ' + ign + ' linhas sem pedido ou correção' : '');
+  if (n) { $('cCola').value = ''; render(); save(); }
+});
 $('tbCorr').addEventListener('click', e => { const i = e.target.dataset.rc; if (i === undefined) return; S.corr.splice(+i,1); render(); save(); });
 $('xAdd').addEventListener('click', () => { const t = $('xTerm').value.trim(); if (!t || S.excl.includes(t)) return; S.excl.push(t); $('xTerm').value=''; render(); save(); });
 $('xList').addEventListener('click', e => { const i = e.target.dataset.rx; if (i === undefined) return; S.excl.splice(+i,1); render(); save(); });
@@ -901,7 +921,10 @@ addEventListener('hashchange', route); route();
 
 render();
 carregando = load();
-carregando.then(() => { fillFilters(false); render(); if (!S.prod.length && !location.hash) { location.hash = 'atualizar'; } });
+carregando.then(async () => {
+  // correções já usadas na planilha antiga: entram uma vez e ficam salvas na base
+  if (!S.corrIni) { const ini = [['1625130658364-01','Troca'],['1604700636679-01','Troca'],['1555710593273-01','Troca'],['1603290634867-01','Troca'],['1603410635063-01','Troca'],['1603990635881-01','Troca'],['1605010637107-01','Troca'],['1608150640774-01','Troca'],['1613860648016-01','Troca'],['1617450651438-01','Troca'],['1615810649764-01','Troca'],['1618420652460-01','Troca'],['1609070641812-01','Troca'],['1618200652262-01','Troca'],['1623160656654-01','Troca'],['1612150645284-01','Troca'],['1612010645044-01','Troca'],['1583590627512-01','Cancelado'],['1500460540012-01','Troca'],['1623930657330-01','Troca'],['1639990669976-01','Troca'],['1647970677578-01','Devolução']]; const tem = new Set(S.corr.map(c => c.p)); ini.forEach(([p, c]) => { if (!tem.has(p)) S.corr.push({ p, c }); }); S.corrIni = true; if (S.prod.length) await save(); }
+  fillFilters(false); render(); if (!S.prod.length && !location.hash) { location.hash = 'atualizar'; } });
 }
 </script>
 </body>
