@@ -21,8 +21,8 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
 h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-height:1.05;text-wrap:balance;margin:0}
 h1{font-size:clamp(32px,5vw,46px)}h2{font-size:26px;margin-bottom:12px}
-.top{background:var(--verde);color:#f4efe2;padding:28px max(5vw,16px) 0;border-bottom:3px solid var(--ouro)}
-.top .in,.wrap{max-width:1240px;margin:0 auto}
+.top{background:var(--verde);color:#f4efe2;padding:28px max(2.5vw,12px) 0;border-bottom:3px solid var(--ouro)}
+.top .in,.wrap{max-width:1680px;margin:0 auto}
 .top p{margin:6px 0 0;color:#cfd8cf;font-size:15px}
 .filt{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 0;align-items:end}
 .filt label{font-size:13px;color:#cfd8cf;display:grid;gap:4px}
@@ -37,7 +37,7 @@ button.x{border-color:var(--alerta);color:var(--alerta)}
 nav{display:flex;gap:2px;margin-top:20px;overflow-x:auto}
 nav a{flex:none;color:#cfd8cf;text-decoration:none;padding:12px 16px;border-radius:8px 8px 0 0;font-weight:500}
 nav a.on{background:var(--bg);color:var(--ink)}
-.wrap{padding:24px max(5vw,16px) 56px}
+.wrap{padding:24px max(2.5vw,12px) 56px}
 .view{display:none}.view.on{display:block}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
 .k{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-rows:2.8em auto 1.4em;align-items:center;justify-items:center;text-align:center;height:100%}
@@ -93,6 +93,7 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
     <a href="#indicadores" data-v="indicadores">Indicadores</a>
     <a href="#estornos" data-v="estornos">Estornos pendentes</a>
     <a href="#base" data-v="base">Base de dados</a>
+    <a href="#correcoes" data-v="correcoes">Correções de tipo</a>
     <a href="#atualizar" data-v="atualizar">Atualizar dados</a>
   </nav>
 </div></header>
@@ -146,14 +147,35 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 
   <section class="view" id="v-base">
     <div class="card">
-      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="row" style="margin-bottom:12px;align-items:end">
         <input type="search" id="busca" placeholder="Buscar pedido, TBS, cliente, produto…" style="flex:1 1 280px">
-        <button class="pri" id="btXls">Baixar Excel</button>
+        <label class="note" style="display:grid;gap:4px">Data de <input type="date" id="bDe"></label>
+        <label class="note" style="display:grid;gap:4px">até <input type="date" id="bAte"></label>
+        <button id="bLimpa" style="align-self:end">Limpar</button>
+        <button class="pri" id="btXls" style="margin-left:auto">Baixar Excel</button>
       </div>
       <p class="note" id="baseInfo"></p>
       <div class="scroll"><table id="tbBase"></table></div>
       <div class="row" style="margin-top:12px"><button id="mais">Mostrar mais</button></div>
     </div>
+  </section>
+
+  <section class="view" id="v-correcoes">
+      <div class="card" style="max-width:900px">
+        <h2>Correções de tipo</h2>
+        <p class="note">Pedidos lançados com o tipo errado no Troque. A correção vale para os indicadores e para os estornos pendentes (troca e cancelado não têm estorno). Fica salva no histórico e no backup.</p>
+        <div class="row" style="margin-bottom:10px">
+          <input type="text" id="cPed" placeholder="Pedido (ex.: 1625130658364-01)" style="flex:1 1 200px">
+          <select id="cTipo"><option>Troca</option><option>Devolução</option><option>Cancelado</option></select>
+          <button id="cAdd">Incluir</button>
+        </div>
+        <details style="margin-bottom:10px"><summary class="note" style="cursor:pointer">Colar várias correções de uma vez</summary>
+          <p class="note">Cole a tabela (pode ser do Excel). Cada linha precisa ter o pedido (ex.: 1625130658364-01) e, no fim, a correção: Troca, Devolução ou Cancelado.</p>
+          <textarea id="cCola" rows="5"></textarea>
+          <div class="row" style="margin-top:8px"><button id="cColaOk">Incluir correções</button><span class="note" id="cColaInfo"></span></div>
+        </details>
+        <table id="tbCorr"></table>
+      </div>
   </section>
 
   <section class="view" id="v-atualizar">
@@ -194,21 +216,6 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
         <span class="note" id="bkInfo"></span></div>
     </div>
     <div class="grid2">
-      <div class="card">
-        <h2>Correções de tipo</h2>
-        <p class="note">Pedidos lançados com o tipo errado no Troque. A correção vale para os indicadores.</p>
-        <div class="row" style="margin-bottom:10px">
-          <input type="text" id="cPed" placeholder="Pedido (ex.: 1625130658364-01)" style="flex:1 1 200px">
-          <select id="cTipo"><option>Troca</option><option>Devolução</option><option>Cancelado</option></select>
-          <button id="cAdd">Incluir</button>
-        </div>
-        <details style="margin-bottom:10px"><summary class="note" style="cursor:pointer">Colar várias correções de uma vez</summary>
-          <p class="note">Cole a tabela (pode ser do Excel). Cada linha precisa ter o pedido (ex.: 1625130658364-01) e, no fim, a correção: Troca, Devolução ou Cancelado.</p>
-          <textarea id="cCola" rows="5"></textarea>
-          <div class="row" style="margin-top:8px"><button id="cColaOk">Incluir correções</button><span class="note" id="cColaInfo"></span></div>
-        </details>
-        <table id="tbCorr"></table>
-      </div>
       <div class="card">
         <h2>Itens fora dos rankings</h2>
         <p class="note">Produtos que contêm estes trechos ficam fora dos indicadores (amostras e brindes).</p>
@@ -516,6 +523,11 @@ const L = (() => {
     // op.soNovos: histórico antigo só acrescenta o que ainda não existe (não sobrescreve dados mais novos)
     if (op.soNovos) {
       const tem = new Set(S.prod.map(r => r.p).concat(S.canc || [])), temR = new Set(S.rev.map(r => r.p)), temE = new Set(S.est.map(r => r.r));
+      // estornos já salvos: só completam o que falta (TBS e campos vazios), sem trocar status ou data
+      const mE = new Map(S.est.map(e => [e.r, e]));
+      f.est.filter(r => temE.has(r.r)).forEach(r => { const o = mE.get(r.r);
+        o.k = [...new Set((o.k || []).concat(r.k || []))];
+        for (const c of ['d','s','rs','sol']) if (!o[c] && r[c]) o[c] = r[c]; });
       f = { ...f, prod: f.prod.filter(r => !tem.has(r.p)), rev: f.rev.filter(r => !temR.has(r.p)), est: f.est.filter(r => !temE.has(r.r)) };
     }
     const n = { prod: 0, rev: 0, est: 0, bi: 0, det: {} };
@@ -538,7 +550,7 @@ const L = (() => {
     if (f.rev.length) { const m = new Map(S.rev.map(r => [r.p, r])); f.rev.forEach(r => m.set(r.p, r)); S.rev = [...m.values()]; n.rev = f.rev.length; }
     if (f.est.length) { const m = new Map(S.est.map(r => [r.r, r]));
       // campo vazio no que chegou não apaga o que já estava salvo
-      f.est.forEach(r => { const o = m.get(r.r); m.set(r.r, o ? { ...o, ...Object.fromEntries(Object.entries(r).filter(([k, v]) => Array.isArray(v) ? v.length : v)) } : r); }); S.est = [...m.values()]; n.est = f.est.length; }
+      f.est.forEach(r => { const o = m.get(r.r); m.set(r.r, o ? { ...o, ...Object.fromEntries(Object.entries(r).filter(([k, v]) => Array.isArray(v) ? v.length : v)), k: [...new Set((o.k || []).concat(r.k || []))] } : r); }); S.est = [...m.values()]; n.est = f.est.length; }
     if (f.bi.length) {
       biGuardar(S, f.bi);
       const m = new Map(f.bi.map(r => [r.v, r.t]));
@@ -686,6 +698,7 @@ function renderInd(ano, mes){
 }
 let chartData = null;
 const svg = $('chart');
+const kf = v => v >= 1000 ? (v/1000).toLocaleString('pt-BR', { maximumFractionDigits: v >= 100000 ? 0 : 1 }) + 'k' : String(Math.round(v));
 function draw(){
   if (!chartData) return;
   const W = svg.clientWidth, H = svg.clientHeight, M = chartData.meses; if (!W || !M.length) { svg.innerHTML=''; return; }
@@ -697,7 +710,9 @@ function draw(){
     const x = pl + i*bw + bw*0.18, w = bw*0.64, op = chartData.sel && chartData.sel !== m.m ? 0.4 : 1;
     s += '<g opacity="'+op+'"><rect x="'+x+'" y="'+y(m.dev)+'" width="'+w+'" height="'+(H-pb-y(m.dev))+'" fill="var(--verde2)" rx="2"/>' +
       '<rect x="'+x+'" y="'+y(m.dev+m.troca)+'" width="'+w+'" height="'+(y(m.dev)-y(m.dev+m.troca))+'" fill="var(--ouro)" rx="2"/>' +
-      (bw > 46 ? '<text x="'+(x+w/2)+'" y="'+(y(m.dev+m.troca)-6)+'" text-anchor="middle" font-size="12" fill="var(--ink)">'+Math.round((m.dev+m.troca)/1000)+'k</text>' : '') +
+      (bw > 34 ? '<text x="'+(x+w/2)+'" y="'+(y(m.dev+m.troca)-6)+'" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">'+kf(m.dev+m.troca)+'</text>' : '') +
+      (bw > 34 && H-pb-y(m.dev) > 18 ? '<text x="'+(x+w/2)+'" y="'+((y(m.dev)+H-pb)/2+4)+'" text-anchor="middle" font-size="11" fill="#fff">'+kf(m.dev)+'</text>' : '') +
+      (bw > 34 && y(m.dev)-y(m.dev+m.troca) > 18 ? '<text x="'+(x+w/2)+'" y="'+((y(m.dev)+y(m.dev+m.troca))/2+4)+'" text-anchor="middle" font-size="11" fill="#2b2410">'+kf(m.troca)+'</text>' : '') +
       '<text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" fill="var(--mute)">'+MES[m.m-1]+'</text>' +
       '<title>'+MES[m.m-1]+': devolução '+brl0(m.dev)+' · troca '+brl0(m.troca)+'</title></g>';
   });
@@ -740,14 +755,18 @@ function renderPend(ano){
 }
 
 const COLS = [['Pedido','p'],['TBS','tbs'],['Data','d'],['Status','st'],['Nome','nm'],['Cidade','cid'],['Estado','uf'],['Transporte','tr'],['Valor','v'],['Tipo','ti'],['Quantidade','q'],['SKU','sku'],['Produto','pr'],['Motivo','mo'],['Produto recebido','rec'],['Data recebimento','drv'],['Data de criação do pedido na loja','dl'],['Produto Agrupado','grp'],['Tipo Atualizado','ta'],['Motivo Atualizado','ma'],['Mês','mesN'],['Ano','ano'],['Valor Total Devolvido','tot'],['Reversa Total/Parcial','tp'],['Tipo de Postagem','po'],['Frete reverso','fr'],['Status da entrega','se'],['Analista Responsável','an'],['Solicitação de Estorno','est'],['Data Estorno','dest']];
+let bSort = { k:'d', dir:-1 };
+const BCOLS = [['d','Data'],['p','Pedido'],['tbs','TBS'],['pr','Produto'],['ta','Tipo'],['ma','Motivo'],['q','Qtd','n'],['tot','Total','n'],['an','Analista'],['est','Estorno']];
 function filtBase(){
-  const q = L.norm($('busca').value);
-  return rows.filter(r => !q || L.norm([r.p,r.tbs,r.nm,r.pr,r.sku,r.an,r.est].join(' ')).includes(q)).slice().reverse();
+  const q = L.norm($('busca').value), de = $('bDe').value, ate = $('bAte').value;
+  const { k, dir } = bSort;
+  return rows.filter(r => (!q || L.norm([r.p,r.tbs,r.nm,r.pr,r.sku,r.an,r.est].join(' ')).includes(q)) && (!de || r.d >= de) && (!ate || r.d <= ate))
+    .slice().sort((a, b) => { const x = a[k] ?? '', y = b[k] ?? ''; return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'pt-BR')) * dir || b.d.localeCompare(a.d); });
 }
 function renderBase(){
   const f = filtBase(), show = f.slice(0, nBase);
   $('baseInfo').textContent = f.length.toLocaleString('pt-BR') + ' linhas' + (f.length > show.length ? ' · mostrando ' + show.length : '') + '. O Excel traz todas as colunas da antiga aba produto_troque.';
-  $('tbBase').innerHTML = '<tr><th>Data</th><th>Pedido</th><th>TBS</th><th>Produto</th><th>Tipo</th><th>Motivo</th><th class="n">Qtd</th><th class="n">Total</th><th>Analista</th><th>Estorno</th></tr>' +
+  $('tbBase').innerHTML = '<tr>' + BCOLS.map(([k, t, c]) => '<th'+(c?' class="n"':'')+'><button class="ord" data-bs="'+k+'" title="Ordenar">'+t+' '+(bSort.k===k?(bSort.dir>0?'▲':'▼'):'↕')+'</button></th>').join('') + '</tr>' +
     show.map(r => '<tr><td>'+dt(r.d)+'</td><td>'+esc(r.p)+'</td><td>'+esc(r.tbs)+'</td><td>'+esc(r.pr)+'</td><td>'+esc(r.ta)+'</td><td>'+esc(r.ma)+'</td><td class="n">'+r.q+'</td><td class="n">'+brl(r.tot)+'</td><td>'+esc(r.an)+'</td><td>'+(/Pendente|Sem TBS/.test(r.est)?'<span class="tag a">'+esc(r.est)+'</span>':esc(r.est))+'</td></tr>').join('');
   $('mais').hidden = f.length <= nBase;
 }
@@ -847,6 +866,10 @@ $('tbVer').addEventListener('click', e => { if (!e.target.closest('[data-ord=v]'
 $('vLimpa').addEventListener('click', () => { $('vDe').value = ''; $('vAte').value = ''; renderPend(+$('fAno').value); });
 $('pLimpa').addEventListener('click', () => { $('pDe').value = ''; $('pAte').value = ''; renderPend(+$('fAno').value); });
 $('busca').addEventListener('input', () => { nBase = 100; renderBase(); });
+['bDe','bAte'].forEach(id => $(id).addEventListener('change', () => { nBase = 100; renderBase(); }));
+$('bLimpa').addEventListener('click', () => { $('bDe').value = ''; $('bAte').value = ''; $('busca').value = ''; nBase = 100; renderBase(); });
+$('tbBase').addEventListener('click', e => { const b = e.target.closest('[data-bs]'); if (!b) return; const k = b.dataset.bs;
+  bSort = bSort.k === k ? { k, dir: -bSort.dir } : { k, dir: (k === 'd' || k === 'tot' || k === 'q') ? -1 : 1 }; renderBase(); });
 $('mais').addEventListener('click', () => { nBase += 200; renderBase(); });
 $('cAdd').addEventListener('click', () => { const p = $('cPed').value.trim(); if (!p) return; S.corr = S.corr.filter(c => c.p !== p).concat({ p, c:$('cTipo').value }); $('cPed').value=''; render(); save(); });
 $('cColaOk').addEventListener('click', () => {
@@ -912,7 +935,7 @@ $('bkUp').addEventListener('change', async e => {
 /* ---------- abas ---------- */
 function route(){
   const v = (location.hash || '#indicadores').slice(1);
-  const ok = ['indicadores','estornos','base','atualizar'].includes(v) ? v : 'indicadores';
+  const ok = ['indicadores','estornos','base','correcoes','atualizar'].includes(v) ? v : 'indicadores';
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+ok));
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === ok));
   if (ok === 'indicadores') draw();
