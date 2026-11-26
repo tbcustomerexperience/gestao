@@ -30,6 +30,15 @@ select,input,button{font:inherit;font-size:16px}
 textarea{width:100%;font:14px/1.5 inherit;font-family:inherit;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card);color:var(--ink);resize:vertical}
 select,input[type=text],input[type=search],input[type=date]{min-height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:var(--card);color:var(--ink)}
 .top select{background:#244232;color:#fff;border-color:#4b6b57}
+.mesSel{position:relative;display:grid;gap:4px;font-size:13px;color:#cfd8cf}
+#fMesBt{background:#244232;color:#fff;border-color:#4b6b57;min-width:150px;text-align:left;font-weight:400}
+#fMesBt::after{content:" ▾";opacity:.8}
+.pop{position:absolute;top:100%;left:0;margin-top:6px;z-index:20;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px;box-shadow:0 10px 30px #0003;width:300px}
+.pop .ms{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0}
+.pop label{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink);padding:6px 4px;border-radius:6px;cursor:pointer}
+.pop label:hover{background:var(--soft)}
+.pop input{width:18px;height:18px;accent-color:var(--verde)}
+.pop .row button{min-height:36px;font-size:14px;padding:0 12px}
 button{min-height:44px;border-radius:8px;border:1px solid var(--verde2);background:var(--card);color:var(--verde2);padding:0 16px;cursor:pointer;font-weight:500}
 button.pri{background:var(--verde);border-color:var(--verde);color:#fff}
 button.x{border-color:var(--alerta);color:var(--alerta)}
@@ -87,7 +96,8 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
   <p id="sub">Carregando base…</p>
   <div class="filt">
     <label>Ano<select id="fAno"></select></label>
-    <label>Mês<select id="fMes"></select></label>
+    <div class="mesSel"><span>Mês</span><button type="button" id="fMesBt" aria-haspopup="true" aria-expanded="false">—</button>
+      <div class="pop" id="fMesBox" hidden></div></div>
   </div>
   <nav id="nav">
     <a href="#indicadores" data-v="indicadores">Indicadores</a>
@@ -471,8 +481,9 @@ const L = (() => {
 
   const excluido = (r, termos) => termos.some(t => t && norm(r.grp).includes(norm(t)));
   function analytics(rows, { ano, mes, excl }){
+    const ms = Array.isArray(mes) ? mes : (mes ? [mes] : []);
     const base = rows.filter(r => r.ano === ano && (r.ta === 'Troca' || r.ta === 'Devolução') && !excluido(r, excl));
-    const per = mes ? base.filter(r => r.mes === mes) : base;
+    const per = ms.length ? base.filter(r => ms.includes(r.mes)) : base;
     const sum = (a, f = r => r.tot) => a.reduce((s, r) => s + f(r), 0);
     // mês x tipo
     const meses = [...new Set(base.map(r => r.mes))].sort((a,b) => a-b).map(m => {
@@ -492,7 +503,7 @@ const L = (() => {
     };
     const k = a => ({ tot: sum(a), dev: sum(a.filter(r => r.ta === 'Devolução')), troca: sum(a.filter(r => r.ta === 'Troca')),
       pedidos: new Set(a.map(r => r.p)).size, itens: sum(a, r => r.q) });
-    const prev = mes ? (mes > 1 ? base.filter(r => r.mes === mes - 1) : null) : null;
+    const prev = ms.length === 1 && ms[0] > 1 ? base.filter(r => r.mes === ms[0] - 1) : null;
     return { meses, motivos,
       arrep: top(r => r.ma === 'Desistência ou Arrependimento'),
       defeito: top(r => r.ma === 'Produto com defeito' || r.ma === 'Produto Avariado'),
@@ -652,17 +663,29 @@ function fillFilters(keep){
   $('fAno').innerHTML = A.map(a => '<option'+(a===a0?' selected':'')+'>'+a+'</option>').join('') || '<option>—</option>';
   fillMes(keep);
 }
+// meses escolhidos: [] = ano todo
+let mesesSel = [], mesesDisp = [];
 function fillMes(keep){
-  const a = +$('fAno').value, ms = [...new Set(rows.filter(r => r.ano === a).map(r => r.mes))].sort((x,y) => x-y);
-  const cur = keep ? $('fMes').value : String(ms[ms.length-1] || 0);
-  $('fMes').innerHTML = '<option value="0">Ano todo</option>' + ms.map(m => '<option value="'+m+'"'+(String(m)===cur?' selected':'')+'>'+MES[m-1]+'</option>').join('');
+  const a = +$('fAno').value;
+  mesesDisp = [...new Set(rows.filter(r => r.ano === a).map(r => r.mes))].sort((x,y) => x-y);
+  mesesSel = keep ? mesesSel.filter(m => mesesDisp.includes(m)) : (mesesDisp.length ? [mesesDisp[mesesDisp.length-1]] : []);
+  desenhaMes();
+}
+const rotMeses = (ms, ano) => !ms.length ? 'acumulado ' + ano : ms.length === 1 ? MES[ms[0]-1] + '/' + ano : (ms.length > 4 ? ms.length + ' meses' : ms.map(m => MES[m-1]).join(', ')) + ' de ' + ano;
+function desenhaMes(){
+  const ms = mesesSel.slice().sort((a,b) => a-b);
+  $('fMesBt').textContent = !ms.length ? 'Ano todo' : ms.length === 1 ? MES[ms[0]-1] : ms.length > 3 ? ms.length + ' meses' : ms.map(m => MES[m-1]).join(', ');
+  $('fMesBox').innerHTML = '<label><input type="checkbox" data-m="0"'+(ms.length?'':' checked')+'> <strong>Ano todo</strong></label>' +
+    '<div class="ms">' + mesesDisp.map(m => '<label><input type="checkbox" data-m="'+m+'"'+(ms.includes(m)?' checked':'')+'> '+MES[m-1]+'</label>').join('') + '</div>' +
+    '<p class="note" style="margin:0 0 8px">Marque um ou mais meses. Sem nenhum marcado, mostra o ano todo.</p>' +
+    '<div class="row"><button type="button" data-acao="ultimo">Último mês</button><button type="button" class="pri" data-acao="fechar">Fechar</button></div>';
 }
 
 /* ---------- render ---------- */
 function render(){
   rows = L.build(S);
   if (!$('fAno').options.length || !anos().includes(+$('fAno').value)) fillFilters(false);
-  const ano = +$('fAno').value, mes = +$('fMes').value;
+  const ano = +$('fAno').value, mes = mesesSel.slice().sort((a,b) => a-b);
   const per = [...new Set(S.prod.map(r => r.d))].sort();
   $('sub').textContent = rows.length ? 'Base de ' + dt(per[0]) + ' a ' + dt(per[per.length-1]) + (S.upd ? ' · atualizada em ' + dt(S.upd) : '') : 'Sem dados ainda. Comece pela aba Atualizar dados.';
   renderInd(ano, mes); renderPend(ano); renderBase(); renderStatus();
@@ -676,7 +699,7 @@ function delta(cur, prev){
 function renderInd(ano, mes){
   if (!rows.length) { $('kpis').innerHTML = '<div class="empty">Suba os arquivos na aba Atualizar dados.</div>'; ['tbMot','tbArr','tbDef'].forEach(i => $(i).innerHTML=''); $('chart').innerHTML=''; return; }
   const a = L.analytics(rows, { ano, mes, excl:S.excl }), k = a.kpi, p = a.kpiPrev;
-  const per = mes ? MES[mes-1]+'/'+ano : 'acumulado '+ano;
+  const per = rotMeses(mes, ano);
   $('kpis').innerHTML = [
     ['Total devolvido · '+per, brl0(k.tot), delta(k.tot, p&&p.tot)],
     ['Devoluções (estorno)', brl0(k.dev), delta(k.dev, p&&p.dev)],
@@ -707,7 +730,7 @@ function draw(){
   let s = '';
   if (W >= 520) for (let i = 0; i <= 4; i++) { const v = max/4*i; s += '<line x1="'+pl+'" x2="'+W+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)"/><text x="'+(pl-8)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="12" fill="var(--mute)">'+Math.round(v/1000)+' mil</text>'; }
   M.forEach((m, i) => {
-    const x = pl + i*bw + bw*0.18, w = bw*0.64, op = chartData.sel && chartData.sel !== m.m ? 0.4 : 1;
+    const x = pl + i*bw + bw*0.18, w = bw*0.64, op = chartData.sel.length && !chartData.sel.includes(m.m) ? 0.4 : 1;
     s += '<g opacity="'+op+'"><rect x="'+x+'" y="'+y(m.dev)+'" width="'+w+'" height="'+(H-pb-y(m.dev))+'" fill="var(--verde2)" rx="2"/>' +
       '<rect x="'+x+'" y="'+y(m.dev+m.troca)+'" width="'+w+'" height="'+(y(m.dev)-y(m.dev+m.troca))+'" fill="var(--ouro)" rx="2"/>' +
       (bw > 34 ? '<text x="'+(x+w/2)+'" y="'+(y(m.dev+m.troca)-6)+'" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">'+kf(m.dev+m.troca)+'</text>' : '') +
@@ -742,9 +765,9 @@ function renderPend(ano){
     : ordP === 'dias' ? (a.drv || '9999').localeCompare(b.drv || '9999') || a.d.localeCompare(b.d)
     : (a.an || '').localeCompare(b.an || '') || a.d.localeCompare(b.d));
   if ($('vOrd').value === 'ant') V.sort((a, b) => a.d.localeCompare(b.d)); else V.sort((a, b) => b.d.localeCompare(a.d));
-  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th><button class="ord" data-ord="p" title="Ordenar por data">Data '+(ordP==='rec'?'▼':ordP==='ant'?'▲':'↕')+'</button></th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
+  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th><button class="ord" data-ord="p" title="Ordenar por data">Data '+(ordP==='rec'?'▼':ordP==='ant'?'▲':'↕')+'</button></th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th><th>Já tem estorno?</th></tr></thead><tbody>' +
     list.map(p => { const dias = p.drv ? Math.floor((hoje - new Date(p.drv+'T12:00')) / 864e5) : '';
-      return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td></tr>'; }).join('') + '</tbody>'
+      return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td><td>'+(p.tbs ? '<span class="vinc" data-tbs="'+esc(p.tbs)+'"><button class="ord" data-vinc>Vincular CR</button></span>' : '')+'</td></tr>'; }).join('') + '</tbody>'
     : '<tr><td class="empty">Nenhuma devolução pendente de estorno em '+rot+'.</td></tr>';
   const vx = e => e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', ');
   $('tbVer').innerHTML = V.length ? '<thead><tr><th>Referência</th><th><button class="ord" data-ord="v" title="Ordenar por data">Data '+($('vOrd').value==='ant'?'▲':'▼')+'</button></th><th>Pedido VTEX</th><th>Resumo</th><th>Status</th><th>Solicitante</th></tr></thead><tbody>' +
@@ -858,8 +881,31 @@ $('jiraOk').addEventListener('click', async () => {
   render(); await save(); if (db) log.textContent = msg + '\nSalvo.';
 });
 $('fAno').addEventListener('change', () => { fillMes(false); render(); });
-$('fMes').addEventListener('change', render);
+$('fMesBt').addEventListener('click', e => { e.stopPropagation(); const b = $('fMesBox'); b.hidden = !b.hidden; $('fMesBt').setAttribute('aria-expanded', String(!b.hidden)); });
+$('fMesBox').addEventListener('click', e => e.stopPropagation());
+$('fMesBox').addEventListener('change', e => { const m = +e.target.dataset.m;
+  if (!m) mesesSel = []; else mesesSel = e.target.checked ? [...new Set(mesesSel.concat(m))] : mesesSel.filter(x => x !== m);
+  desenhaMes(); render(); });
+$('fMesBox').addEventListener('click', e => { const a = e.target.dataset && e.target.dataset.acao; if (!a) return;
+  if (a === 'ultimo') { mesesSel = mesesDisp.length ? [mesesDisp[mesesDisp.length-1]] : []; desenhaMes(); render(); }
+  if (a === 'fechar') { $('fMesBox').hidden = true; $('fMesBt').setAttribute('aria-expanded', 'false'); } });
+document.addEventListener('click', () => { if (!$('fMesBox').hidden) { $('fMesBox').hidden = true; $('fMesBt').setAttribute('aria-expanded', 'false'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('fMesBox').hidden = true; });
 $('fAn').addEventListener('change', () => renderPend(+$('fAno').value));
+// vincular manualmente uma solicitação do Jira a um TBS (para resumos sem TBS)
+$('tbPend').addEventListener('click', async e => {
+  const cel = e.target.closest('.vinc'); if (!cel) return;
+  if (e.target.matches('[data-vinc]')) { cel.innerHTML = '<input type="text" placeholder="CR-6041" style="width:110px;min-height:36px;font-size:14px"> <button class="ord" data-ok>OK</button>'; cel.querySelector('input').focus(); return; }
+  if (!e.target.matches('[data-ok]')) return;
+  const cr = cel.querySelector('input').value.trim().toUpperCase().replace(/\s+/g, ''), tbs = cel.dataset.tbs;
+  if (!/^[A-Z]+-\d+$/.test(cr)) { cel.querySelector('input').style.borderColor = 'var(--alerta)'; return; }
+  await carregando;
+  const e0 = S.est.find(x => x.r === cr);
+  if (e0) e0.k = [...new Set((e0.k || []).concat(tbs))];
+  else S.est.push({ r: cr, d: '', s: 'vinculado manualmente', rs: '', sol: '', k: [tbs] });
+  render(); await save();
+});
+$('tbPend').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest('.vinc')) e.target.closest('.vinc').querySelector('[data-ok]').click(); });
 $('tbPend').addEventListener('click', e => { if (!e.target.closest('[data-ord=p]')) return; $('pOrd').value = $('pOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
 $('tbVer').addEventListener('click', e => { if (!e.target.closest('[data-ord=v]')) return; $('vOrd').value = $('vOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
 ['pDe','pAte','vDe','vAte','pOrd','vOrd'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
@@ -894,20 +940,20 @@ $('dlgOk').addEventListener('click', async () => { $('dlg').classList.remove('on
 $('btXls').addEventListener('click', async () => {
   const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
 
-  const ano = +$('fAno').value, mes = +$('fMes').value, a = L.analytics(rows, { ano, mes, excl:S.excl });
+  const ano = +$('fAno').value, mes = mesesSel.slice().sort((a,b) => a-b), a = L.analytics(rows, { ano, mes, excl:S.excl });
   const wb = XLSX.utils.book_new();
   const base = rows.map(r => Object.fromEntries(COLS.map(([h,k]) => [h, k==='mesN' ? MES[r.mes-1] : (r[k] ?? '')])));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(base), 'Base');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(L.pendencias(rows, ano, $('pDe').value, $('pAte').value).map(p => ({ 'Analista':p.an, 'TBS':p.tbs||'sem TBS', 'Pedido':p.p, 'Cliente':p.nm, 'Data':p.d, 'Motivo':p.ma, 'Status da entrega':p.se, 'Recebido em':p.drv, 'Valor':p.valor }))), 'Estornos pendentes');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(L.verificar(S, rows, ano, $('vDe').value || $('pDe').value, $('vAte').value || $('pAte').value).map(e => ({ 'Referência':e.r, 'Data':e.d, 'Pedido VTEX':e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', '), 'Resumo':e.rs, 'Status':e.s, 'Solicitante':e.sol }))), 'Estornos a verificar');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.meses.map(m => ({ 'Mês':MES[m.m-1], 'Troca':m.troca, 'Devolução':m.dev, 'Total':m.troca+m.dev, 'Pedidos':m.pedidos }))), 'Resumo mensal '+ano);
-  const per = mes ? MES[mes-1] : 'ano';
+  const per = !mes.length ? 'ano' : mes.length === 1 ? MES[mes[0]-1] : mes.length + ' meses';
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.motivos.map(o => ({ 'Motivo':o.m, 'Devolução':o.dev, 'Troca':o.troca, 'Total':o.tot }))), 'Motivos '+per);
   const tp = arr => arr.map(o => ({ 'Produto':o.n, 'Quantidade':o.q, 'Total Devolvido':o.v, '% do Total':o.pct, '% Acumulado':o.acum }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.arrep)), 'Arrependimento '+per);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.defeito)), 'Defeito-Avaria '+per);
   const out = XLSX.write(wb, { bookType:'xlsx', type:'array' });
-  const nome = 'Trocas e Devolucoes '+ano+(mes?'-'+String(mes).padStart(2,'0'):'')+'.xlsx';
+  const nome = 'Trocas e Devolucoes '+ano+(mes.length ? ' ' + mes.map(m => MES[m-1]).join('-') : '')+'.xlsx';
   if (!dl) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([out], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); a.download = nome; document.body.appendChild(a); a.click(); a.remove(); return; }
   try { await dl.save({ filename:nome, data:out }); }
   catch(e){ if (e.code !== 'declined') aviso('Não foi possível baixar ('+esc(e.code||e.message)+').'); }
