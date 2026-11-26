@@ -206,6 +206,7 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
     <div class="card">
       <h2>Estornos do Jira</h2>
       <p class="note">No portal do Jira, selecione a lista de solicitações (do cabeçalho até a última linha), copie e cole aqui. "Hoje" e "Ontem" viram a data do dia em que você colar. Solicitações já salvas são atualizadas pela referência (CR-…), então pode colar a lista inteira ou só as mais recentes.</p>
+      <div id="ultJira" style="margin:4px 0 14px"></div>
       <textarea id="jira" rows="8" placeholder="Estorno de venda (ou Cancelamento)&#10;Hoje&#10;CR-11752&#10;Estorno integral - TBS-01414899 - …&#10;Tarefas pendentes&#10;Contas a Receber&#10;Tayna Moura"></textarea>
       <div class="row" style="margin-top:10px"><button class="pri" id="jiraOk">Importar estornos</button><span class="note" id="jiraPrev"></span></div>
       <div class="log" id="logJ" hidden></div>
@@ -319,7 +320,7 @@ const L = (() => {
     const resumo = txt(g(o,'resumo'));
     const keys = [...new Set([...tbsAll(resumo), tbsKey(g(o,'pedidotbs'))].filter(Boolean))];
     return { r: txt(g(o,'referencia','chave','key')), d: parseDate(g(o,'data de criacao','criado','created')),
-      s: txt(g(o,'status')), rs: resumo, sol: txt(g(o,'solicitante','relator','reporter')), k: keys };
+      s: txt(g(o,'status')), rs: resumo, pj: txt(g(o,'projeto de servico','projeto')), sol: txt(g(o,'solicitante','relator','reporter')), k: keys };
   };
   function mapBI(o){
     const ks = Object.keys(o), kt = ks.find(k => /tbs/.test(k)), kv = ks.find(k => /vtex/.test(k)), kd = ks.find(k => /order_date/.test(k));
@@ -404,7 +405,8 @@ const L = (() => {
       const antes = cel.slice(0, iR).reverse().find(c => dataJira(c, hoje)) || '';
       const depois = cel.slice(iR + 1);
       const sol = depois.slice(2).filter(c => !/^contas a receber$/i.test(c) && !/^estorno de venda/i.test(c));
-      return { r: cel[iR], d: antes ? dataJira(antes, hoje) : '', rs: depois[0] || '', s: depois[1] || '', sol: sol[sol.length - 1] || '', k: tbsAll(depois[0]) };
+      const pj = depois.slice(2).find(c => /^contas a receber$/i.test(c)) || (depois.length > 3 ? depois[2] : '');
+      return { r: cel[iR], d: antes ? dataJira(antes, hoje) : '', rs: depois[0] || '', s: depois[1] || '', pj, sol: sol[sol.length - 1] || '', k: tbsAll(depois[0]) };
     }
     // sem tab: data · CR · resumo · status · projeto · solicitante separados por espaços
     const t = semLink(l).replace(/\s+/g, ' ');
@@ -413,8 +415,9 @@ const L = (() => {
     let rest = m[3], st = '', sol = '';
     const ms = rest.match(STATUS_J);
     if (ms) { st = ms[1]; sol = rest.slice(ms.index + ms[1].length); rest = rest.slice(0, ms.index); }
+    const pj = /contas a receber/i.test(sol) ? 'Contas a Receber' : '';
     sol = sol.replace(/contas a receber/i, '').trim();
-    return { r: m[2], d: dataJira(pre, hoje), rs: rest.trim(), s: st.trim(), sol, k: tbsAll(rest) };
+    return { r: m[2], d: dataJira(pre, hoje), rs: rest.trim(), s: st.trim(), pj, sol, k: tbsAll(rest) };
   }
   function parseJira(texto, hoje){
     const tira = l => l.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
@@ -433,7 +436,8 @@ const L = (() => {
       const resto = L0.slice(i + 1, Math.max(i + 1, fim));
       const resumo = resto[0] || '', status = resto[1] || '';
       const sol = resto.slice(2).filter(l => !/^contas a receber$/i.test(l) && !/^estorno de venda/i.test(l));
-      return { r: L0[i], d: dataJira(L0[i - 1] || '', hoje), s: status, rs: resumo, sol: sol[sol.length - 1] || '', k: tbsAll(resumo) };
+      const pj = resto.slice(2).find(l => /^contas a receber$/i.test(l)) || '';
+      return { r: L0[i], d: dataJira(L0[i - 1] || '', hoje), s: status, rs: resumo, pj, sol: sol[sol.length - 1] || '', k: tbsAll(resumo) };
     }).filter(e => e.r);
   }
 
@@ -538,7 +542,7 @@ const L = (() => {
       const mE = new Map(S.est.map(e => [e.r, e]));
       f.est.filter(r => temE.has(r.r)).forEach(r => { const o = mE.get(r.r);
         o.k = [...new Set((o.k || []).concat(r.k || []))];
-        for (const c of ['d','s','rs','sol']) if (!o[c] && r[c]) o[c] = r[c]; });
+        for (const c of ['d','s','rs','pj','sol']) if (!o[c] && r[c]) o[c] = r[c]; });
       f = { ...f, prod: f.prod.filter(r => !tem.has(r.p)), rev: f.rev.filter(r => !temR.has(r.p)), est: f.est.filter(r => !temE.has(r.r)) };
     }
     const n = { prod: 0, rev: 0, est: 0, bi: 0, det: {} };
@@ -765,9 +769,9 @@ function renderPend(ano){
     : ordP === 'dias' ? (a.drv || '9999').localeCompare(b.drv || '9999') || a.d.localeCompare(b.d)
     : (a.an || '').localeCompare(b.an || '') || a.d.localeCompare(b.d));
   if ($('vOrd').value === 'ant') V.sort((a, b) => a.d.localeCompare(b.d)); else V.sort((a, b) => b.d.localeCompare(a.d));
-  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th><button class="ord" data-ord="p" title="Ordenar por data">Data '+(ordP==='rec'?'▼':ordP==='ant'?'▲':'↕')+'</button></th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th><th>Já tem estorno?</th></tr></thead><tbody>' +
+  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th><button class="ord" data-ord="p" title="Ordenar por data">Data '+(ordP==='rec'?'▼':ordP==='ant'?'▲':'↕')+'</button></th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
     list.map(p => { const dias = p.drv ? Math.floor((hoje - new Date(p.drv+'T12:00')) / 864e5) : '';
-      return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td><td>'+(p.tbs ? '<span class="vinc" data-tbs="'+esc(p.tbs)+'"><button class="ord" data-vinc>Vincular CR</button></span>' : '')+'</td></tr>'; }).join('') + '</tbody>'
+      return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td></tr>'; }).join('') + '</tbody>'
     : '<tr><td class="empty">Nenhuma devolução pendente de estorno em '+rot+'.</td></tr>';
   const vx = e => e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', ');
   $('tbVer').innerHTML = V.length ? '<thead><tr><th>Referência</th><th><button class="ord" data-ord="v" title="Ordenar por data">Data '+($('vOrd').value==='ant'?'▲':'▼')+'</button></th><th>Pedido VTEX</th><th>Resumo</th><th>Status</th><th>Solicitante</th></tr></thead><tbody>' +
@@ -793,7 +797,16 @@ function renderBase(){
     show.map(r => '<tr><td>'+dt(r.d)+'</td><td>'+esc(r.p)+'</td><td>'+esc(r.tbs)+'</td><td>'+esc(r.pr)+'</td><td>'+esc(r.ta)+'</td><td>'+esc(r.ma)+'</td><td class="n">'+r.q+'</td><td class="n">'+brl(r.tot)+'</td><td>'+esc(r.an)+'</td><td>'+(/Pendente|Sem TBS/.test(r.est)?'<span class="tag a">'+esc(r.est)+'</span>':esc(r.est))+'</td></tr>').join('');
   $('mais').hidden = f.length <= nBase;
 }
+// último chamado do Jira já registrado (maior número de referência)
+function renderUltJira(){
+  const num = r => +(String(r).match(/\d+$/) || [0])[0];
+  const u = S.est.filter(e => e.r).reduce((a, e) => !a || num(e.r) > num(a.r) || (num(e.r) === num(a.r) && (e.d || '') > (a.d || '')) ? e : a, null);
+  $('ultJira').innerHTML = !u ? '<p class="note">Nenhum chamado registrado ainda.</p>' :
+    '<p class="note" style="margin:0 0 6px"><strong>Último chamado registrado</strong> · cole a partir dele na próxima atualização</p><div class="scroll"><table class="stack"><thead><tr><th>Data de criação</th><th>Referência</th><th>Resumo</th><th>Status</th><th>Projeto de serviço</th><th>Solicitante</th></tr></thead><tbody><tr>' +
+    '<td class="nw">'+dt(u.d)+'</td><td class="nw"><strong>'+esc(u.r)+'</strong></td><td>'+esc(u.rs)+'</td><td>'+esc(u.s)+'</td><td>'+esc(u.pj || 'Contas a Receber')+'</td><td>'+esc(u.sol)+'</td></tr></tbody></table></div>';
+}
 function renderStatus(){
+  renderUltJira();
   const rng = (arr, k='d') => { const d = arr.map(r => r[k]).filter(Boolean).sort(); return d.length ? dt(d[0])+' a '+dt(d[d.length-1]) : '—'; };
   const semTbs = new Set(S.prod.filter(r => !r.tbs).map(r => r.p)).size;
   const revP = new Set(S.rev.map(v => v.p)), semRev = new Set(S.prod.filter(r => !revP.has(r.p)).map(r => r.p)).size;
@@ -892,20 +905,6 @@ $('fMesBox').addEventListener('click', e => { const a = e.target.dataset && e.ta
 document.addEventListener('click', () => { if (!$('fMesBox').hidden) { $('fMesBox').hidden = true; $('fMesBt').setAttribute('aria-expanded', 'false'); } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('fMesBox').hidden = true; });
 $('fAn').addEventListener('change', () => renderPend(+$('fAno').value));
-// vincular manualmente uma solicitação do Jira a um TBS (para resumos sem TBS)
-$('tbPend').addEventListener('click', async e => {
-  const cel = e.target.closest('.vinc'); if (!cel) return;
-  if (e.target.matches('[data-vinc]')) { cel.innerHTML = '<input type="text" placeholder="CR-6041" style="width:110px;min-height:36px;font-size:14px"> <button class="ord" data-ok>OK</button>'; cel.querySelector('input').focus(); return; }
-  if (!e.target.matches('[data-ok]')) return;
-  const cr = cel.querySelector('input').value.trim().toUpperCase().replace(/\s+/g, ''), tbs = cel.dataset.tbs;
-  if (!/^[A-Z]+-\d+$/.test(cr)) { cel.querySelector('input').style.borderColor = 'var(--alerta)'; return; }
-  await carregando;
-  const e0 = S.est.find(x => x.r === cr);
-  if (e0) e0.k = [...new Set((e0.k || []).concat(tbs))];
-  else S.est.push({ r: cr, d: '', s: 'vinculado manualmente', rs: '', sol: '', k: [tbs] });
-  render(); await save();
-});
-$('tbPend').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest('.vinc')) e.target.closest('.vinc').querySelector('[data-ok]').click(); });
 $('tbPend').addEventListener('click', e => { if (!e.target.closest('[data-ord=p]')) return; $('pOrd').value = $('pOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
 $('tbVer').addEventListener('click', e => { if (!e.target.closest('[data-ord=v]')) return; $('vOrd').value = $('vOrd').value === 'rec' ? 'ant' : 'rec'; renderPend(+$('fAno').value); });
 ['pDe','pAte','vDe','vAte','pOrd','vOrd'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
