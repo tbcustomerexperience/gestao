@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trocas &amp; Devoluções</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: painel gerencial calmo, de relatório mensal, nada de enfeite.
+   IDEA: a ficha de controle de devoluções da TB — cabeçalho verde, régua dourada.
+   PICTURE: gráfico mensal Troca x Devolução em destaque logo abaixo dos números.
+   COLOUR and TYPE: verde TB #2C4F3A dominante, dourado #B89A5E de apoio, terracota para alerta; Cormorant Garamond + DM Sans.
+   LAYOUT: faixa verde com filtros, abas, conteúdo até 1240px; empilha abaixo de 600px. */
+:root{color-scheme:light dark;
+ --bg:light-dark(#f7f5f0,#111a15);--card:light-dark(#fff,#18241d);--ink:light-dark(#1d2a22,#e9ece6);--mute:light-dark(#66706a,#9aa59e);
+ --line:light-dark(#e3dfd4,#2a3a30);--verde:#2C4F3A;--verde2:light-dark(#2C4F3A,#7fb08f);--ouro:#B89A5E;--ouro2:light-dark(#9a7d43,#d4b97f);
+ --alerta:light-dark(#a8482c,#e38d6f);--soft:light-dark(#eef2ec,#1f2d25)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,5vw,46px)}h2{font-size:26px;margin-bottom:12px}
+.top{background:var(--verde);color:#f4efe2;padding:28px max(5vw,16px) 0;border-bottom:3px solid var(--ouro)}
+.top .in,.wrap{max-width:1240px;margin:0 auto}
+.top p{margin:6px 0 0;color:#cfd8cf;font-size:15px}
+.filt{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 0;align-items:end}
+.filt label{font-size:13px;color:#cfd8cf;display:grid;gap:4px}
+select,input,button{font:inherit;font-size:16px}
+textarea{width:100%;font:14px/1.5 inherit;font-family:inherit;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card);color:var(--ink);resize:vertical}
+select,input[type=text],input[type=search],input[type=date]{min-height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:var(--card);color:var(--ink)}
+.top select{background:#244232;color:#fff;border-color:#4b6b57}
+button{min-height:44px;border-radius:8px;border:1px solid var(--verde2);background:var(--card);color:var(--verde2);padding:0 16px;cursor:pointer;font-weight:500}
+button.pri{background:var(--verde);border-color:var(--verde);color:#fff}
+button.x{border-color:var(--alerta);color:var(--alerta)}
+:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+nav{display:flex;gap:2px;margin-top:20px;overflow-x:auto}
+nav a{flex:none;color:#cfd8cf;text-decoration:none;padding:12px 16px;border-radius:8px 8px 0 0;font-weight:500}
+nav a.on{background:var(--bg);color:var(--ink)}
+.wrap{padding:24px max(5vw,16px) 56px}
+.view{display:none}.view.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-rows:2.8em auto 1.4em;align-items:center;justify-items:center;text-align:center;height:100%}
+.k b{display:block;font-size:clamp(22px,3vw,28px);font-weight:600;white-space:nowrap;line-height:1.2}
+.k span{font-size:13px;color:var(--mute);line-height:1.35;align-self:end}.k i{font-style:normal;font-size:13px;display:block}
+.up{color:var(--alerta)}.down{color:var(--verde2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:20px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px}
+.grid2 .card{margin:0}
+.fig{position:relative;min-height:300px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.leg{display:flex;gap:16px;font-size:13px;color:var(--mute);margin-bottom:6px}.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--mute);font-size:13px;border-bottom:1px solid var(--line);padding:8px 6px}
+td{border-bottom:1px solid var(--line);padding:8px 6px;vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--ouro);margin-top:4px}
+.nw{white-space:nowrap}
+.chip{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--soft);font-size:13px;margin:0 6px 6px 0}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--soft);white-space:nowrap}
+.tag.a{background:light-dark(#f6e4dc,#3a241c);color:var(--alerta)}
+.note{font-size:14px;color:var(--mute)}
+.drop{display:block;border:2px dashed var(--ouro);border-radius:12px;padding:32px 20px;text-align:center;background:var(--card);cursor:pointer}
+.drop.hot{background:var(--soft)}
+.drop b{font-family:"Cormorant Garamond",serif;font-size:26px;display:block}
+.drop span{display:block}
+.btnfile{display:inline-flex;align-items:center;min-height:44px;border:1px solid var(--verde2);border-radius:8px;padding:0 16px;color:var(--verde2);font-weight:500;cursor:pointer}
+.ok{color:var(--verde2)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.steps div{background:var(--soft);border-radius:10px;padding:12px 14px;font-size:14px}
+.steps strong{display:block}
+.log{white-space:pre-wrap;font-size:14px;background:var(--soft);border-radius:8px;padding:12px;margin-top:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.banner{background:light-dark(#f6e4dc,#3a241c);color:var(--alerta);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px}
+.empty{padding:40px 10px;text-align:center;color:var(--mute)}
+.scroll{overflow-x:auto}
+.dlg{position:fixed;inset:0;background:#0008;display:none;place-items:center;padding:16px;z-index:9}
+.dlg.on{display:grid}.dlg>div{background:var(--card);border-radius:12px;padding:22px;max-width:420px}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1>Trocas &amp; Devoluções</h1>
+  <p id="sub">Carregando base…</p>
+  <div class="filt">
+    <label>Ano<select id="fAno"></select></label>
+    <label>Mês<select id="fMes"></select></label>
+  </div>
+  <nav id="nav">
+    <a href="#indicadores" data-v="indicadores">Indicadores</a>
+    <a href="#estornos" data-v="estornos">Estornos pendentes</a>
+    <a href="#base" data-v="base">Base de dados</a>
+    <a href="#atualizar" data-v="atualizar">Atualizar dados</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div id="aviso"></div>
+
+  <section class="view" id="v-indicadores">
+    <div class="kpis" id="kpis"></div>
+    <div class="card">
+      <h2>Valor devolvido por mês</h2>
+      <div class="leg"><span><i style="background:var(--verde2)"></i>Devolução</span><span><i style="background:var(--ouro)"></i>Troca</span></div>
+      <div class="fig" id="fig"><svg id="chart" role="img" aria-label="Valor devolvido por mês, troca e devolução"></svg></div>
+    </div>
+    <div class="card"><h2 id="tMot">Motivos</h2><div class="scroll"><table id="tbMot"></table></div></div>
+    <div class="grid2">
+      <div class="card"><h2>Mais devolvidos por arrependimento</h2><div class="scroll"><table id="tbArr"></table></div></div>
+      <div class="card"><h2>Mais devolvidos por defeito ou avaria</h2><div class="scroll"><table id="tbDef"></table></div></div>
+    </div>
+    <p class="note" id="notaExcl"></p>
+  </section>
+
+  <section class="view" id="v-estornos">
+    <div class="kpis" id="kpiPend"></div>
+    <div class="card">
+      <h2>Devoluções sem solicitação de estorno no Jira</h2>
+      <div id="porAnalista"></div>
+      <div class="row" style="margin:8px 0 12px;align-items:end">
+        <label class="note" style="display:grid;gap:4px">Analista <select id="fAn"></select></label>
+        <label class="note" style="display:grid;gap:4px">Data de <input type="date" id="pDe"></label>
+        <label class="note" style="display:grid;gap:4px">até <input type="date" id="pAte"></label>
+        <button id="pLimpa">Limpar datas</button>
+      </div>
+      <p class="note" id="pPer"></p>
+      <table class="stack" id="tbPend"></table>
+    </div>
+    <div class="card">
+      <h2>Estornos no Jira sem reversa no Troque</h2>
+      <p class="note">Solicitações do ano que não acham o TBS no Troque nem nos controles manuais de devolução. Antes era o "Verificar Lançamento".</p>
+      <div class="row" style="margin:8px 0 12px;align-items:end">
+        <label class="note" style="display:grid;gap:4px">Data de <input type="date" id="vDe"></label>
+        <label class="note" style="display:grid;gap:4px">até <input type="date" id="vAte"></label>
+        <button id="vLimpa">Limpar datas</button>
+      </div>
+      <p class="note" id="vNota"></p>
+      <table class="stack" id="tbVer"></table>
+    </div>
+  </section>
+
+  <section class="view" id="v-base">
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <input type="search" id="busca" placeholder="Buscar pedido, TBS, cliente, produto…" style="flex:1 1 280px">
+        <button class="pri" id="btXls">Baixar Excel</button>
+      </div>
+      <p class="note" id="baseInfo"></p>
+      <div class="scroll"><table id="tbBase"></table></div>
+      <div class="row" style="margin-top:12px"><button id="mais">Mostrar mais</button></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-atualizar">
+    <div class="card">
+      <h2>Exports do mês</h2>
+      <p class="note">Arraste os arquivos juntos, do jeito que saem de cada sistema (.xlsx ou .csv), sem tirar colunas. O painel reconhece cada um pelo cabeçalho. Pode ser o histórico todo ou só o mês: o que vier no arquivo substitui o que já existe (produtos por pedido, reversas pela reversa, estornos pela referência) e o resto do histórico fica salvo.</p>
+      <div class="steps">
+        <div><strong>1. Troque · produtos</strong>produtos_taniabulhoes_….csv</div>
+        <div><strong>2. Troque · reversas</strong>reversas_taniabulhoes_….csv</div>
+        <div><strong>3. BI · TBS</strong>Export com order_vtex_id e order_tbs_id</div>
+        <div><strong>4. Jira · estornos</strong>Colados no quadro abaixo (planilha também funciona)</div>
+        <div><strong>5. Controle de Devolução 2026</strong>A aba salva como arquivo próprio (.xlsx ou .csv)</div>
+      </div>
+      <label class="drop" data-modo="mes"><b>Solte os exports aqui</b><span class="note">ou clique para escolher</span>
+        <input type="file" multiple accept=".xlsx,.xls,.csv" hidden></label>
+      <div class="log" id="log" hidden></div>
+    </div>
+    <div class="card">
+      <h2>Estornos do Jira</h2>
+      <p class="note">No portal do Jira, selecione a lista de solicitações (do cabeçalho até a última linha), copie e cole aqui. "Hoje" e "Ontem" viram a data do dia em que você colar. Solicitações já salvas são atualizadas pela referência (CR-…), então pode colar a lista inteira ou só as mais recentes.</p>
+      <textarea id="jira" rows="8" placeholder="Estorno de venda (ou Cancelamento)&#10;Hoje&#10;CR-11752&#10;Estorno integral - TBS-01414899 - …&#10;Tarefas pendentes&#10;Contas a Receber&#10;Tayna Moura"></textarea>
+      <div class="row" style="margin-top:10px"><button class="pri" id="jiraOk">Importar estornos</button><span class="note" id="jiraPrev"></span></div>
+      <div class="log" id="logJ" hidden></div>
+    </div>
+    <div class="card">
+      <h2>Histórico de devoluções</h2>
+      <p class="note">Para planilhas de histórico: a antiga "Análise devoluções (Troque Commerce).xlsx" (traz os estornos antigos do Jira e as correções) e o "Histórico de devoluções.xlsx" (controles 2024 a 2026). O painel lê todas as abas, inclusive as ocultas, e aqui só <strong>acrescenta</strong> o que falta: não sobrescreve pedidos, reversas e estornos que já vieram dos exports mais recentes.</p>
+      <label class="drop" data-modo="hist"><b>Solte a planilha do histórico</b><span class="note">.xlsx · ou clique para escolher</span>
+        <input type="file" accept=".xlsx,.xlsm,.xls" hidden></label>
+      <div class="log" id="logH" hidden></div><div id="histLog"></div>
+    </div>
+    <div class="card"><h2>Situação da base</h2><p>Salvamento: <span class="tag" id="salvo">Verificando…</span></p><div id="status"></div></div>
+    <div class="card">
+      <h2>Backup da base</h2>
+      <p class="note">A base fica guardada só neste navegador. Depois de cada atualização, baixe o backup e guarde o arquivo numa pasta sua (OneDrive, SharePoint). Para abrir em outro computador, ou se o navegador for limpo, é só carregar o último backup. <strong>Não suba o backup no GitHub:</strong> ele tem nomes de clientes.</p>
+      <div class="row"><button class="pri" id="bkDown">Baixar backup</button>
+        <label class="btnfile"><span>Carregar backup (.json)</span><input type="file" id="bkUp" accept=".json" hidden></label>
+        <span class="note" id="bkInfo"></span></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Correções de tipo</h2>
+        <p class="note">Pedidos lançados com o tipo errado no Troque. A correção vale para os indicadores.</p>
+        <div class="row" style="margin-bottom:10px">
+          <input type="text" id="cPed" placeholder="Pedido (ex.: 1625130658364-01)" style="flex:1 1 200px">
+          <select id="cTipo"><option>Troca</option><option>Devolução</option><option>Cancelado</option></select>
+          <button id="cAdd">Incluir</button>
+        </div>
+        <table id="tbCorr"></table>
+      </div>
+      <div class="card">
+        <h2>Itens fora dos rankings</h2>
+        <p class="note">Produtos que contêm estes trechos ficam fora dos indicadores (amostras e brindes).</p>
+        <div class="row" style="margin-bottom:10px"><input type="text" id="xTerm" placeholder="Trecho do nome" style="flex:1 1 200px"><button id="xAdd">Incluir</button></div>
+        <div id="xList"></div>
+      </div>
+    </div>
+    <div class="card"><h2>Recomeçar</h2><p class="note">Apaga a base salva neste painel. Os arquivos originais não são afetados.</p><button class="x" id="btZera">Apagar base</button></div>
+  </section>
+</main>
+
+<div class="dlg" id="dlg"><div><p id="dlgTxt"></p><div class="row"><button class="x" id="dlgOk">Apagar</button><button id="dlgNo">Cancelar</button></div></div></div>
+
+<script>
+/* ===== Lógica (sem DOM) — também testada no Node ===== */
+const L = (() => {
+  const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+  const txt = v => (v === null || v === undefined) ? '' : String(v).replace(/\s+/g,' ').trim();
+  const pad = n => String(n).padStart(2,'0');
+  function parseDate(v){
+    if (v === null || v === undefined || v === '') return '';
+    if (v instanceof Date && !isNaN(v)) {
+      // SheetJS devolve datas em horário local; arredonda para o dia mais próximo
+      const d = new Date(v.getTime() + 12*3600e3);
+      return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    }
+    if (typeof v === 'number' && v > 20000 && v < 80000) {
+      const d = new Date(Math.round((v - 25569) * 86400e3));
+      return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate());
+    }
+    const s = String(v).trim();
+    let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    if (m) { let y = +m[3]; if (y < 100) y += 2000; return y+'-'+pad(m[2])+'-'+pad(m[1]); }
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[1]+'-'+m[2]+'-'+m[3];
+    return '';
+  }
+  function parseNum(v){
+    if (typeof v === 'number') return v;
+    let s = txt(v).replace(/[R$\s]/g,'');
+    if (!s || s === '-') return 0;
+    if (s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+    const n = parseFloat(s); return isNaN(n) ? 0 : n;
+  }
+  const tbsKey = s => { const m = String(s ?? '').match(/TBS\s*-?\s*0*(\d{3,})/i); return m ? 'TBS-' + m[1] : ''; };
+  const tbsAll = s => [...String(s ?? '').matchAll(/TBS\s*-?\s*0*(\d{3,})/gi)].map(m => 'TBS-' + m[1]);
+  const nomeAnalista = (an, email) => {
+    let s = txt(an);
+    if (!s && email) s = String(email).split('@')[0].split(/[._]/).map(w => w ? w[0].toUpperCase() + w.slice(1) : '').join(' ');
+    return s.replace(/\s+/g,' ');
+  };
+
+  // linhas de uma aba -> objetos com cabeçalho normalizado
+  function rowsFrom(aoa){
+    let h = 0; while (h < Math.min(aoa.length, 10) && (aoa[h] || []).filter(c => txt(c)).length < 3) h++;
+    const head = (aoa[h] || []).map(norm);
+    const out = [];
+    for (let i = h + 1; i < aoa.length; i++) {
+      const r = aoa[i]; if (!r || !r.some(c => txt(c))) continue;
+      const o = {}; head.forEach((k, j) => { if (k && !(k in o)) o[k] = r[j]; }); out.push(o);
+    }
+    return { head, rows: out };
+  }
+  function detect(head){
+    const has = k => head.includes(k);
+    const any = re => head.some(k => re.test(k));
+    if (has('pedido') && has('sku') && has('produto')) return 'prod';
+    if (has('reversa') && (has('tipo de reversa') || has('status da entrega'))) return 'rev';
+    if (has('resumo') && (has('referencia') || has('chave') || has('key'))) return 'est';
+    if (any(/tbs/) && any(/vtex/)) return 'bi';
+    return null;
+  }
+  const g = (o, ...ks) => { for (const k of ks) if (o[k] !== undefined && o[k] !== null && o[k] !== '') return o[k]; return ''; };
+
+  const mapProd = o => ({
+    p: txt(g(o,'pedido')), d: parseDate(g(o,'data')), st: txt(g(o,'status')), nm: txt(g(o,'nome')),
+    cid: txt(g(o,'cidade')), uf: txt(g(o,'estado')), tr: txt(g(o,'transporte')),
+    v: parseNum(g(o,'valor')), q: parseNum(g(o,'quantidade')) || 0, sku: txt(g(o,'sku')),
+    pr: txt(g(o,'produto')), mo: txt(g(o,'motivo')), ti: txt(g(o,'tipo')),
+    rec: txt(g(o,'produto recebido')), dr: parseDate(g(o,'data recebimento')),
+    dl: parseDate(g(o,'data de criacao do pedido na loja')), tbs: tbsKey(g(o,'tbs'))
+  });
+  const mapRev = o => ({
+    p: txt(g(o,'reversa')), d: parseDate(g(o,'data de criacao')), tp: txt(g(o,'reversa total/parcial')),
+    po: txt(g(o,'tipo')), fr: parseNum(g(o,'frete reverso')), se: txt(g(o,'status da entrega')),
+    dr: parseDate(g(o,'data do recebimento')), an: nomeAnalista(g(o,'analista'), g(o,'criado por')),
+    tr: txt(g(o,'transportadora'))
+  });
+  const mapEst = o => {
+    const resumo = txt(g(o,'resumo'));
+    const keys = [...new Set([...tbsAll(resumo), tbsKey(g(o,'pedidotbs'))].filter(Boolean))];
+    return { r: txt(g(o,'referencia','chave','key')), d: parseDate(g(o,'data de criacao','criado','created')),
+      s: txt(g(o,'status')), rs: resumo, sol: txt(g(o,'solicitante','relator','reporter')), k: keys };
+  };
+  function mapBI(o){
+    const ks = Object.keys(o), kt = ks.find(k => /tbs/.test(k)), kv = ks.find(k => /vtex/.test(k)), kd = ks.find(k => /order_date/.test(k));
+    return { v: txt(o[kv]), t: tbsKey(o[kt]), d: kd ? parseDate(o[kd]).slice(0,7) : '' };
+  }
+  // ligação TBS -> VTEX guardada por mês do pedido (texto compacto "1414899:1676010702759-01|...")
+  let biCache = null;
+  function biGuardar(S, pares){
+    const lim = new Date(); lim.setMonth(lim.getMonth() - 12);
+    const corte = lim.getFullYear() + '-' + pad(lim.getMonth() + 1);
+    S.bi = S.bi || {};
+    const porMes = {};
+    pares.forEach(r => { const m = r.d || 'sem-data'; if (m !== 'sem-data' && m < corte) return; (porMes[m] ||= new Map()).set(r.t.slice(4), r.v); });
+    for (const [m, novo] of Object.entries(porMes)) {
+      const atual = new Map((S.bi[m] || '').split('|').filter(Boolean).map(x => x.split(':')));
+      novo.forEach((v, t) => atual.set(t, v));
+      S.bi[m] = [...atual].map(([t, v]) => t + ':' + v).join('|');
+    }
+    for (const m of Object.keys(S.bi)) if (m !== 'sem-data' && m < corte) delete S.bi[m];
+    biCache = null;
+  }
+  function vtexDe(S, k){
+    const assin = Object.entries(S.bi || {}).map(([m, t]) => m + t.length).join();
+    if (!biCache || biCache.assin !== assin) { biCache = new Map(); biCache.assin = assin; Object.values(S.bi || {}).forEach(txt => txt.split('|').forEach(x => { const i = x.indexOf(':'); if (i > 0) biCache.set(x.slice(0, i), x.slice(i + 1)); })); }
+    return (S.vtex || {})[k] || biCache.get(String(k).replace(/^TBS-/, '')) || '';
+  }
+
+  // lê um workbook (SheetJS) e devolve o que encontrou
+  function readWorkbook(XLSX, wb){
+    const found = { prod: [], rev: [], est: [], bi: [], corr: [], lanc: [], historico: false, abas: [] };
+    const aoaOf = ws => XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
+    const names = wb.SheetNames;
+    const isHist = names.includes('produto_troque');
+    found.historico = isHist;
+    const vis = (wb.Workbook && wb.Workbook.Sheets) || [];
+    for (const [i, n] of names.entries()) {
+      const ws = wb.Sheets[n]; if (!ws) continue;
+      const nn = norm(n), oculta = !!(vis[i] && vis[i].Hidden);
+      const aba = (t, qtd) => found.abas.push({ n, oculta, t, qtd });
+      if (isHist && /^(analise_area|analitics)$/.test(nn)) { aba('resumo antigo (não precisa)', 0); continue; }
+      if (isHist && nn === 'correcoes') {
+        const a0 = found.corr.length;
+        rowsFrom(aoaOf(ws)).rows.forEach(o => { const p = txt(o['pedido']), c = txt(o['correcao']); if (p && c) found.corr.push({ p, c }); });
+        aba('correções de tipo', found.corr.length - a0); continue;
+      }
+      const cab = rowsFrom(aoaOf(ws)).head;
+      if (/controle de devolucao/.test(nn) || (cab.includes('data da solicitacao') && cab.includes('pedido') && !cab.includes('sku'))) {
+        const ks = rowsFrom(aoaOf(ws)).rows.map(o => tbsKey(o['pedido'])).filter(Boolean);
+        found.lanc.push(...ks); aba('controle manual de devoluções', ks.length); continue;
+      }
+      const { head, rows } = rowsFrom(aoaOf(ws));
+      const t = detect(head);
+      if (!t) { aba('não reconhecida', 0); continue; }
+      aba({ prod:'produtos do Troque', rev:'reversas do Troque', est:'estornos do Jira', bi:'TBS do BI' }[t], rows.length);
+      if (t === 'prod') rows.forEach(o => { const r = mapProd(o); if (r.p && r.d) found.prod.push(r); });
+      if (t === 'rev') rows.forEach(o => { const r = mapRev(o); if (r.p) found.rev.push(r); });
+      if (t === 'est') rows.forEach(o => { const r = mapEst(o); if (r.r) found.est.push(r); });
+      if (t === 'bi') rows.forEach(o => { const r = mapBI(o); if (r.v && r.t) found.bi.push(r); });
+    }
+    found.lanc = [...new Set(found.lanc)];
+    return found;
+  }
+
+  // lista colada do portal do Jira (Service Desk): blocos com data, CR-xxx, resumo, status, projeto, solicitante
+  const MES_ABR = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };
+  function dataJira(s, hoje){
+    const t = norm(s), base = hoje ? new Date(hoje + 'T12:00') : new Date();
+    const f = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    if (/^hoje\b/.test(t)) return f(base);
+    if (/^ontem\b/.test(t)) return f(new Date(base.getTime() - 864e5));
+    const m = t.match(/^(\d{1,2})\/([a-z]{3})\/(\d{2,4})/);
+    if (m && MES_ABR[m[2]]) { let y = +m[3]; if (y < 100) y += 2000; return y+'-'+pad(MES_ABR[m[2]])+'-'+pad(m[1]); }
+    return parseDate(s);
+  }
+  // formato tabela: uma solicitação por linha (colunas por tab, ou espaços)
+  const STATUS_J = /(itens conclu[ií]dos|em andamento|tarefas pendentes|aguardando[^\t]*?|cancelad[oa]|resolvid[oa]|conclu[ií]d[oa]|aberto|fechado)/i;
+  function linhaJira(l, hoje){
+    const semLink = x => x.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').trim();
+    const cel = l.split('\t').map(semLink).filter(Boolean);
+    const iR = cel.findIndex(c => /^(?!TBS-)[A-Z][A-Z0-9]+-\d+$/.test(c));
+    if (cel.length >= 4 && iR >= 0) {
+      const antes = cel.slice(0, iR).reverse().find(c => dataJira(c, hoje)) || '';
+      const depois = cel.slice(iR + 1);
+      const sol = depois.slice(2).filter(c => !/^contas a receber$/i.test(c) && !/^estorno de venda/i.test(c));
+      return { r: cel[iR], d: antes ? dataJira(antes, hoje) : '', rs: depois[0] || '', s: depois[1] || '', sol: sol[sol.length - 1] || '', k: tbsAll(depois[0]) };
+    }
+    // sem tab: data · CR · resumo · status · projeto · solicitante separados por espaços
+    const t = semLink(l).replace(/\s+/g, ' ');
+    const m = t.match(/^(.*?)\b((?!TBS-)[A-Z][A-Z0-9]+-\d+)\s+(.*)$/); if (!m) return null;
+    const pre = m[1].trim().split(' ').reverse().find(c => dataJira(c, hoje)) || m[1].trim();
+    let rest = m[3], st = '', sol = '';
+    const ms = rest.match(STATUS_J);
+    if (ms) { st = ms[1]; sol = rest.slice(ms.index + ms[1].length); rest = rest.slice(0, ms.index); }
+    sol = sol.replace(/contas a receber/i, '').trim();
+    return { r: m[2], d: dataJira(pre, hoje), rs: rest.trim(), s: st.trim(), sol, k: tbsAll(rest) };
+  }
+  function parseJira(texto, hoje){
+    const tira = l => l.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');
+    const umaLinha = l => /\b(?!TBS-)[A-Z][A-Z0-9]+-\d+\b/.test(tira(l)) && /TBS|estorno/i.test(tira(l));
+    const linhas = String(texto || '').split(/\r?\n/);
+    if (linhas.some(umaLinha)) {
+      const out = linhas.map(l => umaLinha(l) ? linhaJira(l, hoje) : null).filter(Boolean);
+      if (out.length) return out;
+    }
+    const semLink = l => l.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').trim();
+    const L0 = String(texto || '').split(/\r?\n/).map(l => semLink(l.replace(/\t/g, ' '))).filter(Boolean);
+    const isRef = l => /^(?!TBS-)[A-Z][A-Z0-9]+-\d+$/.test(l);
+    const idx = L0.map((l, i) => isRef(l) ? i : -1).filter(i => i >= 0);
+    return idx.map((i, j) => {
+      const fim = j + 1 < idx.length ? idx[j + 1] - 2 : L0.length; // antes do tipo + data do próximo
+      const resto = L0.slice(i + 1, Math.max(i + 1, fim));
+      const resumo = resto[0] || '', status = resto[1] || '';
+      const sol = resto.slice(2).filter(l => !/^contas a receber$/i.test(l) && !/^estorno de venda/i.test(l));
+      return { r: L0[i], d: dataJira(L0[i - 1] || '', hoje), s: status, rs: resumo, sol: sol[sol.length - 1] || '', k: tbsAll(resumo) };
+    }).filter(e => e.r);
+  }
+
+  // ---- regras copiadas das fórmulas da planilha ----
+  function agrupar(n){
+    const has = s => n.includes(s);
+    if (has('Refil')) return n;
+    if (has('Difusor para Ambiente')) return n;
+    if (has('Essência') && has('Difusor Elétrico')) return n;
+    if (has('Difusor Elétrico') && has('Seixos')) return 'Difusor Elétrico Seixos';
+    if (has('Difusor Elétrico') && has('Colmeia')) return 'Difusor Elétrico Colmeia';
+    for (const k of ['Difusor Porcelana Flor','Difusor Costela de Adão','Difusor de Porcelana Lótus','Difusor de Cristal Protea Prata','Difusor Porcelana Vitória Régia']) if (has(k)) return k;
+    if (has('Difusor') && has('Carro')) return 'Difusor para Carro';
+    return n;
+  }
+  function motivoAtual(m){
+    if (['Desistência','Arrependimento','Não gostei do produto','Desistência ou Arrependimento'].includes(m)) return 'Desistência ou Arrependimento';
+    if (['Atraso na Entrega','Falha na Entrega'].includes(m)) return 'Problemas na Entrega';
+    return m || 'Sem motivo';
+  }
+
+  // junta tudo: linhas enriquecidas (equivalente à aba produto_troque)
+  function build(S){
+    const rev = new Map(S.rev.map(r => [r.p, r]));
+    const corr = new Map(S.corr.map(c => [c.p, c.c]));
+    const est = new Map();
+    for (const e of S.est) for (const k of e.k) if (!est.has(k)) est.set(k, e);
+    const seen = new Set();
+    return S.prod.map(r => {
+      const rv = rev.get(r.p) || {};
+      const first = !seen.has(r.p); seen.add(r.p);
+      const ta = corr.get(r.p) || r.ti;
+      const e = r.tbs ? est.get(r.tbs) : null;
+      return { ...r,
+        ano: +r.d.slice(0,4), mes: +r.d.slice(5,7), grp: agrupar(r.pr), ta, ma: motivoAtual(r.mo),
+        tot: Math.round(r.q * r.v * 100) / 100,
+        tp: rv.tp || '', po: rv.po || '', fr: first ? (rv.fr || 0) : 0, se: rv.se || '', an: rv.an || '',
+        drv: rv.dr || r.dr,
+        // usa o tipo corrigido: troca (ou cancelado) não tem estorno
+        est: ta !== 'Devolução' ? '-' : (e ? e.r : (r.tbs ? 'Estorno Pendente' : 'Sem TBS')),
+        dest: ta !== 'Devolução' ? '-' : (e ? e.d : ''), ests: e ? e.s : ''
+      };
+    });
+  }
+
+  const excluido = (r, termos) => termos.some(t => t && norm(r.grp).includes(norm(t)));
+  function analytics(rows, { ano, mes, excl }){
+    const base = rows.filter(r => r.ano === ano && (r.ta === 'Troca' || r.ta === 'Devolução') && !excluido(r, excl));
+    const per = mes ? base.filter(r => r.mes === mes) : base;
+    const sum = (a, f = r => r.tot) => a.reduce((s, r) => s + f(r), 0);
+    // mês x tipo
+    const meses = [...new Set(base.map(r => r.mes))].sort((a,b) => a-b).map(m => {
+      const a = base.filter(r => r.mes === m);
+      return { m, troca: sum(a.filter(r => r.ta === 'Troca')), dev: sum(a.filter(r => r.ta === 'Devolução')),
+        pedidos: new Set(a.map(r => r.p)).size };
+    });
+    // motivos x tipo
+    const mot = {};
+    per.forEach(r => { const o = mot[r.ma] ||= { m: r.ma, dev: 0, troca: 0 }; o[r.ta === 'Troca' ? 'troca' : 'dev'] += r.tot; });
+    const motivos = Object.values(mot).map(o => ({ ...o, tot: o.dev + o.troca })).sort((a,b) => b.tot - a.tot);
+    const top = filtro => {
+      const t = {}; per.filter(filtro).forEach(r => { const o = t[r.grp] ||= { n: r.grp, q: 0, v: 0 }; o.q += r.q; o.v += r.tot; });
+      const arr = Object.values(t).sort((a,b) => b.v - a.v || b.q - a.q);
+      const total = sum(arr, o => o.v); let ac = 0;
+      return arr.map(o => { ac += o.v; return { ...o, pct: total ? o.v/total : 0, acum: total ? ac/total : 0 }; });
+    };
+    const k = a => ({ tot: sum(a), dev: sum(a.filter(r => r.ta === 'Devolução')), troca: sum(a.filter(r => r.ta === 'Troca')),
+      pedidos: new Set(a.map(r => r.p)).size, itens: sum(a, r => r.q) });
+    const prev = mes ? (mes > 1 ? base.filter(r => r.mes === mes - 1) : null) : null;
+    return { meses, motivos,
+      arrep: top(r => r.ma === 'Desistência ou Arrependimento'),
+      defeito: top(r => r.ma === 'Produto com defeito' || r.ma === 'Produto Avariado'),
+      kpi: k(per), kpiPrev: prev && prev.length ? k(prev) : null };
+  }
+
+  // devoluções sem estorno no Jira (equivale à aba analise_area)
+  // de/ate (AAAA-MM-DD): se preenchidos, valem no lugar do ano
+  const noPeriodo = (d, ano, de, ate) => (de || ate) ? (!!d && (!de || d >= de) && (!ate || d <= ate)) : +String(d).slice(0,4) === ano;
+  function pendencias(rows, ano, de, ate){
+    const m = new Map();
+    rows.filter(r => noPeriodo(r.d, ano, de, ate) && r.ta === 'Devolução' && (r.est === 'Estorno Pendente' || r.est === 'Sem TBS')).forEach(r => {
+      const o = m.get(r.p) || { ...r, itens: 0, valor: 0 };
+      o.itens += r.q; o.valor += r.tot; m.set(r.p, o);
+    });
+    return [...m.values()].sort((a,b) => a.an.localeCompare(b.an) || a.d.localeCompare(b.d));
+  }
+  // estornos no Jira sem reversa no Troque nem lançamento manual (Status Final = Verificar Lançamento)
+  function verificar(S, rows, ano, de, ate){
+    const noTroque = new Set(rows.map(r => r.tbs).filter(Boolean));
+    const lanc = new Set(S.lanc);
+    return S.est.filter(e => noPeriodo(e.d, ano, de, ate) && !/cancel/i.test(e.s) && !e.k.some(k => noTroque.has(k) || lanc.has(k)))
+      .sort((a,b) => b.d.localeCompare(a.d));
+  }
+
+  // mescla um upload na base. Produtos: substitui por pedido. Reversas: por reversa. Estornos: por referência.
+  function merge(S, f, op = {}){
+    // op.soNovos: histórico antigo só acrescenta o que ainda não existe (não sobrescreve dados mais novos)
+    if (op.soNovos) {
+      const tem = new Set(S.prod.map(r => r.p).concat(S.canc || [])), temR = new Set(S.rev.map(r => r.p)), temE = new Set(S.est.map(r => r.r));
+      f = { ...f, prod: f.prod.filter(r => !tem.has(r.p)), rev: f.rev.filter(r => !temR.has(r.p)), est: f.est.filter(r => !temE.has(r.r)) };
+    }
+    const n = { prod: 0, rev: 0, est: 0, bi: 0, det: {} };
+    // novos / atualizados / mantidos do histórico, por fonte
+    const conta = (nome, antigos, chegou) => { const a = new Set(antigos), c = new Set(chegou);
+      let novos = 0, atual = 0; c.forEach(k => a.has(k) ? atual++ : novos++);
+      n.det[nome] = { novos, atual, mantidos: [...a].filter(k => !c.has(k)).length }; };
+    if (f.prod.length) conta('pedidos (produtos)', S.prod.map(r => r.p), f.prod.filter(r => !/^cancelad/i.test(r.st)).map(r => r.p));
+    if (f.rev.length) conta('reversas', S.rev.map(r => r.p), f.rev.map(r => r.p));
+    if (f.est.length) conta('estornos', S.est.map(r => r.r), f.est.map(r => r.r));
+    if (f.prod.length) {
+      const oldTbs = new Map(S.prod.filter(r => r.tbs).map(r => [r.p, r.tbs]));
+      // pedidos do upload substituem os antigos; itens com status Cancelado ficam fora (como na planilha antiga)
+      const ped = new Set(f.prod.map(r => r.p)), vale = f.prod.filter(r => !/^cancelad/i.test(r.st));
+      const valeP = new Set(vale.map(r => r.p));
+      S.canc = [...new Set((S.canc || []).filter(p => !valeP.has(p)).concat([...ped].filter(p => !valeP.has(p))))];
+      S.prod = S.prod.filter(r => !ped.has(r.p)).concat(vale.map(r => ({ ...r, tbs: r.tbs || oldTbs.get(r.p) || '' })));
+      n.prod = vale.length; n.canc = f.prod.length - vale.length;
+    }
+    if (f.rev.length) { const m = new Map(S.rev.map(r => [r.p, r])); f.rev.forEach(r => m.set(r.p, r)); S.rev = [...m.values()]; n.rev = f.rev.length; }
+    if (f.est.length) { const m = new Map(S.est.map(r => [r.r, r]));
+      // campo vazio no que chegou não apaga o que já estava salvo
+      f.est.forEach(r => { const o = m.get(r.r); m.set(r.r, o ? { ...o, ...Object.fromEntries(Object.entries(r).filter(([k, v]) => Array.isArray(v) ? v.length : v)) } : r); }); S.est = [...m.values()]; n.est = f.est.length; }
+    if (f.bi.length) {
+      biGuardar(S, f.bi);
+      const m = new Map(f.bi.map(r => [r.v, r.t]));
+      S.prod.forEach(r => { const t = m.get(r.p); if (t && t !== r.tbs) { r.tbs = t; n.bi++; } });
+      // TBS -> VTEX dos estornos (para os que não estão no Troque)
+      const inv = new Map(); f.bi.forEach(r => { if (!inv.has(r.t)) inv.set(r.t, r.v); });
+      S.vtex = S.vtex || {};
+      S.est.forEach(e => e.k.forEach(k => { const v = inv.get(k); if (v) S.vtex[k] = v; }));
+    }
+    if (f.corr.length) { const m = new Map(S.corr.map(c => [c.p, c])); f.corr.forEach(c => m.set(c.p, c)); S.corr = [...m.values()]; }
+    if (f.lanc.length) S.lanc = [...new Set(S.lanc.concat(f.lanc))];
+    S.prod.sort((a,b) => a.d.localeCompare(b.d) || a.p.localeCompare(b.p));
+    return n;
+  }
+
+  return { MESES, norm, vtexDe, parseJira, parseDate, parseNum, tbsKey, readWorkbook, build, analytics, pendencias, verificar, merge, agrupar, motivoAtual };
+})();
+
+
+</script>
+<script>
+{
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl = v => 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const brl0 = v => 'R$ ' + Math.round(v||0).toLocaleString('pt-BR');
+const pct = v => (v*100).toLocaleString('pt-BR',{maximumFractionDigits:1}) + '%';
+const dt = s => s ? s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4) : '';
+const MES = L.MESES;
+
+let S = { prod:[], rev:[], est:[], corr:[], lanc:[], canc:[], vtex:{}, bi:{}, excl:['Eau de Parfum 2ml'], upd:'' };
+let rows = [], db = null, uid = null, saved = {}, nBase = 100;
+
+/* ---------- armazenamento (db privado por pessoa) ---------- */
+function chunks(){
+  const out = { meta: { excl:S.excl, corr:S.corr, lanc:S.lanc, canc:S.canc||[], vtex:S.vtex||{}, upd:S.upd } };
+  const put = (pre, arr, dkey) => arr.forEach(r => { const k = pre + (r[dkey]||'0000-00').slice(0,7); (out[k] ||= { rows:[] }).rows.push(r); });
+  put('p-', S.prod, 'd'); put('r-', S.rev, 'd'); put('e-', S.est, 'd');
+  Object.entries(S.bi || {}).forEach(([m, txt]) => { out['b-' + m] = { s: txt }; });
+  return out;
+}
+const LKEY = 'trocas-devolucoes-base-v1';
+function saveLocal(){
+  try { localStorage.setItem(LKEY, JSON.stringify(S)); return true; } catch(e){ return false; }
+}
+function loadLocal(){
+  try { const v = JSON.parse(localStorage.getItem(LKEY) || 'null'); if (v && v.prod) { Object.assign(S, v); return true; } } catch(e){}
+  return false;
+}
+const hora = () => new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+async function save(){
+  const local = saveLocal();
+  if (!db) { setSalvo(local, local ? 'Salvo neste navegador às ' + hora() + ' · baixe o backup para guardar uma cópia' : 'Não salva: este navegador bloqueou o armazenamento. Baixe o backup.'); return; }
+  const c = chunks();
+  for (const k of Object.keys(saved)) if (!c[k]) c[k] = { rows:[] };
+  for (const [k, v] of Object.entries(c)) {
+    const js = JSON.stringify(v);
+    if (saved[k] === js) continue;
+    try { await db.doc('data/users/'+uid+'/'+k).set(v); saved[k] = js; }
+    catch(e){ const det = (e && (e.code || e.message)) + ' na parte ' + k; setSalvo(false, 'Falha ao salvar (' + det + ')'); aviso('Não consegui salvar ('+esc(det)+'). Os dados continuam na tela, mas não ficaram guardados. Me mande este print.'); return; }
+  }
+  setSalvo(true, 'Salvo às ' + hora() + ' na sua conta' + (local ? ' e neste navegador' : ''));
+}
+let salvoMsg = 'Verificando…';
+const setSalvo = (ok, t) => { salvoMsg = t; const el = $('salvo'); if (el) { el.textContent = t; el.className = 'tag' + (ok ? '' : ' a'); } };
+async function load(){
+  let etapa = 'iniciar';
+  try {
+    setSalvo(true, 'Conectando à sua conta…');
+    const embutido = window.parent !== window;
+    for (let i = 0; embutido && i < 100 && !(window.claude && window.claude.use); i++) await new Promise(r => setTimeout(r, 100));
+    if (!(window.claude && window.claude.use)) { db = null; const t = loadLocal(); setSalvo(true, t ? 'Base salva neste navegador' + (S.bk ? ' · último backup: ' + dt(S.bk) : ' · nenhum backup baixado ainda') : 'Base vazia · suba os arquivos ou carregue um backup'); return; }
+    etapa = 'usuário'; const user = await window.claude.use('user');
+    etapa = 'banco'; db = await window.claude.use('db');
+    etapa = 'id'; uid = user ? await user.id() : null;
+    if (!db || !uid) { db = null; const t = loadLocal(); setSalvo(true, (t ? 'Base carregada deste navegador' : 'Salvando neste navegador') + ' (conta indisponível: ' + (!db ? 'banco' : 'login') + ')'); return; }
+    etapa = 'leitura';
+    const timer = setTimeout(() => aviso('A base salva está demorando para responder. Se não aparecer, recarregue a página.'), 10000);
+    const snap = await db.collection('data/users/'+uid).get();
+    clearTimeout(timer); $('aviso').innerHTML = '';
+    const P=[],R=[],E=[];
+    snap.docs.forEach(d => { const v = d.data(); saved[d.id] = JSON.stringify(v);
+      if (d.id === 'meta') { Object.assign(S, { excl:v.excl||S.excl, corr:v.corr||[], lanc:v.lanc||[], canc:v.canc||[], vtex:v.vtex||{}, upd:v.upd||'' }); }
+      else if (d.id.startsWith('p-')) P.push(...(v.rows||[])); else if (d.id.startsWith('r-')) R.push(...(v.rows||[])); else if (d.id.startsWith('e-')) E.push(...(v.rows||[])); else if (d.id.startsWith('b-')) (S.bi ||= {})[d.id.slice(2)] = v.s || ''; });
+    S.prod = P.sort((a,b) => a.d.localeCompare(b.d) || a.p.localeCompare(b.p)); S.rev = R; S.est = E;
+    if (!snap.size && loadLocal()) { setSalvo(true, 'Levando a base deste navegador para a sua conta…'); await save(); return; }
+    setSalvo(true, snap.size ? 'Salvamento ativo · ' + snap.size + ' partes salvas na sua conta' : 'Salvamento ativo · base ainda vazia');
+  } catch(e){ db = null; const det = 'etapa ' + etapa + ': ' + (e && (e.code || e.message) || e);
+    const t = loadLocal();
+    setSalvo(true, (t ? 'Base carregada deste navegador' : 'Salvando neste navegador') + ' (conta indisponível: ' + det + ')'); }
+}
+const aviso = h => { $('aviso').innerHTML = '<div class="banner">'+h+'</div>'; };
+
+let carregando = Promise.resolve();
+/* ---------- filtros ---------- */
+function anos(){ return [...new Set(rows.map(r => r.ano))].sort((a,b) => b-a); }
+function fillFilters(keep){
+  const A = anos(), a0 = keep && A.includes(+$('fAno').value) ? +$('fAno').value : A[0];
+  $('fAno').innerHTML = A.map(a => '<option'+(a===a0?' selected':'')+'>'+a+'</option>').join('') || '<option>—</option>';
+  fillMes(keep);
+}
+function fillMes(keep){
+  const a = +$('fAno').value, ms = [...new Set(rows.filter(r => r.ano === a).map(r => r.mes))].sort((x,y) => x-y);
+  const cur = keep ? $('fMes').value : String(ms[ms.length-1] || 0);
+  $('fMes').innerHTML = '<option value="0">Ano todo</option>' + ms.map(m => '<option value="'+m+'"'+(String(m)===cur?' selected':'')+'>'+MES[m-1]+'</option>').join('');
+}
+
+/* ---------- render ---------- */
+function render(){
+  rows = L.build(S);
+  if (!$('fAno').options.length || !anos().includes(+$('fAno').value)) fillFilters(false);
+  const ano = +$('fAno').value, mes = +$('fMes').value;
+  const per = [...new Set(S.prod.map(r => r.d))].sort();
+  $('sub').textContent = rows.length ? 'Base de ' + dt(per[0]) + ' a ' + dt(per[per.length-1]) + (S.upd ? ' · atualizada em ' + dt(S.upd) : '') : 'Sem dados ainda. Comece pela aba Atualizar dados.';
+  renderInd(ano, mes); renderPend(ano); renderBase(); renderStatus();
+}
+function delta(cur, prev){
+  if (!prev) return '';
+  const d = prev ? (cur - prev) / prev : 0;
+  if (!isFinite(d)) return '';
+  return '<i class="'+(d>0?'up':'down')+'">'+(d>0?'▲ ':'▼ ')+pct(Math.abs(d))+' vs mês anterior</i>';
+}
+function renderInd(ano, mes){
+  if (!rows.length) { $('kpis').innerHTML = '<div class="empty">Suba os arquivos na aba Atualizar dados.</div>'; ['tbMot','tbArr','tbDef'].forEach(i => $(i).innerHTML=''); $('chart').innerHTML=''; return; }
+  const a = L.analytics(rows, { ano, mes, excl:S.excl }), k = a.kpi, p = a.kpiPrev;
+  const per = mes ? MES[mes-1]+'/'+ano : 'acumulado '+ano;
+  $('kpis').innerHTML = [
+    ['Total devolvido · '+per, brl0(k.tot), delta(k.tot, p&&p.tot)],
+    ['Devoluções (estorno)', brl0(k.dev), delta(k.dev, p&&p.dev)],
+    ['Trocas', brl0(k.troca), delta(k.troca, p&&p.troca)],
+    ['Pedidos com reversa', k.pedidos.toLocaleString('pt-BR'), delta(k.pedidos, p&&p.pedidos)],
+    ['Itens devolvidos', k.itens.toLocaleString('pt-BR'), delta(k.itens, p&&p.itens)]
+  ].map(x => '<div class="k"><span>'+x[0]+'</span><b>'+x[1]+'</b>'+x[2]+'</div>').join('');
+  chartData = { meses:a.meses, sel:mes }; draw();
+  $('tMot').textContent = 'Motivos · ' + per;
+  const tm = a.motivos.reduce((s,o) => s+o.tot, 0);
+  $('tbMot').innerHTML = '<tr><th>Motivo</th><th class="n">Devolução</th><th class="n">Troca</th><th class="n">Total</th><th class="n">%</th></tr>' +
+    a.motivos.map(o => '<tr><td>'+esc(o.m)+'<div class="bar" style="width:'+(tm?o.tot/tm*100:0)+'%"></div></td><td class="n">'+brl0(o.dev)+'</td><td class="n">'+brl0(o.troca)+'</td><td class="n">'+brl0(o.tot)+'</td><td class="n">'+pct(tm?o.tot/tm:0)+'</td></tr>').join('') +
+    '<tr><th>Total</th><th class="n">'+brl0(k.dev)+'</th><th class="n">'+brl0(k.troca)+'</th><th class="n">'+brl0(k.tot)+'</th><th class="n">100%</th></tr>';
+  const top = arr => arr.length ? '<tr><th>Produto</th><th class="n">Qtd</th><th class="n">Valor</th><th class="n">%</th><th class="n">% acum.</th></tr>' +
+    arr.slice(0,10).map(o => '<tr><td>'+esc(o.n)+'</td><td class="n">'+o.q+'</td><td class="n">'+brl0(o.v)+'</td><td class="n">'+pct(o.pct)+'</td><td class="n">'+pct(o.acum)+'</td></tr>').join('') +
+    (arr.length > 10 ? '<tr><td colspan="5" class="note">+ '+(arr.length-10)+' produtos (lista completa no Excel da aba Base de dados)</td></tr>' : '') : '<tr><td class="empty">Nenhum item no período.</td></tr>';
+  $('tbArr').innerHTML = top(a.arrep); $('tbDef').innerHTML = top(a.defeito);
+  $('notaExcl').textContent = 'Valores = quantidade × valor unitário. Considera o tipo já corrigido (aba Atualizar dados) e deixa de fora: ' + (S.excl.join(', ') || 'nada') + '.';
+}
+let chartData = null;
+const svg = $('chart');
+function draw(){
+  if (!chartData) return;
+  const W = svg.clientWidth, H = svg.clientHeight, M = chartData.meses; if (!W || !M.length) { svg.innerHTML=''; return; }
+  const pl = W < 520 ? 8 : 56, pb = 28, pt = 22, max = Math.max(...M.map(m => m.dev + m.troca)) * 1.1 || 1;
+  const bw = (W - pl - 8) / M.length, y = v => H - pb - v / max * (H - pb - pt);
+  let s = '';
+  if (W >= 520) for (let i = 0; i <= 4; i++) { const v = max/4*i; s += '<line x1="'+pl+'" x2="'+W+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)"/><text x="'+(pl-8)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="12" fill="var(--mute)">'+Math.round(v/1000)+' mil</text>'; }
+  M.forEach((m, i) => {
+    const x = pl + i*bw + bw*0.18, w = bw*0.64, op = chartData.sel && chartData.sel !== m.m ? 0.4 : 1;
+    s += '<g opacity="'+op+'"><rect x="'+x+'" y="'+y(m.dev)+'" width="'+w+'" height="'+(H-pb-y(m.dev))+'" fill="var(--verde2)" rx="2"/>' +
+      '<rect x="'+x+'" y="'+y(m.dev+m.troca)+'" width="'+w+'" height="'+(y(m.dev)-y(m.dev+m.troca))+'" fill="var(--ouro)" rx="2"/>' +
+      (bw > 46 ? '<text x="'+(x+w/2)+'" y="'+(y(m.dev+m.troca)-6)+'" text-anchor="middle" font-size="12" fill="var(--ink)">'+Math.round((m.dev+m.troca)/1000)+'k</text>' : '') +
+      '<text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="12" fill="var(--mute)">'+MES[m.m-1]+'</text>' +
+      '<title>'+MES[m.m-1]+': devolução '+brl0(m.dev)+' · troca '+brl0(m.troca)+'</title></g>';
+  });
+  svg.innerHTML = s;
+}
+const ro = new ResizeObserver(draw); ro.observe(svg);
+
+function renderPend(ano){
+  const de = $('pDe').value, ate = $('pAte').value, comData = !!(de || ate);
+  const P = L.pendencias(rows, ano, de, ate), V = L.verificar(S, rows, ano, $('vDe').value || de, $('vAte').value || ate);
+  const rot = comData ? (de ? dt(de) : 'início') + ' a ' + (ate ? dt(ate) : 'hoje') : String(ano);
+  $('pPer').textContent = comData ? 'Período: ' + rot + ' (pela data da reversa; o filtro de data vale no lugar do Ano lá em cima).' : 'Mostrando o ano ' + ano + '. Use as datas para escolher um período.';
+  const an = [...new Set(P.map(p => p.an || 'Sem analista'))].sort();
+  const sel = $('fAn').value;
+  $('fAn').innerHTML = '<option value="">Todos</option>' + an.map(a => '<option'+(a===sel?' selected':'')+'>'+esc(a)+'</option>').join('');
+  const semTbs = P.filter(p => p.est === 'Sem TBS').length;
+  $('kpiPend').innerHTML = '<div class="k"><span>Devoluções sem estorno · '+rot+'</span><b>'+P.length+'</b></div>' +
+    '<div class="k"><span>Valor aguardando estorno</span><b>'+brl0(P.reduce((s,p) => s+p.valor, 0))+'</b></div>' +
+    '<div class="k"><span>Estornos para verificar</span><b>'+V.length+'</b></div>' +
+    (semTbs ? '<div class="k"><span>Pedidos sem TBS</span><b class="up">'+semTbs+'</b><i>suba o export do BI</i></div>' : '');
+  const cont = {}; P.forEach(p => { const a = p.an || 'Sem analista'; cont[a] = (cont[a]||0)+1; });
+  $('porAnalista').innerHTML = Object.entries(cont).sort((a,b) => b[1]-a[1]).map(([a,n]) => '<span class="chip">'+esc(a)+' · '+n+'</span>').join('');
+  const hoje = new Date();
+  const list = P.filter(p => !$('fAn').value || (p.an || 'Sem analista') === $('fAn').value);
+  $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th>Data</th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
+    list.map(p => { const dias = p.drv ? Math.floor((hoje - new Date(p.drv+'T12:00')) / 864e5) : '';
+      return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td></tr>'; }).join('') + '</tbody>'
+    : '<tr><td class="empty">Nenhuma devolução pendente de estorno em '+rot+'.</td></tr>';
+  const vx = e => e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', ');
+  $('tbVer').innerHTML = V.length ? '<thead><tr><th>Referência</th><th>Data</th><th>Pedido VTEX</th><th>Resumo</th><th>Status</th><th>Solicitante</th></tr></thead><tbody>' +
+    V.map(e => '<tr><td>'+esc(e.r)+'</td><td>'+dt(e.d)+'</td><td class="nw">'+(esc(vx(e)) || '<span class="note">—</span>')+'</td><td>'+esc(e.rs)+'</td><td>'+esc(e.s)+'</td><td>'+esc(e.sol)+'</td></tr>').join('') + '</tbody>'
+    : '<tr><td class="empty">Tudo certo: todo estorno do ano tem reversa ou lançamento.</td></tr>';
+  const semVx = V.filter(e => !vx(e)).length;
+  $('vNota').textContent = semVx ? semVx + ' sem número VTEX: o TBS não está no BI salvo (o painel guarda os pedidos dos últimos 12 meses). Suba um BI mais recente ou que inclua esses pedidos.' : '';
+}
+
+const COLS = [['Pedido','p'],['TBS','tbs'],['Data','d'],['Status','st'],['Nome','nm'],['Cidade','cid'],['Estado','uf'],['Transporte','tr'],['Valor','v'],['Tipo','ti'],['Quantidade','q'],['SKU','sku'],['Produto','pr'],['Motivo','mo'],['Produto recebido','rec'],['Data recebimento','drv'],['Data de criação do pedido na loja','dl'],['Produto Agrupado','grp'],['Tipo Atualizado','ta'],['Motivo Atualizado','ma'],['Mês','mesN'],['Ano','ano'],['Valor Total Devolvido','tot'],['Reversa Total/Parcial','tp'],['Tipo de Postagem','po'],['Frete reverso','fr'],['Status da entrega','se'],['Analista Responsável','an'],['Solicitação de Estorno','est'],['Data Estorno','dest']];
+function filtBase(){
+  const q = L.norm($('busca').value);
+  return rows.filter(r => !q || L.norm([r.p,r.tbs,r.nm,r.pr,r.sku,r.an,r.est].join(' ')).includes(q)).slice().reverse();
+}
+function renderBase(){
+  const f = filtBase(), show = f.slice(0, nBase);
+  $('baseInfo').textContent = f.length.toLocaleString('pt-BR') + ' linhas' + (f.length > show.length ? ' · mostrando ' + show.length : '') + '. O Excel traz todas as colunas da antiga aba produto_troque.';
+  $('tbBase').innerHTML = '<tr><th>Data</th><th>Pedido</th><th>TBS</th><th>Produto</th><th>Tipo</th><th>Motivo</th><th class="n">Qtd</th><th class="n">Total</th><th>Analista</th><th>Estorno</th></tr>' +
+    show.map(r => '<tr><td>'+dt(r.d)+'</td><td>'+esc(r.p)+'</td><td>'+esc(r.tbs)+'</td><td>'+esc(r.pr)+'</td><td>'+esc(r.ta)+'</td><td>'+esc(r.ma)+'</td><td class="n">'+r.q+'</td><td class="n">'+brl(r.tot)+'</td><td>'+esc(r.an)+'</td><td>'+(/Pendente|Sem TBS/.test(r.est)?'<span class="tag a">'+esc(r.est)+'</span>':esc(r.est))+'</td></tr>').join('');
+  $('mais').hidden = f.length <= nBase;
+}
+function renderStatus(){
+  const rng = (arr, k='d') => { const d = arr.map(r => r[k]).filter(Boolean).sort(); return d.length ? dt(d[0])+' a '+dt(d[d.length-1]) : '—'; };
+  const semTbs = new Set(S.prod.filter(r => !r.tbs).map(r => r.p)).size;
+  const revP = new Set(S.rev.map(v => v.p)), semRev = new Set(S.prod.filter(r => !revP.has(r.p)).map(r => r.p)).size;
+  $('status').innerHTML = '<table class="stack"><thead><tr><th>Fonte</th><th class="n">Linhas</th><th>Período</th><th>Observação</th></tr></thead><tbody>' +
+    '<tr><td>Troque · produtos</td><td class="n">'+S.prod.length.toLocaleString('pt-BR')+'</td><td>'+rng(S.prod)+'</td><td>'+(semTbs?'<span class="tag a">'+semTbs+' pedidos sem TBS — suba o BI</span>':'todos com TBS')+'</td></tr>' +
+    '<tr><td>Troque · reversas</td><td class="n">'+S.rev.length.toLocaleString('pt-BR')+'</td><td>'+rng(S.rev)+'</td><td>'+(semRev?'<span class="tag a">'+semRev+' pedidos sem reversa</span>':'ok')+'</td></tr>' +
+    '<tr><td>Jira · estornos</td><td class="n">'+S.est.length.toLocaleString('pt-BR')+'</td><td>'+rng(S.est)+'</td><td></td></tr>' +
+    '<tr><td>Controles manuais 2024–2026</td><td class="n">'+S.lanc.length.toLocaleString('pt-BR')+'</td><td>—</td><td>TBS lançados fora do Troque</td></tr></tbody></table>' +
+    '';
+  $('tbCorr').innerHTML = S.corr.length ? '<tr><th>Pedido</th><th>Corrigido para</th><th></th></tr>' + S.corr.map((c,i) => '<tr><td>'+esc(c.p)+'</td><td>'+esc(c.c)+'</td><td class="n"><button class="x" data-rc="'+i+'">Remover</button></td></tr>').join('') : '<tr><td class="note">Nenhuma correção.</td></tr>';
+  $('xList').innerHTML = S.excl.map((t,i) => '<span class="chip">'+esc(t)+' <button class="x" style="min-height:28px;padding:0 8px;margin-left:4px" data-rx="'+i+'" aria-label="Remover">×</button></span>').join('') || '<p class="note">Nenhum item excluído.</p>';
+}
+
+/* ---------- upload ---------- */
+async function readFile(file){
+  const buf = await file.arrayBuffer();
+  if (/\.csv$/i.test(file.name)) {
+    const t = new TextDecoder('utf-8').decode(buf).replace(/^﻿/, '');
+    const l1 = t.split(/\r?\n/)[0];
+    return XLSX.read(t, { type:'string', FS:(l1.split(';').length > l1.split(',').length ? ';' : ','), raw:true });
+  }
+  return XLSX.read(buf, { type:'array', cellDates:true, dense:true, cellText:false, cellHTML:false, cellStyles:false });
+}
+async function handle(files, modo){
+  if (typeof XLSX === 'undefined') { aviso('A biblioteca de leitura de planilhas não carregou. Recarregue a página.'); return; }
+  const log = $(modo === 'hist' ? 'logH' : 'log'); log.hidden = false; log.textContent = 'Lendo ' + files.length + ' arquivo(s)…' + (files.some(f => f.size > 5e6) ? ' Arquivos grandes, como o BI completo, podem levar até 1 minuto.' : '');
+  await new Promise(r => setTimeout(r, 50));
+  if (modo === 'hist') $('histLog').innerHTML = '';
+  const hist = [];
+  const all = { prod:[], rev:[], est:[], bi:[], corr:[], lanc:[] }; const msgs = [];
+  for (const f of files) {
+    try {
+      const r = L.readWorkbook(XLSX, await readFile(f));
+      const parts = [];
+      if (r.historico) parts.push('histórico completo');
+      if (r.prod.length) parts.push(r.prod.length+' linhas de produtos');
+      if (r.rev.length) parts.push(r.rev.length+' reversas');
+      if (r.bi.length) parts.push(r.bi.length.toLocaleString('pt-BR')+' linhas do BI (pedido → TBS)');
+      if (r.est.length) parts.push(r.est.length+' estornos');
+      if (r.corr.length) parts.push(r.corr.length+' correções');
+      if (r.lanc.length) parts.push(r.lanc.length+' TBS do controle de devoluções');
+      msgs.push('• ' + f.name + ': ' + (parts.join(', ') || 'não reconheci as colunas'));
+      if (modo === 'hist') hist.push({ nome:f.name, r });
+      for (const k in all) for (const x of r[k]) all[k].push(x);
+    } catch(e){ msgs.push('• ' + f.name + ': erro ao ler (' + e.message + ')'); }
+  }
+  log.textContent = msgs.join('\n') + '\nConectando à sua conta…'; await carregando;
+  const n = L.merge(S, all, { soNovos: modo === 'hist' });
+  if (modo === 'hist') $('histLog').innerHTML = hist.map(({ nome, r }) => !r.abas.some(a => a.qtd)
+    ? '<p class="banner">Não reconheci nenhuma aba de '+esc(nome)+'.</p>'
+    : '<p class="note" style="margin-top:14px"><strong>'+esc(nome)+'</strong>: '+r.abas.length+' abas lidas, '+r.abas.filter(a => a.oculta).length+' ocultas.</p><table class="stack"><thead><tr><th>Aba</th><th>Visibilidade</th><th>O que virou</th><th class="n">Linhas</th></tr></thead><tbody>' +
+      r.abas.map(a => '<tr><td>'+esc(a.n)+'</td><td>'+(a.oculta?'<span class="tag">oculta</span>':'visível')+'</td><td>'+esc(a.t)+'</td><td class="n">'+(a.qtd?a.qtd.toLocaleString('pt-BR'):'—')+'</td></tr>').join('') + '</tbody></table>').join('');
+  if (n.prod || n.rev || n.est || n.bi || all.corr.length || all.lanc.length) S.upd = new Date().toISOString().slice(0,10);
+  if (n.canc) msgs.push('• ' + n.canc + ' itens com status Cancelado ficaram de fora');
+  Object.entries(n.det).forEach(([k, d]) => msgs.push('• ' + k + ': ' + d.novos + ' novos, ' + d.atual + ' atualizados, ' + d.mantidos + ' mantidos do histórico'));
+  msgs.push('', 'Base agora: ' + S.prod.length + ' linhas de produtos, ' + S.rev.length + ' reversas, ' + S.est.length + ' estornos.' + (n.bi ? ' TBS preenchido em ' + n.bi + ' linhas.' : ''));
+  log.textContent = msgs.join('\n') + (db ? '\nSalvando…' : '');
+  fillFilters(false); render();
+  await save(); if (db) log.textContent = msgs.join('\n') + '\nSalvo.';
+}
+document.querySelectorAll('.drop').forEach(dz => {
+  const modo = dz.dataset.modo, inp = dz.querySelector('input');
+  inp.addEventListener('change', e => { if (e.target.files.length) handle([...e.target.files], modo); e.target.value = ''; });
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('hot'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('hot'); }));
+  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) handle([...e.dataTransfer.files], modo); });
+});
+
+/* ---------- ações ---------- */
+const hojeISO = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+$('jira').addEventListener('input', () => {
+  const e = L.parseJira($('jira').value, hojeISO());
+  $('jiraPrev').textContent = $('jira').value.trim() ? (e.length ? e.length + ' solicitações reconhecidas' + (e.some(x => !x.k.length) ? ' (' + e.filter(x => !x.k.length).length + ' sem TBS no resumo)' : '') : 'Nenhuma solicitação reconhecida (procuro linhas como CR-11752)') : '';
+});
+$('jiraOk').addEventListener('click', async () => {
+  const e = L.parseJira($('jira').value, hojeISO()), log = $('logJ'); log.hidden = false;
+  if (!e.length) { log.textContent = 'Não reconheci nenhuma solicitação. Confira se a cópia inclui as linhas CR-….'; return; }
+  log.textContent = 'Conectando à sua conta…'; await carregando;
+  const n = L.merge(S, { prod:[], rev:[], est:e, bi:[], corr:[], lanc:[] }), d = n.det['estornos'];
+  S.upd = hojeISO();
+  const datas = e.map(x => x.d).filter(Boolean).sort();
+  const msg = e.length + ' solicitações de ' + dt(datas[0]) + ' a ' + dt(datas[datas.length-1]) + ': ' + d.novos + ' novas, ' + d.atual + ' atualizadas, ' + d.mantidos + ' mantidas do histórico.' + (e.some(x => !x.k.length) ? '\nSem TBS no resumo (não cruzam com o Troque): ' + e.filter(x => !x.k.length).map(x => x.r).join(', ') : '');
+  log.textContent = msg + (db ? '\nSalvando…' : '');
+  $('jira').value = ''; $('jiraPrev').textContent = '';
+  render(); await save(); if (db) log.textContent = msg + '\nSalvo.';
+});
+$('fAno').addEventListener('change', () => { fillMes(false); render(); });
+$('fMes').addEventListener('change', render);
+$('fAn').addEventListener('change', () => renderPend(+$('fAno').value));
+['pDe','pAte','vDe','vAte'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
+$('vLimpa').addEventListener('click', () => { $('vDe').value = ''; $('vAte').value = ''; renderPend(+$('fAno').value); });
+$('pLimpa').addEventListener('click', () => { $('pDe').value = ''; $('pAte').value = ''; renderPend(+$('fAno').value); });
+$('busca').addEventListener('input', () => { nBase = 100; renderBase(); });
+$('mais').addEventListener('click', () => { nBase += 200; renderBase(); });
+$('cAdd').addEventListener('click', () => { const p = $('cPed').value.trim(); if (!p) return; S.corr = S.corr.filter(c => c.p !== p).concat({ p, c:$('cTipo').value }); $('cPed').value=''; render(); save(); });
+$('tbCorr').addEventListener('click', e => { const i = e.target.dataset.rc; if (i === undefined) return; S.corr.splice(+i,1); render(); save(); });
+$('xAdd').addEventListener('click', () => { const t = $('xTerm').value.trim(); if (!t || S.excl.includes(t)) return; S.excl.push(t); $('xTerm').value=''; render(); save(); });
+$('xList').addEventListener('click', e => { const i = e.target.dataset.rx; if (i === undefined) return; S.excl.splice(+i,1); render(); save(); });
+$('btZera').addEventListener('click', () => { $('dlgTxt').textContent = 'Apagar toda a base salva ('+S.prod.length+' linhas de produtos, '+S.rev.length+' reversas, '+S.est.length+' estornos)? Não dá para desfazer.'; $('dlg').classList.add('on'); });
+$('dlgNo').addEventListener('click', () => $('dlg').classList.remove('on'));
+$('dlgOk').addEventListener('click', async () => { $('dlg').classList.remove('on'); S = { prod:[], rev:[], est:[], corr:[], lanc:[], canc:[], vtex:{}, bi:{}, excl:['Eau de Parfum 2ml'], upd:'' }; $('fAno').innerHTML=''; render(); await save(); });
+
+$('btXls').addEventListener('click', async () => {
+  const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+
+  const ano = +$('fAno').value, mes = +$('fMes').value, a = L.analytics(rows, { ano, mes, excl:S.excl });
+  const wb = XLSX.utils.book_new();
+  const base = rows.map(r => Object.fromEntries(COLS.map(([h,k]) => [h, k==='mesN' ? MES[r.mes-1] : (r[k] ?? '')])));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(base), 'Base');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(L.pendencias(rows, ano, $('pDe').value, $('pAte').value).map(p => ({ 'Analista':p.an, 'TBS':p.tbs||'sem TBS', 'Pedido':p.p, 'Cliente':p.nm, 'Data':p.d, 'Motivo':p.ma, 'Status da entrega':p.se, 'Recebido em':p.drv, 'Valor':p.valor }))), 'Estornos pendentes');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(L.verificar(S, rows, ano, $('vDe').value || $('pDe').value, $('vAte').value || $('pAte').value).map(e => ({ 'Referência':e.r, 'Data':e.d, 'Pedido VTEX':e.k.map(k => L.vtexDe(S, k)).filter(Boolean).join(', '), 'Resumo':e.rs, 'Status':e.s, 'Solicitante':e.sol }))), 'Estornos a verificar');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.meses.map(m => ({ 'Mês':MES[m.m-1], 'Troca':m.troca, 'Devolução':m.dev, 'Total':m.troca+m.dev, 'Pedidos':m.pedidos }))), 'Resumo mensal '+ano);
+  const per = mes ? MES[mes-1] : 'ano';
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.motivos.map(o => ({ 'Motivo':o.m, 'Devolução':o.dev, 'Troca':o.troca, 'Total':o.tot }))), 'Motivos '+per);
+  const tp = arr => arr.map(o => ({ 'Produto':o.n, 'Quantidade':o.q, 'Total Devolvido':o.v, '% do Total':o.pct, '% Acumulado':o.acum }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.arrep)), 'Arrependimento '+per);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tp(a.defeito)), 'Defeito-Avaria '+per);
+  const out = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+  const nome = 'Trocas e Devolucoes '+ano+(mes?'-'+String(mes).padStart(2,'0'):'')+'.xlsx';
+  if (!dl) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([out], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); a.download = nome; document.body.appendChild(a); a.click(); a.remove(); return; }
+  try { await dl.save({ filename:nome, data:out }); }
+  catch(e){ if (e.code !== 'declined') aviso('Não foi possível baixar ('+esc(e.code||e.message)+').'); }
+});
+
+/* ---------- backup ---------- */
+$('bkDown').addEventListener('click', () => {
+  S.bk = hojeISO(); saveLocal();
+  const nome = 'backup-trocas-devolucoes-' + S.bk + '.json';
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type:'application/json' })); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  $('bkInfo').textContent = 'Backup baixado: ' + nome; save();
+});
+$('bkUp').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const v = JSON.parse(await f.text());
+    if (!v || !Array.isArray(v.prod)) throw new Error('arquivo não é um backup deste painel');
+    S = Object.assign({ prod:[], rev:[], est:[], corr:[], lanc:[], canc:[], vtex:{}, bi:{}, excl:['Eau de Parfum 2ml'], upd:'' }, v);
+    $('fAno').innerHTML = ''; render(); await save();
+    $('bkInfo').textContent = 'Backup carregado: ' + S.prod.length + ' linhas de produtos, ' + S.rev.length + ' reversas, ' + S.est.length + ' estornos.';
+  } catch(err){ $('bkInfo').textContent = 'Não consegui carregar: ' + err.message; }
+});
+
+/* ---------- abas ---------- */
+function route(){
+  const v = (location.hash || '#indicadores').slice(1);
+  const ok = ['indicadores','estornos','base','atualizar'].includes(v) ? v : 'indicadores';
+  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+ok));
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === ok));
+  if (ok === 'indicadores') draw();
+}
+addEventListener('hashchange', route); route();
+
+render();
+carregando = load();
+carregando.then(() => { fillFilters(false); render(); if (!S.prod.length && !location.hash) { location.hash = 'atualizar'; } });
+}
+</script>
+</body>
+</html>
