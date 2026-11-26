@@ -124,6 +124,7 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
         <label class="note" style="display:grid;gap:4px">Data de <input type="date" id="pDe"></label>
         <label class="note" style="display:grid;gap:4px">até <input type="date" id="pAte"></label>
         <button id="pLimpa">Limpar datas</button>
+        <label class="note" style="display:grid;gap:4px">Ordenar <select id="pOrd"><option value="an">Analista</option><option value="rec">Data (mais recente)</option><option value="ant">Data (mais antiga)</option><option value="dias">Mais dias sem estorno</option></select></label>
       </div>
       <p class="note" id="pPer"></p>
       <table class="stack" id="tbPend"></table>
@@ -135,6 +136,7 @@ td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
         <label class="note" style="display:grid;gap:4px">Data de <input type="date" id="vDe"></label>
         <label class="note" style="display:grid;gap:4px">até <input type="date" id="vAte"></label>
         <button id="vLimpa">Limpar datas</button>
+        <label class="note" style="display:grid;gap:4px">Ordenar <select id="vOrd"><option value="rec">Data (mais recente)</option><option value="ant">Data (mais antiga)</option></select></label>
       </div>
       <p class="note" id="vNota"></p>
       <table class="stack" id="tbVer"></table>
@@ -713,7 +715,12 @@ function renderPend(ano){
   const cont = {}; P.forEach(p => { const a = p.an || 'Sem analista'; cont[a] = (cont[a]||0)+1; });
   $('porAnalista').innerHTML = Object.entries(cont).sort((a,b) => b[1]-a[1]).map(([a,n]) => '<span class="chip">'+esc(a)+' · '+n+'</span>').join('');
   const hoje = new Date();
-  const list = P.filter(p => !$('fAn').value || (p.an || 'Sem analista') === $('fAn').value);
+  const ordP = $('pOrd').value;
+  const list = P.filter(p => !$('fAn').value || (p.an || 'Sem analista') === $('fAn').value).sort((a, b) =>
+    ordP === 'rec' ? b.d.localeCompare(a.d) : ordP === 'ant' ? a.d.localeCompare(b.d)
+    : ordP === 'dias' ? (a.drv || '9999').localeCompare(b.drv || '9999') || a.d.localeCompare(b.d)
+    : (a.an || '').localeCompare(b.an || '') || a.d.localeCompare(b.d));
+  if ($('vOrd').value === 'ant') V.sort((a, b) => a.d.localeCompare(b.d)); else V.sort((a, b) => b.d.localeCompare(a.d));
   $('tbPend').innerHTML = list.length ? '<thead><tr><th>Analista</th><th>TBS</th><th>Pedido</th><th>Cliente</th><th>Data</th><th>Motivo</th><th>Status da entrega</th><th>Recebido em</th><th class="n">Dias</th><th class="n">Valor</th></tr></thead><tbody>' +
     list.map(p => { const dias = p.drv ? Math.floor((hoje - new Date(p.drv+'T12:00')) / 864e5) : '';
       return '<tr><td>'+esc(p.an)+'</td><td class="nw">'+(p.est==='Sem TBS'?'<span class="tag a">sem TBS</span>':esc(p.tbs))+'</td><td class="nw">'+esc(p.p)+'</td><td>'+esc(p.nm)+'</td><td>'+dt(p.d)+'</td><td>'+esc(p.ma)+'</td><td>'+esc(p.se)+'</td><td>'+dt(p.drv)+'</td><td class="n">'+(dias!==''&&dias>15?'<span class="tag a">'+dias+'</span>':dias)+'</td><td class="n">'+brl(p.valor)+'</td></tr>'; }).join('') + '</tbody>'
@@ -828,7 +835,7 @@ $('jiraOk').addEventListener('click', async () => {
 $('fAno').addEventListener('change', () => { fillMes(false); render(); });
 $('fMes').addEventListener('change', render);
 $('fAn').addEventListener('change', () => renderPend(+$('fAno').value));
-['pDe','pAte','vDe','vAte'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
+['pDe','pAte','vDe','vAte','pOrd','vOrd'].forEach(id => $(id).addEventListener('change', () => renderPend(+$('fAno').value)));
 $('vLimpa').addEventListener('click', () => { $('vDe').value = ''; $('vAte').value = ''; renderPend(+$('fAno').value); });
 $('pLimpa').addEventListener('click', () => { $('pDe').value = ''; $('pAte').value = ''; renderPend(+$('fAno').value); });
 $('busca').addEventListener('input', () => { nBase = 100; renderBase(); });
